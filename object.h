@@ -10,15 +10,26 @@
 vector of subg --> than later we create a distance
 
 */
-
-
- class ground_Class
- {
-    private:
+class hitBox//parrent class for inheritance
+{
+    protected:
     int x;
     int y;
     int w;
     int h;
+    public:
+    hitBox(int x,int y,int w,int h){
+        this->x=x;
+        this->y=y;
+        this->w=w;
+        this->h=h;
+    }
+};
+
+ class ground_Class:public hitBox
+ {
+    private:
+  
     int divw=0;//Divide width into 20px parts and get widths
      std::vector <SDL_Rect> ground ;
      std::vector <std::vector<SDL_Rect>> groundUnder;
@@ -36,13 +47,13 @@ vector of subg --> than later we create a distance
 
     public:
         
-        ground_Class() : x(0), y(0), w(0), h(0), divw(0) {}
-        ground_Class(int ax,int ay,int aw,int ah,SDL_Renderer*renderer,const std::string &texturePath,const std::string &ugT)
+        ground_Class() : hitBox(0, 0,0,0), divw(0) {}
+        ground_Class(int ax,int ay,int aw,int ah,SDL_Renderer*renderer,const std::string &texturePath,const std::string &ugT) : hitBox(ax,ay,aw,ah)
         {
-            x=ax;
-            y=ay;
-            w=aw;
-            h=ah;
+            // x=ax;
+            // y=ay;
+            // w=aw;
+            // h=ah;
             divw = w / perboxwidth;
             int rows = h / perboxheight;
 
@@ -68,6 +79,47 @@ vector of subg --> than later we create a distance
 
             }
         }
+
+        void rebuild()
+        {
+            divw = w / perboxwidth;
+            int rows = h / perboxheight;
+
+            ground.clear();
+            groundUnder.clear();
+
+            ground.resize(divw);
+            groundUnder.resize(divw);
+
+            for (int i = 0; i < divw; i++)
+                groundUnder[i].resize(rows);
+
+            for (int i = 0; i < divw; i++)
+            {
+                ground[i] = { x + i * perboxwidth, y, perboxwidth, perboxheight };
+
+                for (int j = 0; j < rows; j++)
+                {
+                    groundUnder[i][j] =
+                    {
+                        x + i * perboxwidth,
+                        y + (j + 1) * perboxheight,
+                        perboxwidth,
+                        perboxheight
+                    };
+                }
+            }
+        }
+
+        void setPosition(int newX, int newY,int newW,int newH)
+{
+    x = newX;
+    y = newY;
+    w=newW;
+    h=newH;
+    rebuild();
+}
+
 
   SDL_Texture* loadTexture(SDL_Renderer* renderer, const std::string& path)
 {
@@ -113,8 +165,11 @@ vector of subg --> than later we create a distance
     }
     }
 
-    
+
+   
  };
 
+
+ 
 
    
