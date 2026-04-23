@@ -18,7 +18,7 @@ std::vector<ground_Class> ground_generator(SDL_Renderer* renderer)
     std::mt19937 gen(rd());
 
     std::uniform_int_distribution<> disty(500, 900);
-    std::uniform_int_distribution<> distw(300, 950);
+    std::uniform_int_distribution<> distw(300, 2450);
     std::uniform_int_distribution<> disth(50, 400);
 
     int x = 0;
@@ -36,4 +36,26 @@ std::vector<ground_Class> ground_generator(SDL_Renderer* renderer)
     );
 
     return ground;
+}
+
+std::vector<ground_Class> groundRandomgenerator(std::vector<ground_Class> prevGround,SDL_Renderer* renderer)
+{
+    std::vector<ground_Class> ground;
+
+    for(int i=0;i<prevGround.size();i++)
+    {
+     ground.push_back(prevGround[i]);
+    }
+    ground.shrink_to_fit();
+     std::random_device rd;
+    std::mt19937 gen(rd());
+
+    std::uniform_int_distribution<> distx(ground.end()->x+80,ground.end()->x+ 120);
+    std::uniform_int_distribution<> disty(ground.end()->y-30, ground.end()->y+60);
+    std::uniform_int_distribution<> distw(300, 2450);
+    std::uniform_int_distribution<> disth(50, 400);
+
+    ground.emplace_back(distx(gen),disty(gen),distw(gen),disth(gen),renderer,
+        "Images_textures/ground.jpeg",
+        "Images_textures/underGround.jpeg")
 }

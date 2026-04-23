@@ -14,7 +14,7 @@ const std::string textureup="Images_textures/ground.jpeg";
 const std::string textureud="Images_textures/underGround.jpeg";
 class hitBox//parrent class for inheritance
 {
-    protected:
+    public:
     int x;
     int y;
     int w;
@@ -30,7 +30,7 @@ class hitBox//parrent class for inheritance
 
  class ground_Class:public hitBox
  {
-    private:
+    public:
   
     int divw=0;//Divide width into 20px parts and get widths
      std::vector <SDL_Rect> ground ;
