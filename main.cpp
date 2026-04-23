@@ -31,7 +31,7 @@ int main()
         return -1;
     }
 
-     ground_Class ground(100,900,300,50,renderer,"Images_textures/ground.jpeg");
+     ground_Class ground(100,900,500,100,renderer,"Images_textures/ground.jpeg","Images_textures/underGround.jpeg");
 
     bool quit=false;   
     SDL_Event eventManager;
