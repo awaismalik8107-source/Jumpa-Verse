@@ -10,6 +10,8 @@
 vector of subg --> than later we create a distance
 
 */
+const std::string textureup="Images_textures/ground.jpeg";
+const std::string textureud="Images_textures/underGround.jpeg";
 class hitBox//parrent class for inheritance
 {
     protected:
@@ -42,7 +44,7 @@ class hitBox//parrent class for inheritance
      int perboxX=50;
      int perboxY;
      
-
+    SDL_Texture* texture ;
 
 
     public:
@@ -80,17 +82,21 @@ class hitBox//parrent class for inheritance
             }
         }
 
-        void rebuild()
+        void rebuild(SDL_Renderer*renderer)
         {
             divw = w / perboxwidth;
             int rows = h / perboxheight;
 
             ground.clear();
+            
+
             groundUnder.clear();
 
             ground.resize(divw);
             groundUnder.resize(divw);
+            groundTexture=loadTexture(renderer,textureup);
 
+            ugTexture=loadTexture(renderer,textureud);
             for (int i = 0; i < divw; i++)
                 groundUnder[i].resize(rows);
 
@@ -110,15 +116,14 @@ class hitBox//parrent class for inheritance
                 }
             }
         }
-
-        void setPosition(int newX, int newY,int newW,int newH)
-{
-    x = newX;
-    y = newY;
-    w=newW;
-    h=newH;
-    rebuild();
-}
+        void seterForElements(int newX, int newY,int newW,int newH,SDL_Renderer*renderer)
+        {
+            x = newX;
+            y = newY;
+            w=newW;
+            h=newH;
+            rebuild(renderer);
+        }
 
 
   SDL_Texture* loadTexture(SDL_Renderer* renderer, const std::string& path)

@@ -31,8 +31,8 @@ int main()
         return -1;
     }
 
-     ground_Class ground(100,900,500,100,renderer,"Images_textures/ground.jpeg","Images_textures/underGround.jpeg");
-
+    //  ground_Class ground(100,900,500,100,renderer,"Images_textures/ground.jpeg","Images_textures/underGround.jpeg");
+       std::vector<ground_Class> ground = ground_generator(renderer);
     bool quit=false;   
     SDL_Event eventManager;
     while(!quit)
@@ -48,8 +48,10 @@ int main()
 
         SDL_SetRenderDrawColor(renderer,135,206,235,255);  
         SDL_RenderClear(renderer);
-
-        ground.render(renderer);
+        for(int i=0;i<ground.size();i++)
+        {
+        ground[i].render(renderer);
+        }
 
         SDL_RenderPresent(renderer);
 
