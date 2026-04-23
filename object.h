@@ -1,180 +1,117 @@
-#pragma once 
-#include<SDL2/SDL.h>
+#pragma once
+
+#include <SDL2/SDL.h>
 #include <SDL2/SDL_rect.h>
-#include<iostream>
-#include<string>
-#include<vector>
-#include<SDL2/SDL_image.h>
-/*
+#include <SDL2/SDL_image.h>
+#include <iostream>
+#include <vector>
+#include <string>
 
-vector of subg --> than later we create a distance
-
-*/
-const std::string textureup="Images_textures/ground.jpeg";
-const std::string textureud="Images_textures/underGround.jpeg";
-class hitBox//parrent class for inheritance
+class hitBox
 {
-    public:
-    int x;
-    int y;
-    int w;
-    int h;
-    public:
-    hitBox(int x,int y,int w,int h){
-        this->x=x;
-        this->y=y;
-        this->w=w;
-        this->h=h;
+public:
+    int x, y, w, h;
+
+    hitBox(int x, int y, int w, int h)
+    {
+        this->x = x;
+        this->y = y;
+        this->w = w;
+        this->h = h;
     }
 };
 
- class ground_Class:public hitBox
- {
-    public:
-  
-    int divw=0;//Divide width into 20px parts and get widths
-     std::vector <SDL_Rect> ground ;
-     std::vector <std::vector<SDL_Rect>> groundUnder;
-     SDL_Texture* groundTexture;
-     SDL_Texture* ugTexture;
-     
-     int ux,uy,uw,uh;
-     int perboxwidth=50;
-     int perboxheight=50;
-     int perboxX=50;
-     int perboxY;
-     
-    SDL_Texture* texture ;
-
-
-    public:
-        
-        ground_Class() : hitBox(0, 0,0,0), divw(0) {}
-        ground_Class(int ax,int ay,int aw,int ah,SDL_Renderer*renderer,const std::string &texturePath,const std::string &ugT) : hitBox(ax,ay,aw,ah)
-        {
-            // x=ax;
-            // y=ay;
-            // w=aw;
-            // h=ah;
-            divw = w / perboxwidth;
-            int rows = h / perboxheight;
-
-            ground.resize(divw);
-           groundUnder.resize(divw);
-            for (int i = 0; i < divw; i++)
-            {
-                groundUnder[i].resize(rows);
-            }
-
-            SDL_Texture* texture = loadTexture(renderer, texturePath);
-            ugTexture=loadTexture(renderer,ugT);
-
-             groundTexture=texture;
-
-            for (int i=0;i<divw;i++)
-            {
-                ground[i]={x + i*50,y,50,50};
-               
-
-            for(int j = 0; j < groundUnder[i].size(); j++)
-                groundUnder[i][j] = { x + i * 50, y + (j+1) * 50, 50, 50 };
-
-            }
-        }
-
-        void rebuild(SDL_Renderer*renderer)
-        {
-            divw = w / perboxwidth;
-            int rows = h / perboxheight;
-
-            ground.clear();
-            
-
-            groundUnder.clear();
-
-            ground.resize(divw);
-            groundUnder.resize(divw);
-            groundTexture=loadTexture(renderer,textureup);
-
-            ugTexture=loadTexture(renderer,textureud);
-            for (int i = 0; i < divw; i++)
-                groundUnder[i].resize(rows);
-
-            for (int i = 0; i < divw; i++)
-            {
-                ground[i] = { x + i * perboxwidth, y, perboxwidth, perboxheight };
-
-                for (int j = 0; j < rows; j++)
-                {
-                    groundUnder[i][j] =
-                    {
-                        x + i * perboxwidth,
-                        y + (j + 1) * perboxheight,
-                        perboxwidth,
-                        perboxheight
-                    };
-                }
-            }
-        }
-        void seterForElements(int newX, int newY,int newW,int newH,SDL_Renderer*renderer)
-        {
-            x = newX;
-            y = newY;
-            w=newW;
-            h=newH;
-            rebuild(renderer);
-        }
-
-
-  SDL_Texture* loadTexture(SDL_Renderer* renderer, const std::string& path)
+class ground_Class : public hitBox
 {
-    SDL_Surface* surface = IMG_Load(path.c_str());
+public:
+    int divw = 0;
 
-    if (!surface)
+    std::vector<SDL_Rect> ground;
+    std::vector<std::vector<SDL_Rect>> groundUnder;
+
+    SDL_Texture* groundTexture = nullptr;  // shared (NOT owned)
+    SDL_Texture* ugTexture = nullptr;      // shared (NOT owned)
+
+    int perboxwidth = 50;
+    int perboxheight = 50;
+
+public:
+    // Default constructor
+    ground_Class() : hitBox(0, 0, 0, 0) {}
+
+    // Main constructor (USES SHARED TEXTURES)
+    ground_Class(int ax, int ay, int aw, int ah,
+                 SDL_Texture* groundTex,
+                 SDL_Texture* ugTex)
+        : hitBox(ax, ay, aw, ah),
+          groundTexture(groundTex),
+          ugTexture(ugTex)
     {
-        std::cerr << "IMG_Load FAILED: " << IMG_GetError() << std::endl;
-        return nullptr;
+        rebuild();
     }
 
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_FreeSurface(surface);
-
-    if (!texture)
+    // Rebuild geometry only (NO SDL loading here)
+    void rebuild()
     {
-        std::cerr << "Texture Create FAILED: " << SDL_GetError() << std::endl;
+        divw = w / perboxwidth;
+        int rows = h / perboxheight;
+
+        ground.clear();
+        groundUnder.clear();
+
+        ground.resize(divw);
+        groundUnder.resize(divw);
+
+        for (int i = 0; i < divw; i++)
+        {
+            groundUnder[i].resize(rows);
+        }
+
+        for (int i = 0; i < divw; i++)
+        {
+            ground[i] = { x + i * perboxwidth, y, perboxwidth, perboxheight };
+
+            for (int j = 0; j < rows; j++)
+            {
+                groundUnder[i][j] =
+                {
+                    x + i * perboxwidth,
+                    y + (j + 1) * perboxheight,
+                    perboxwidth,
+                    perboxheight
+                };
+            }
+        }
     }
 
-    return texture;
-}
+    void seterForElements(int newX, int newY, int newW, int newH)
+    {
+        x = newX;
+        y = newY;
+        w = newW;
+        h = newH;
+
+        rebuild();
+    }
 
     void render(SDL_Renderer* renderer)
-{
-    if (!groundTexture || !ugTexture) {
-        std::cerr << "Cannot render: texture is null!" << std::endl;
-        return;
-    }
+    {
+        if (!groundTexture || !ugTexture)
+        {
+            std::cerr << "Cannot render: texture is null!\n";
+            return;
+        }
 
-    for (int i = 0; i < divw; i++)
-    {
-        SDL_RenderCopy(renderer, groundTexture, NULL, &ground[i]);
-        for (int j = 0; j < (int)groundUnder[i].size(); j++)
-            SDL_RenderCopy(renderer, ugTexture, NULL, &groundUnder[i][j]);
-    }
-}
-     ~ground_Class()
-    {
-        if (groundTexture)
-    {
-        SDL_DestroyTexture(groundTexture);
-        SDL_DestroyTexture(ugTexture);
-    }
-    }
+        for (int i = 0; i < divw; i++)
+        {
+            SDL_RenderCopy(renderer, groundTexture, nullptr, &ground[i]);
 
+            for (int j = 0; j < (int)groundUnder[i].size(); j++)
+            {
+                SDL_RenderCopy(renderer, ugTexture, nullptr, &groundUnder[i][j]);
+            }
+        }
+    }
 
    
- };
-
-
- 
-
-   
+};

@@ -12,7 +12,7 @@
 #include<random>
 #include "functions.h"
 
-std::vector<ground_Class> ground_generator(SDL_Renderer* renderer)
+std::vector<ground_Class> ground_generator(SDL_Renderer* renderer,SDL_Texture* groundTex,SDL_Texture* ugTex)
 {
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -30,32 +30,30 @@ std::vector<ground_Class> ground_generator(SDL_Renderer* renderer)
 
     ground.emplace_back(
         x, y, w, h,
-        renderer,
-        "Images_textures/ground.jpeg",
-        "Images_textures/underGround.jpeg"
+       groundTex,ugTex
     );
 
     return ground;
 }
 
-std::vector<ground_Class> groundRandomgenerator(std::vector<ground_Class> prevGround,SDL_Renderer* renderer)
-{
-    std::vector<ground_Class> ground;
+    ground_Class groundRandomgenerator(SDL_Renderer* renderer,SDL_Texture* groundTex,SDL_Texture* ugTex,std::vector<ground_Class> &prevGround)
+{   
 
-    for(int i=0;i<prevGround.size();i++)
-    {
-     ground.push_back(prevGround[i]);
-    }
-    ground.shrink_to_fit();
      std::random_device rd;
     std::mt19937 gen(rd());
 
-    std::uniform_int_distribution<> distx(ground.end()->x+80,ground.end()->x+ 120);
-    std::uniform_int_distribution<> disty(ground.end()->y-30, ground.end()->y+60);
+    std::uniform_int_distribution<> distx(prevGround.back().x+ prevGround.back().w+80,prevGround.back().x +prevGround.back().w+ 120);
+    std::uniform_int_distribution<> disty(prevGround.back().y-30, prevGround.back().y+60);
+    // std::uniform_int_distribution<> distx(500, 900);
+    // std::uniform_int_distribution<> disty(500, 900);
     std::uniform_int_distribution<> distw(300, 2450);
     std::uniform_int_distribution<> disth(50, 400);
+    int x = distx(gen);
+    int y = disty(gen);
+    int w = distw(gen);
+    int h = disth(gen);
 
-    ground.emplace_back(distx(gen),disty(gen),distw(gen),disth(gen),renderer,
-        "Images_textures/ground.jpeg",
-        "Images_textures/underGround.jpeg")
+    ground_Class temp(x,y,w,h,groundTex,ugTex);
+        
+        return temp;
 }

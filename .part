@@ -1,0 +1,4 @@
+if (ground.back().x + ground.back().w < 1280)
+{
+    groundRandomgenerator(ground, renderer);
+}
