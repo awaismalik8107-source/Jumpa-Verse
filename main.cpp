@@ -20,6 +20,7 @@
 
 int main()
 {
+    std::cout<<"Registration<<endl;
     SDL_Window* window=nullptr;
     SDL_Renderer* renderer=nullptr;
 
