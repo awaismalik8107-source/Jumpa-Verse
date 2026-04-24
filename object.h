@@ -71,7 +71,6 @@ public:
         for (int i = 0; i < divw; i++)
         {
             ground[i] = { x + i * perboxwidth, y, perboxwidth, perboxheight };
-
             for (int j = 0; j < rows; j++)
             {
                 groundUnder[i][j] =

@@ -10,6 +10,7 @@
 #include"object.h"
 #include<SDL2/SDL_image.h>
 #include "functions.h"
+#include<stdlib.h>
 
 
 int main()
@@ -39,11 +40,12 @@ int main()
      Uint32 lastTime = SDL_GetTicks();
     int i=0;
     int count=0;
+    const float targetFrameTime = 1000.0f / 60.0f; // 16.67 ms
     int score=0;
     while(!quit)
     {
 
-       
+       Uint32 frameStart = SDL_GetTicks();
 
         Uint32 currentTime = SDL_GetTicks();
         float deltaTime = (currentTime - lastTime) / 1000.0f;
@@ -61,7 +63,7 @@ int main()
         // if (cammera_offSet < -10.0f)
         //     cammera_offSet = -10.0f;
 
-        if (cammera_offSet > -3.0f)
+        if (cammera_offSet > -9.0f)
         {
             cammera_offSet -= speed * deltaTime;
         }
@@ -117,14 +119,25 @@ int main()
 
     frames++;
 
-    if (SDL_GetTicks() - fpsTimer >= 1000)
+    Uint32 frameTime = SDL_GetTicks() - frameStart;
+
+    if (frameTime < targetFrameTime)
     {
-        std::cout << "FPS: " << frames << std::endl;
-        frames = 0;
-        fpsTimer = SDL_GetTicks();
+        SDL_Delay((Uint32)(targetFrameTime - frameTime));
     }
 
 
+    if (SDL_GetTicks() - fpsTimer >= 1000)
+    {
+        std::cout << "\rFPS: " << frames 
+          << "  Offset: " << cammera_offSet 
+          << std::flush;
+        frames = 0;
+        
+        fpsTimer = SDL_GetTicks();
+    }
+
+    
     }
     close(window,renderer);
     return 0;
