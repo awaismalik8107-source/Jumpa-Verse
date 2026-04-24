@@ -5,7 +5,6 @@
 #include<SDL2/SDL.h>
 #include<vector>
 #include<string.h>
-#include<vector>
 #include<algorithm>//For basic algorithim like sorting 
 #include"object.h"
 #include<SDL2/SDL_image.h>

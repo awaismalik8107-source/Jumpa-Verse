@@ -11,3 +11,5 @@ std::vector<ground_Class> ground_generator(SDL_Renderer* renderer,SDL_Texture* g
 
 
 ground_Class groundRandomgenerator(SDL_Renderer* renderer,SDL_Texture* groundTex,SDL_Texture* ugTex,std::vector<ground_Class> &prevGround);
+
+std::vector<ground_Class> cameraMovmentObj(std::vector<ground_Class> ground,float cameraOffset);

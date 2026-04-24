@@ -10,13 +10,6 @@
 #include<SDL2/SDL_image.h>
 #include "functions.h"
 
-/*
-
-
-
-*/
-
-
 
 int main()
 {
@@ -31,8 +24,7 @@ int main()
         return -1;
     }
 
-    
-
+    float cammera_offSet=0.5f; //no 2d camera in sdl2 so we create an illusion 
     //  ground_Class ground(100,900,500,100,renderer,"Images_textures/ground.jpeg","Images_textures/underGround.jpeg");
 
     //    ground=groundRandomgenerator(ground,renderer);
@@ -58,14 +50,25 @@ int main()
         SDL_SetRenderDrawColor(renderer,135,206,235,255);  
         SDL_RenderClear(renderer);
 
-        if(i%=60)
+        if(i%60==0)
         {        
         temp=groundRandomgenerator(renderer,groundTex,ugTex,ground);
         ground.push_back(temp);
+ 
+         std::cout<<i<<std::endl;
+           
         }
-        for(int i=0;i<ground.size();i++)
+       if(i%4==0)
+       {
+        if(i<2000)
+        cammera_offSet-=0.1f;
+        ground=cameraMovmentObj(ground,cammera_offSet);
+       }
+             
+         
+        for(int j=0;j<ground.size();j++)
         {
-        ground[i].render(renderer);
+        ground[j].render(renderer);
         }
 
         SDL_RenderPresent(renderer);
