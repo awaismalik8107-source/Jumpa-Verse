@@ -38,6 +38,8 @@ int main()
     SDL_Event eventManager;
      Uint32 lastTime = SDL_GetTicks();
     int i=0;
+    int count=0;
+    int score=0;
     while(!quit)
     {
 
@@ -47,27 +49,29 @@ int main()
         float deltaTime = (currentTime - lastTime) / 1000.0f;
         lastTime = currentTime;
         float speed = 2.0f; // pixels per second
-
+     
 
       
-    
+
+    if (deltaTime > 0.05f)
+    deltaTime = 0.05f;
 
         
 
         // if (cammera_offSet < -10.0f)
         //     cammera_offSet = -10.0f;
 
-        if (cammera_offSet > -6.0f)
+        if (cammera_offSet > -3.0f)
         {
             cammera_offSet -= speed * deltaTime;
         }
+        // std::cout<<cammera_offSet<<std::endl;
        
-        std::cout<<cammera_offSet<<std::endl;
+        // std::cout<<cammera_offSet<<std::endl;
         
-        
-    
-        i++;
 
+         i++;
+      
 
         while(SDL_PollEvent(&eventManager)!=0)
         {
@@ -80,18 +84,25 @@ int main()
         SDL_SetRenderDrawColor(renderer,135,206,235,255);  
         SDL_RenderClear(renderer);
 
-        if(i%60==0)
+        if(ground.size() < 30)
         {        
         temp=groundRandomgenerator(renderer,groundTex,ugTex,ground);
         ground.push_back(temp);
+
+        
  
         //  std::cout<<i<<std::endl;
            
         }
-    
+        if (ground.size() > 30)
+        {
+            ground.erase(ground.begin());
+        }
+            
         // cammera_offSet-=0.1f;
-        ground=cameraMovmentObj(ground,cammera_offSet);
-    
+        cameraMovmentObj(ground,cammera_offSet);
+        
+        
              
          
         for(int j=0;j<ground.size();j++)
@@ -100,6 +111,19 @@ int main()
         }
 
         SDL_RenderPresent(renderer);
+
+        static int frames = 0;
+    static Uint32 fpsTimer = SDL_GetTicks();
+
+    frames++;
+
+    if (SDL_GetTicks() - fpsTimer >= 1000)
+    {
+        std::cout << "FPS: " << frames << std::endl;
+        frames = 0;
+        fpsTimer = SDL_GetTicks();
+    }
+
 
     }
     close(window,renderer);

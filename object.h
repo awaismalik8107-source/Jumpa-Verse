@@ -43,6 +43,7 @@ public:
     ground_Class(int ax, int ay, int aw, int ah,
                  SDL_Texture* groundTex,
                  SDL_Texture* ugTex)
+        
         : hitBox(ax, ay, aw, ah),
           groundTexture(groundTex),
           ugTexture(ugTex)
@@ -113,5 +114,6 @@ public:
         }
     }
 
+    
    
 };

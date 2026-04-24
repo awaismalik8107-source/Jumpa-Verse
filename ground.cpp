@@ -3,6 +3,7 @@
 #include <SDL2/SDL_video.h>
 #include<iostream>
 #include<SDL2/SDL.h>
+#include <iterator>
 #include<vector>
 #include<string.h>
 
@@ -62,7 +63,20 @@ std::vector<ground_Class> ground_generator(SDL_Renderer* renderer,SDL_Texture* g
     }
     }
 
+
     ground_Class temp(x,y,w,h,groundTex,ugTex);
-        
-        return temp;
+    
+
+    return temp;
+}
+
+void freeMemory(std::vector<ground_Class>& ground)
+{
+    for (int i = 0; i < ground.size(); )
+    {
+        if (ground[i].x >= 2400)
+            ground.erase(ground.begin() + i);
+        else
+            i++;
+    }
 }
