@@ -5,6 +5,7 @@
 #include<SDL2/SDL.h>
 #include<vector>
 #include<string.h>
+
 #include<algorithm>//For basic algorithim like sorting 
 #include"object.h"
 #include<SDL2/SDL_image.h>
@@ -37,20 +38,29 @@ std::vector<ground_Class> ground_generator(SDL_Renderer* renderer,SDL_Texture* g
 
     ground_Class groundRandomgenerator(SDL_Renderer* renderer,SDL_Texture* groundTex,SDL_Texture* ugTex,std::vector<ground_Class> &prevGround)
 {   
-
+ bool check=false;
+ int x,y,w,h;
      std::random_device rd;
     std::mt19937 gen(rd());
 
     std::uniform_int_distribution<> distx(prevGround.back().x+ prevGround.back().w+80,prevGround.back().x +prevGround.back().w+ 120);
-    std::uniform_int_distribution<> disty(prevGround.back().y-30, prevGround.back().y+60);
+    
     // std::uniform_int_distribution<> distx(500, 900);
     // std::uniform_int_distribution<> disty(500, 900);
     std::uniform_int_distribution<> distw(300, 2450);
     std::uniform_int_distribution<> disth(50, 400);
-    int x = distx(gen);
-    int y = disty(gen);
-    int w = distw(gen);
-    int h = disth(gen);
+    while(!check)
+    {
+   std::uniform_int_distribution<> disty(prevGround.back().y-30, prevGround.back().y+60);
+    x = distx(gen);
+    y = disty(gen);
+    w = distw(gen);
+    h = disth(gen);
+    if(y<800 &&y>100)
+    {
+        check=true;
+    }
+    }
 
     ground_Class temp(x,y,w,h,groundTex,ugTex);
         

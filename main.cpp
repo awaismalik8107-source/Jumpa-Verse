@@ -2,6 +2,7 @@
 #include <SDL2/SDL_video.h>
 #include<iostream>
 #include<SDL2/SDL.h>
+#include <iterator>
 #include<vector>
 #include<string.h>
 #include<vector>
@@ -35,10 +36,39 @@ int main()
     ground.push_back(temp);
     bool quit=false;   
     SDL_Event eventManager;
+     Uint32 lastTime = SDL_GetTicks();
     int i=0;
     while(!quit)
     {
+
+       
+
+        Uint32 currentTime = SDL_GetTicks();
+        float deltaTime = (currentTime - lastTime) / 1000.0f;
+        lastTime = currentTime;
+        float speed = 2.0f; // pixels per second
+
+
+      
+    
+
+        
+
+        // if (cammera_offSet < -10.0f)
+        //     cammera_offSet = -10.0f;
+
+        if (cammera_offSet > -6.0f)
+        {
+            cammera_offSet -= speed * deltaTime;
+        }
+       
+        std::cout<<cammera_offSet<<std::endl;
+        
+        
+    
         i++;
+
+
         while(SDL_PollEvent(&eventManager)!=0)
         {
             if(eventManager.type==SDL_QUIT)
@@ -55,15 +85,13 @@ int main()
         temp=groundRandomgenerator(renderer,groundTex,ugTex,ground);
         ground.push_back(temp);
  
-         std::cout<<i<<std::endl;
+        //  std::cout<<i<<std::endl;
            
         }
-       if(i%4==0)
-       {
-        if(i<2000)
-        cammera_offSet-=0.1f;
+    
+        // cammera_offSet-=0.1f;
         ground=cameraMovmentObj(ground,cammera_offSet);
-       }
+    
              
          
         for(int j=0;j<ground.size();j++)
