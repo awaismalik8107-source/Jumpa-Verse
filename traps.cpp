@@ -17,15 +17,24 @@ void trapTriangle(SDL_Renderer* renderer,std::vector<trapSpike>& trap,std::vecto
 {
     std::random_device rd;
     std::mt19937 gen(rd());
-
-    std::uniform_int_distribution<> distp(ground[i].x,ground[i].x+ground[i].w);
+    while(1)
+    {
+    std::uniform_int_distribution<> distp(ground[i].x,ground[i].x+ground[i].w-100);
     std::uniform_int_distribution<> chances(0, 100);
+    if(trap.size()>3)
+    {
+    int indexc=trap.size()-1;
+    if(distp(gen)<trap[indexc-1].x)
+    break;
+    }
     
     if (chances(gen) < 5 && ground[i].trapCount<3)
     {
         ground[i].trapCount++;
         trap.emplace_back(distp(gen), ground[i].y, ground[i].w, ground[i].h);
+        break;
     }
+}
 }
 
 
@@ -34,7 +43,7 @@ void trapTriangleInitalization(SDL_Renderer* renderer,std::vector<trapSpike>& tr
     std::random_device rd;
     std::mt19937 gen(rd());
 
-    std::uniform_int_distribution<> distp(ground[i].x,ground[i].x+ground[i].w);
+    std::uniform_int_distribution<> distp(ground[i].x,ground[i].x+ground[i].w-50);
     std::uniform_int_distribution<> chances(0, 100);
 
     if (chances(gen) < 30)
