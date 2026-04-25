@@ -32,8 +32,13 @@ int main()
     //    ground=groundRandomgenerator(ground,renderer);
     SDL_Texture* groundTex = IMG_LoadTexture(renderer, "Images_textures/ground.jpeg");
     SDL_Texture* ugTex = IMG_LoadTexture(renderer, "Images_textures/underGround.jpeg");
+     std::vector<trapSpike> trap;
     std::vector<ground_Class> ground = ground_generator(renderer,groundTex,ugTex);
-    ground_Class temp=groundRandomgenerator(renderer,groundTex,ugTex,ground);
+    
+    ground_Class temp=groundRandomgenerator(renderer,groundTex,ugTex,ground,trap);
+   
+   
+
     ground.push_back(temp);
     bool quit=false;   
     SDL_Event eventManager;
@@ -82,35 +87,51 @@ int main()
                 quit=true;
             }
         }
+        //  trapTriangle(renderer,trap,ground,1);
+        
 
         SDL_SetRenderDrawColor(renderer,135,206,235,255);  
         SDL_RenderClear(renderer);
 
-        if(ground.size() < 30)
-        {        
-        temp=groundRandomgenerator(renderer,groundTex,ugTex,ground);
+        // if(ground.size() < 100)
+               
+        if(ground.size()<30)
+        {
+        temp=groundRandomgenerator(renderer,groundTex,ugTex,ground,trap);
         ground.push_back(temp);
-
-        
+        }
+        freeMemory(ground);       
  
         //  std::cout<<i<<std::endl;
            
-        }
-        if (ground.size() > 30)
-        {
-            ground.erase(ground.begin());
-        }
+        
+        // if (ground.size() > 100)
+        // {
+        //     ground.erase(ground.begin());
+        // }
             
         // cammera_offSet-=0.1f;
-        cameraMovmentObj(ground,cammera_offSet);
+        cameraMovmentObj(ground,cammera_offSet,trap);
         
         
-             
+      
+        
          
         for(int j=0;j<ground.size();j++)
         {
         ground[j].render(renderer);
+       
         }
+
+        for(int j=0;j<trap.size();j++)
+        {
+           
+             trap[j].render(renderer);
+            //  std::cout<<trap[j].x<<std::endl;
+        }
+        renderTrap(renderer,trap,cammera_offSet);
+        
+
 
         SDL_RenderPresent(renderer);
 

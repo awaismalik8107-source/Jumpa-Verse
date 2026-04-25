@@ -37,7 +37,7 @@ std::vector<ground_Class> ground_generator(SDL_Renderer* renderer,SDL_Texture* g
     return ground;
 }
 
-    ground_Class groundRandomgenerator(SDL_Renderer* renderer,SDL_Texture* groundTex,SDL_Texture* ugTex,std::vector<ground_Class> &prevGround)
+    ground_Class groundRandomgenerator(SDL_Renderer* renderer,SDL_Texture* groundTex,SDL_Texture* ugTex,std::vector<ground_Class> &prevGround,std::vector<trapSpike>& trap)
 {   
  bool check=false;
  int x,y,w,h;
@@ -50,6 +50,11 @@ std::vector<ground_Class> ground_generator(SDL_Renderer* renderer,SDL_Texture* g
     // std::uniform_int_distribution<> disty(500, 900);
     std::uniform_int_distribution<> distw(300, 2450);
     std::uniform_int_distribution<> disth(50, 400);
+
+    for(int i=0;i<prevGround.size();i++)
+    {
+        trapTriangle(renderer,trap,prevGround,i);
+    }
     while(!check)
     {
    std::uniform_int_distribution<> disty(prevGround.back().y-30, prevGround.back().y+60);
@@ -62,8 +67,7 @@ std::vector<ground_Class> ground_generator(SDL_Renderer* renderer,SDL_Texture* g
         check=true;
     }
     }
-
-
+    
     ground_Class temp(x,y,w,h,groundTex,ugTex);
     
 
@@ -80,3 +84,4 @@ void freeMemory(std::vector<ground_Class>& ground)
             i++;
     }
 }
+
