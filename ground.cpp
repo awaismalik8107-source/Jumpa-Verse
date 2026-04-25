@@ -13,6 +13,7 @@
 #include<random>
 #include "functions.h"
 
+
 std::vector<ground_Class> ground_generator(SDL_Renderer* renderer,SDL_Texture* groundTex,SDL_Texture* ugTex)
 {
     std::random_device rd;
