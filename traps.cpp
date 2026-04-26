@@ -28,13 +28,15 @@ void trapTriangle(SDL_Renderer* renderer,std::vector<trapSpike>& trap,std::vecto
     break;
     }
     
-    if (chances(gen) < 5 && ground[i].trapCount<3)
+    if (chances(gen) < 5 && ground[i].trapCount<4 )
     {
         ground[i].trapCount++;
         trap.emplace_back(distp(gen), ground[i].y, ground[i].w, ground[i].h);
         break;
     }
 }
+
+
 }
 
 
@@ -50,5 +52,13 @@ void trapTriangleInitalization(SDL_Renderer* renderer,std::vector<trapSpike>& tr
     {
         
         trap.emplace_back(distp(gen), ground[i].y, ground[i].w, ground[i].h);
+    }
+}
+
+void trapFreeMemory(std::vector<trapSpike>&trap)
+{
+    if(trap.size()>20)
+    {
+        trap.erase(trap.begin());
     }
 }

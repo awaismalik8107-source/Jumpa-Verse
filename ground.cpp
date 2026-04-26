@@ -37,6 +37,15 @@ std::vector<ground_Class> ground_generator(SDL_Renderer* renderer,SDL_Texture* g
 
     return ground;
 }
+/*
+
+
+*/
+
+
+
+
+
 
     ground_Class groundRandomgenerator(SDL_Renderer* renderer,SDL_Texture* groundTex,SDL_Texture* ugTex,std::vector<ground_Class> &prevGround,std::vector<trapSpike>& trap)
 {   
@@ -86,3 +95,22 @@ void freeMemory(std::vector<ground_Class>& ground)
     }
 }
 
+void dualPath(std::vector<ground_Class>& ground,SDL_Texture* groundTex,SDL_Texture* ugTex)
+{
+
+    std::random_device rd;
+    std::mt19937 gen;
+    std::uniform_int_distribution <> chances (0,1000);
+
+    if(chances(gen)<=1)
+    {
+
+    std::uniform_int_distribution<> distx(ground.back().x+ ground.back().w+80,ground.back().x +ground.back().w+ 120);
+    std::uniform_int_distribution<> disty(ground.back().y+150,ground.back().y+250);
+    // std::uniform_int_distribution<> distx(500, 900);
+    // std::uniform_int_distribution<> disty(500, 900);
+    std::uniform_int_distribution<> distw(300, 1400);
+    std::uniform_int_distribution<> disth(50, 100);
+
+    }
+}

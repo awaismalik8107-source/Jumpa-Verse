@@ -100,7 +100,8 @@ int main()
         temp=groundRandomgenerator(renderer,groundTex,ugTex,ground,trap);
         ground.push_back(temp);
         }
-        freeMemory(ground);       
+        freeMemory(ground);  
+        trapFreeMemory(trap);     
  
         //  std::cout<<i<<std::endl;
            

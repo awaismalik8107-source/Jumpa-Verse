@@ -23,3 +23,6 @@ void trapTriangle(SDL_Renderer* renderer,std::vector<trapSpike>& trap,std::vecto
 void renderTrap(SDL_Renderer* renderer,
                 std::vector<trapSpike>& trap,
                 float cameraOffset);
+
+
+void trapFreeMemory(std::vector<trapSpike>&trap);
