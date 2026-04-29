@@ -38,14 +38,8 @@ std::vector<ground_Class> ground_generator(SDL_Renderer* renderer,SDL_Texture* g
     return ground;
 }
 /*
-
-
+(umar will learn vector after 1 year;)
 */
-
-
-
-
-
 
     ground_Class groundRandomgenerator(SDL_Renderer* renderer,SDL_Texture* groundTex,SDL_Texture* ugTex,std::vector<ground_Class> &prevGround,std::vector<trapSpike>& trap)
 {   
