@@ -105,7 +105,8 @@ int main()
  
         //  std::cout<<i<<std::endl;
            
-        
+        //32MB heap malloc calloc 
+
         // if (ground.size() > 100)
         // {
         //     ground.erase(ground.begin());
