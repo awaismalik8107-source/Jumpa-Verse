@@ -13,7 +13,7 @@
 #include<stdlib.h>
 #include<SDL2/SDL_ttf.h>
 
-
+bool exitb = false;
 int main()
 {
     SDL_Window* window=nullptr;
@@ -63,6 +63,11 @@ int main()
     while(!menu)
     {
     menu=menuScreen(renderer,font);
+    if(exitb==true)
+    {
+        quit=true;
+        continue;
+    }
     }
       
 

@@ -222,78 +222,123 @@ public:
 
 class optionBoxes : public hitBox
 {
-    public:
-    SDL_Texture* textTexture = nullptr; //USe it so we could share not owned the color;
-    bool state=false;
-     SDL_Rect box;
-   optionBoxes(int x,int y, int w ,int h):hitBox(x,y,w,h)
+public:
+    SDL_Texture* textTexture = nullptr;
+    SDL_Texture* exitTexture = nullptr;
+
+    bool state = false;
+    bool stateExit=false;
+
+    SDL_Rect box;
+    SDL_Rect boxExit;
+
+    std::string exitText = "Exit";
+    int boxOffsetY = 30;
+
+    optionBoxes(int x, int y, int w, int h)
+        : hitBox(x, y, w, h)
     {
         box = {x, y, w, h};
+        boxExit = {x, y + h + boxOffsetY, w, h};
     }
- void box_Initializer(SDL_Renderer* renderer, TTF_Font* font, std::string text)
-{
-    // box = {x, y, w, h};
 
-    if (!font)
+    ~optionBoxes()
     {
-        std::cout << "Font is NULL!\n";
-        return;
+        if (textTexture) SDL_DestroyTexture(textTexture);
+        if (exitTexture) SDL_DestroyTexture(exitTexture);
     }
 
-    if (textTexture)
+    void box_Initializer(SDL_Renderer* renderer, TTF_Font* font, std::string text)
     {
-        SDL_DestroyTexture(textTexture);
-        textTexture = nullptr;
+        if (!font)
+        {
+            std::cout << "Font is NULL!\n";
+            return;
+        }
+
+        // cleanup old textures
+        if (textTexture) SDL_DestroyTexture(textTexture);
+        if (exitTexture) SDL_DestroyTexture(exitTexture);
+
+        SDL_Color color = !state ? SDL_Color{255,127,0,255}
+                                 : SDL_Color{192,192,192,255};
+
+        SDL_Color colorExit = !stateExit ? SDL_Color{255,127,0,255}
+                                 : SDL_Color{192,192,192,255};
+
+        // ---- MAIN TEXT ----
+        SDL_Surface* surface1 = TTF_RenderText_Blended(font, text.c_str(), color);
+        if (!surface1)
+        {
+            std::cout << "Surface1 error: " << TTF_GetError() << "\n";
+            return;
+        }
+
+
+        textTexture = SDL_CreateTextureFromSurface(renderer, surface1);
+        SDL_FreeSurface(surface1);
+
+        // ---- EXIT TEXT ----
+        SDL_Surface* surface2 = TTF_RenderText_Blended(font, exitText.c_str(), colorExit);
+        if (!surface2)
+        {
+            std::cout << "Surface2 error: " << TTF_GetError() << "\n";
+            return;
+        }
+
+        exitTexture = SDL_CreateTextureFromSurface(renderer, surface2);
+        SDL_FreeSurface(surface2);
     }
 
-    SDL_Color color = !state ? SDL_Color{255,127,0} : SDL_Color{192,192,192};
-
-    SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), color);
-
-    if (!surface)
-    {
-        std::cout << "Surface error: " << TTF_GetError() << std::endl;
-        return;
-    }
-
-    textTexture = SDL_CreateTextureFromSurface(renderer, surface);
-
-    if (!textTexture)
-    {
-        std::cout << "Texture error: " << SDL_GetError() << std::endl;
-    }
-
-    SDL_FreeSurface(surface);
-}
     void render(SDL_Renderer* renderer)
-{
-    // Box color depends on state
-    SDL_Color color = state ? SDL_Color{255,127,0} : SDL_Color{192,192,192};
-    if (state)
-        SDL_SetRenderDrawColor(renderer, 255, 127, 0, 255);
-    else
-        SDL_SetRenderDrawColor(renderer, 192, 192, 192, 255);
-
-    SDL_RenderFillRect(renderer, &box);
-
-    if (textTexture)
     {
-        int w, h;
-        SDL_QueryTexture(textTexture, NULL, NULL, &w, &h);
+        SDL_Color color = state ? SDL_Color{255,127,0,255}
+                                : SDL_Color{192,192,192,255};
+        SDL_Color colorExit = stateExit ? SDL_Color{255,127,0,255}
+                                : SDL_Color{192,192,192,255};
+        
 
-        SDL_Rect textRect;
-            textRect.x = box.x + (box.w - w) / 2;
-            textRect.y = box.y + (box.h - h) / 2;
-            textRect.w = w;
-            textRect.h = h;
-        SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
+
+        SDL_RenderFillRect(renderer, &box);
+        SDL_SetRenderDrawColor(renderer, colorExit.r, colorExit.g, colorExit.b, 255);
+        SDL_RenderFillRect(renderer, &boxExit);
+
+        // ---- render main text ----
+        if (textTexture)
+        {
+            int w, h;
+            SDL_QueryTexture(textTexture, NULL, NULL, &w, &h);
+
+            SDL_Rect r = {
+                box.x + (box.w - w) / 2,
+                box.y + (box.h - h) / 2,
+                w, h
+            };
+
+            SDL_RenderCopy(renderer, textTexture, NULL, &r);
+        }
+
+        // ---- render exit text ----
+        if (exitTexture)
+        {
+            int w, h;
+            SDL_QueryTexture(exitTexture, NULL, NULL, &w, &h);
+
+            SDL_Rect r = {
+                boxExit.x + (boxExit.w - w) / 2,
+                boxExit.y + (boxExit.h - h) / 2,
+                w, h
+            };
+
+            SDL_RenderCopy(renderer, exitTexture, NULL, &r);
+        }
     }
-}
 
-    void stateHolder(SDL_Renderer* renderer,TTF_Font* font,std::string text,bool stat)
+    void stateHolder(SDL_Renderer* renderer, TTF_Font* font, std::string text, bool stat,bool exit)
     {
-        state=stat;
-        box_Initializer(renderer,font,text);
+        state = stat;
+        stateExit=exit;
+        box_Initializer(renderer, font, text);
     }
 };
-

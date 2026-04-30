@@ -20,17 +20,21 @@ SDL_Color mainMenuColor::text         = {255, 255, 255, 255};
 //Run 
 bool menuScreen(SDL_Renderer* renderer, TTF_Font* font)
 {
-    optionBoxes playButton(740, 430, 500, 200);
+    optionBoxes playButton(740, 430, 500, 150);
     /*
     1980/2=990-widthof the box
     1260/2=630-200
     */
     playButton.box_Initializer(renderer, font, "Play");
+    SDL_Point start={0,1000};
+    SDL_Point end={1980,1000};
 
     bool running = true;
     SDL_Event event;
     int mousex,mousey;
     bool hover=false;
+
+    
 
     while (running)
     {
@@ -50,21 +54,41 @@ bool menuScreen(SDL_Renderer* renderer, TTF_Font* font)
                 {
                     return true; 
                 }
+
+                if (mx >= playButton.boxExit.x && mx <= playButton.boxExit.x + playButton.boxExit.w &&
+                    my >= playButton.boxExit.y && my <= playButton.boxExit.y + playButton.boxExit.h)
+                    {
+                    exitb=true;
+                    return true;
+                    }
             }
         }
+        // SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // white
+        // SDL_RenderDrawLine(renderer,start.x,start.y,end.x,end.y);
+
         Uint32 button = SDL_GetMouseState(&mousex,&mousey);
-       if(mousex>=740 && mousex<=740+500 && mousey>=430 && mousey<=430+200)
+       if(mousex>=playButton.x && mousex<=playButton.w+playButton.x && mousey>=playButton.y && mousey<=playButton.y+playButton.h)
         {
             std::cout<<mousex<<" , "<<mousey<<std::endl;
-            playButton.state=true;
+            // playButton.state=true;
             
-            playButton.stateHolder(renderer, font, "Play",true);
+            playButton.stateHolder(renderer, font, "Play",true,false);
         }
-        else{
-            playButton.state=false;
-            playButton.stateHolder(renderer, font, "Play",false);
+        // else{
+        //     // playButton.state=false;
+        //     playButton.stateHolder(renderer, font, "Play",false,false);
+        // }
+
+        else if(mousex>=playButton.boxExit.x && mousex<=playButton.boxExit.x + playButton.boxExit.w && mousey>=playButton.boxExit.y && mousey<=playButton.boxExit.y+ playButton.boxExit.h)
+        {
+           playButton.stateHolder(renderer, font, "Play",false,true); 
         }
-            // Clear screen
+        else
+        {
+            playButton.stateHolder(renderer, font, "Play",false,false); 
+        }
+
+             // Clear screen
         SDL_SetRenderDrawColor(renderer,
             mainMenuColor::background.r,
             mainMenuColor::background.g,
@@ -72,7 +96,8 @@ bool menuScreen(SDL_Renderer* renderer, TTF_Font* font)
             mainMenuColor::background.a);
 
         SDL_RenderClear(renderer);
-
+          SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+            SDL_RenderDrawLine(renderer, start.x, start.y, end.x, end.y);
         // Render button
         playButton.render(renderer);
 

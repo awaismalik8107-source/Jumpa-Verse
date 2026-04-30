@@ -2,7 +2,7 @@
 #include <SDL2/SDL.h>
 #include <vector>
 #include <SDL2/SDL_ttf.h>
-
+extern bool exitb;
 class ground_Class;
 class trapSpike;
 bool init(SDL_Window*& Window, SDL_Renderer*& renderer);
