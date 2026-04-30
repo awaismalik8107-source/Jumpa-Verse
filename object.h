@@ -224,7 +224,7 @@ class optionBoxes : public hitBox
 {
     public:
     SDL_Texture* textTexture = nullptr; //USe it so we could share not owned the color;
-    bool state=true;
+    bool state=false;
      SDL_Rect box;
    optionBoxes(int x,int y, int w ,int h):hitBox(x,y,w,h)
     {
@@ -268,6 +268,7 @@ class optionBoxes : public hitBox
     void render(SDL_Renderer* renderer)
 {
     // Box color depends on state
+    SDL_Color color = state ? SDL_Color{255,127,0} : SDL_Color{192,192,192};
     if (state)
         SDL_SetRenderDrawColor(renderer, 255, 127, 0, 255);
     else
@@ -289,7 +290,7 @@ class optionBoxes : public hitBox
     }
 }
 
-    void stateHolder(SDL_Renderer* renderer,TTF_Font* font,std::string text,bool stat=true)
+    void stateHolder(SDL_Renderer* renderer,TTF_Font* font,std::string text,bool stat)
     {
         state=stat;
         box_Initializer(renderer,font,text);

@@ -29,6 +29,8 @@ bool menuScreen(SDL_Renderer* renderer, TTF_Font* font)
 
     bool running = true;
     SDL_Event event;
+    int mousex,mousey;
+    bool hover=false;
 
     while (running)
     {
@@ -50,8 +52,19 @@ bool menuScreen(SDL_Renderer* renderer, TTF_Font* font)
                 }
             }
         }
-
-        // Clear screen
+        Uint32 button = SDL_GetMouseState(&mousex,&mousey);
+       if(mousex>=740 && mousex<=740+500 && mousey>=430 && mousey<=430+200)
+        {
+            std::cout<<mousex<<" , "<<mousey<<std::endl;
+            playButton.state=true;
+            
+            playButton.stateHolder(renderer, font, "Play",true);
+        }
+        else{
+            playButton.state=false;
+            playButton.stateHolder(renderer, font, "Play",false);
+        }
+            // Clear screen
         SDL_SetRenderDrawColor(renderer,
             mainMenuColor::background.r,
             mainMenuColor::background.g,
