@@ -1,0 +1,70 @@
+#include <SDL2/SDL_rect.h>
+#include <SDL2/SDL_render.h>
+#include <SDL2/SDL_video.h>
+#include<iostream>
+#include<SDL2/SDL.h>
+#include <iterator>
+#include<vector>
+#include<string.h>
+#include<algorithm>//For basic algorithim like sorting 
+#include"object.h"
+#include<SDL2/SDL_image.h>
+#include<random>
+#include "functions.h"
+
+SDL_Color mainMenuColor::background   = {30, 30, 30, 255};
+SDL_Color mainMenuColor::buttonNormal = {70, 130, 180, 255};
+SDL_Color mainMenuColor::buttonHover  = {100, 160, 210, 255};
+SDL_Color mainMenuColor::buttonActive = {40, 90, 140, 255};
+SDL_Color mainMenuColor::text         = {255, 255, 255, 255};
+//Run 
+bool menuScreen(SDL_Renderer* renderer, TTF_Font* font)
+{
+    optionBoxes playButton(740, 430, 500, 200);
+    /*
+    1980/2=990-widthof the box
+    1260/2=630-200
+    */
+    playButton.box_Initializer(renderer, font, "Play");
+
+    bool running = true;
+    SDL_Event event;
+
+    while (running)
+    {
+        while (SDL_PollEvent(&event))
+        {
+            if (event.type == SDL_QUIT)
+                return false;
+
+            if (event.type == SDL_MOUSEBUTTONDOWN)
+            {
+                int mx = event.button.x;
+                int my = event.button.y;
+
+                // Check click inside button
+                if (mx >= playButton.x && mx <= playButton.x + playButton.w &&
+                    my >= playButton.y && my <= playButton.y + playButton.h)
+                {
+                    return true; 
+                }
+            }
+        }
+
+        // Clear screen
+        SDL_SetRenderDrawColor(renderer,
+            mainMenuColor::background.r,
+            mainMenuColor::background.g,
+            mainMenuColor::background.b,
+            mainMenuColor::background.a);
+
+        SDL_RenderClear(renderer);
+
+        // Render button
+        playButton.render(renderer);
+
+        SDL_RenderPresent(renderer);
+    }
+
+    return false;
+}

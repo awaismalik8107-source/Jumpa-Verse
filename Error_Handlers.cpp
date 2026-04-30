@@ -24,6 +24,11 @@ bool init(SDL_Window*& Window,SDL_Renderer *&renderer)
         std::cerr<<"SDL couldnt be initialized! \t\t\t Error Type:\t"<<SDL_GetError()<<std::endl;
         return false;
     }
+    if(TTF_Init()<0)
+    {
+        std::cout<<"TTF NOT FOUND"<<std::endl;
+        return false;
+    }
 
     if (!(IMG_Init(IMG_INIT_JPG) & IMG_INIT_JPG))
 {

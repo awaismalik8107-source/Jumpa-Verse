@@ -11,6 +11,7 @@
 #include<SDL2/SDL_image.h>
 #include "functions.h"
 #include<stdlib.h>
+#include<SDL2/SDL_ttf.h>
 
 
 int main()
@@ -32,6 +33,7 @@ int main()
     //    ground=groundRandomgenerator(ground,renderer);
     SDL_Texture* groundTex = IMG_LoadTexture(renderer, "Images_textures/ground.jpeg");
     SDL_Texture* ugTex = IMG_LoadTexture(renderer, "Images_textures/underGround.jpeg");
+    TTF_Font *font =TTF_OpenFont("debrosee-font/Debrosee-ALPnL.ttf",100);
      std::vector<trapSpike> trap;
     std::vector<ground_Class> ground = ground_generator(renderer,groundTex,ugTex);
     
@@ -47,6 +49,7 @@ int main()
     int count=0;
     const float targetFrameTime = 1000.0f / 60.0f; // 16.67 ms
     int score=0;
+    bool menu=false;
     while(!quit)
     {
 
@@ -57,7 +60,10 @@ int main()
         lastTime = currentTime;
         float speed = 2.0f; // pixels per second
      
-
+    while(!menu)
+    {
+    menu=menuScreen(renderer,font);
+    }
       
 
     if (deltaTime > 0.05f)

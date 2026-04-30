@@ -1,6 +1,7 @@
 #pragma once
 #include <SDL2/SDL.h>
 #include <vector>
+#include <SDL2/SDL_ttf.h>
 
 class ground_Class;
 class trapSpike;
@@ -26,3 +27,5 @@ void renderTrap(SDL_Renderer* renderer,
 
 
 void trapFreeMemory(std::vector<trapSpike>&trap);
+
+bool menuScreen(SDL_Renderer* renderer, TTF_Font* font);

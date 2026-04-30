@@ -20,7 +20,7 @@ std::vector<ground_Class> ground_generator(SDL_Renderer* renderer,SDL_Texture* g
     std::mt19937 gen(rd());
 
     std::uniform_int_distribution<> disty(500, 900);
-    std::uniform_int_distribution<> distw(300, 2450);
+    std::uniform_int_distribution<> distw(1200, 2450);
     std::uniform_int_distribution<> disth(50, 400);
 
     int x = 0;
@@ -48,7 +48,7 @@ std::vector<ground_Class> ground_generator(SDL_Renderer* renderer,SDL_Texture* g
      std::random_device rd;
     std::mt19937 gen(rd());
 
-    std::uniform_int_distribution<> distx(prevGround.back().x+ prevGround.back().w+80,prevGround.back().x +prevGround.back().w+ 120);
+    std::uniform_int_distribution<> distx(prevGround.back().x+ prevGround.back().w+120,prevGround.back().x +prevGround.back().w+ 200);
     
     // std::uniform_int_distribution<> distx(500, 900);
     // std::uniform_int_distribution<> disty(500, 900);
@@ -61,7 +61,7 @@ std::vector<ground_Class> ground_generator(SDL_Renderer* renderer,SDL_Texture* g
     }
     while(!check)
     {
-   std::uniform_int_distribution<> disty(prevGround.back().y-30, prevGround.back().y+60);
+   std::uniform_int_distribution<> disty(prevGround.back().y-100, prevGround.back().y+600);
     x = distx(gen);
     y = disty(gen);
     w = distw(gen);
