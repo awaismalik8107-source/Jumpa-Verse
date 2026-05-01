@@ -12,7 +12,6 @@
 #include<random>
 #include "functions.h"
 
-
 void trapTriangle(SDL_Renderer* renderer,std::vector<trapSpike>& trap,std::vector<ground_Class>& ground,int i)
 {
     std::random_device rd;

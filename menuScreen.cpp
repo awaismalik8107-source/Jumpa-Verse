@@ -9,6 +9,7 @@
 #include<algorithm>//For basic algorithim like sorting 
 #include"object.h"
 #include<SDL2/SDL_image.h>
+#include<SDL2/SDL2_gfxPrimitives.h>
 #include<random>
 #include "functions.h"
 
@@ -26,22 +27,74 @@ bool menuScreen(SDL_Renderer* renderer, TTF_Font* font)
     1260/2=630-200
     */
     playButton.box_Initializer(renderer, font, "Play");
+    SDL_Texture* titleTexture = nullptr;
+    if (font)
+    {
+        SDL_Surface* titleSurface = TTF_RenderText_Blended(font, "Jumpa Verse", SDL_Color{255, 127, 0, 255});
+        if (titleSurface)
+        {
+            titleTexture = SDL_CreateTextureFromSurface(renderer, titleSurface);
+            SDL_FreeSurface(titleSurface);
+        }
+    }
     SDL_Point start={0,1000};
     SDL_Point end={1980,1000};
 
     bool running = true;
     SDL_Event event;
     int mousex,mousey;
-    bool hover=false;
+    int selectedButton = 0;
+    bool playSelected = true;
+    bool exitSelected = false;
+    Uint32 lastFrameTime = SDL_GetTicks();
+    float cubeVelocity = 0.0f;
+    float cubeY = 1000.0f - 45.0f;
+    float trapOffset = 0.0f;
+
+    playButton.stateHolder(renderer, font, "Play", playSelected, exitSelected);
 
     
 
     while (running)
     {
+        Uint32 currentFrameTime = SDL_GetTicks();
+        float deltaTime = (currentFrameTime - lastFrameTime) / 1000.0f;
+        lastFrameTime = currentFrameTime;
+        if (deltaTime > 0.05f)
+            deltaTime = 0.05f;
+
         while (SDL_PollEvent(&event))
         {
             if (event.type == SDL_QUIT)
+            {
+                if (titleTexture)
+                    SDL_DestroyTexture(titleTexture);
                 return false;
+            }
+
+            if (event.type == SDL_KEYDOWN)
+            {
+                if (event.key.keysym.sym == SDLK_UP || event.key.keysym.sym == SDLK_DOWN)
+                {
+                    selectedButton = 1 - selectedButton;
+                    playSelected = selectedButton == 0;
+                    exitSelected = selectedButton == 1;
+                }
+                else if (event.key.keysym.sym == SDLK_RETURN || event.key.keysym.sym == SDLK_SPACE)
+                {
+                    if (selectedButton == 0)
+                    {
+                        if (titleTexture)
+                            SDL_DestroyTexture(titleTexture);
+                        return true;
+                    }
+
+                    exitb = true;
+                    if (titleTexture)
+                        SDL_DestroyTexture(titleTexture);
+                    return true;
+                }
+            }
 
             if (event.type == SDL_MOUSEBUTTONDOWN)
             {
@@ -52,6 +105,8 @@ bool menuScreen(SDL_Renderer* renderer, TTF_Font* font)
                 if (mx >= playButton.x && mx <= playButton.x + playButton.w &&
                     my >= playButton.y && my <= playButton.y + playButton.h)
                 {
+                    if (titleTexture)
+                        SDL_DestroyTexture(titleTexture);
                     return true; 
                 }
 
@@ -59,6 +114,8 @@ bool menuScreen(SDL_Renderer* renderer, TTF_Font* font)
                     my >= playButton.boxExit.y && my <= playButton.boxExit.y + playButton.boxExit.h)
                     {
                     exitb=true;
+                    if (titleTexture)
+                        SDL_DestroyTexture(titleTexture);
                     return true;
                     }
             }
@@ -67,12 +124,12 @@ bool menuScreen(SDL_Renderer* renderer, TTF_Font* font)
         // SDL_RenderDrawLine(renderer,start.x,start.y,end.x,end.y);
 
         Uint32 button = SDL_GetMouseState(&mousex,&mousey);
+        (void)button;
        if(mousex>=playButton.x && mousex<=playButton.w+playButton.x && mousey>=playButton.y && mousey<=playButton.y+playButton.h)
         {
-            std::cout<<mousex<<" , "<<mousey<<std::endl;
-            // playButton.state=true;
-            
-            playButton.stateHolder(renderer, font, "Play",true,false);
+            selectedButton = 0;
+            playSelected = true;
+            exitSelected = false;
         }
         // else{
         //     // playButton.state=false;
@@ -81,12 +138,12 @@ bool menuScreen(SDL_Renderer* renderer, TTF_Font* font)
 
         else if(mousex>=playButton.boxExit.x && mousex<=playButton.boxExit.x + playButton.boxExit.w && mousey>=playButton.boxExit.y && mousey<=playButton.boxExit.y+ playButton.boxExit.h)
         {
-           playButton.stateHolder(renderer, font, "Play",false,true); 
+            selectedButton = 1;
+            playSelected = false;
+            exitSelected = true;
         }
-        else
-        {
-            playButton.stateHolder(renderer, font, "Play",false,false); 
-        }
+
+        playButton.stateHolder(renderer, font, "Play", playSelected, exitSelected);
 
              // Clear screen
         SDL_SetRenderDrawColor(renderer,
@@ -98,11 +155,86 @@ bool menuScreen(SDL_Renderer* renderer, TTF_Font* font)
         SDL_RenderClear(renderer);
           SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
             SDL_RenderDrawLine(renderer, start.x, start.y, end.x, end.y);
+
+        if (titleTexture)
+        {
+            int titleW, titleH;
+            SDL_QueryTexture(titleTexture, NULL, NULL, &titleW, &titleH);
+            SDL_Rect titleRect = {
+                (1980 - titleW) / 2,
+                110,
+                titleW,
+                titleH
+            };
+            SDL_RenderCopy(renderer, titleTexture, NULL, &titleRect);
+        }
+
+        const int lineY = start.y;
+        const int cubeSize = 45;
+        const int cubeX = 260;
+        const int cubeGroundY = lineY - cubeSize;
+        const float gravity = 1800.0f;
+        const float jumpSpeed = -720.0f;
+        const float trapSpeed = 430.0f;
+        const int trapSpacing = 360;
+        const int trapSize = 50;
+
+        trapOffset += trapSpeed * deltaTime;
+        if (trapOffset >= trapSpacing)
+            trapOffset -= trapSpacing;
+
+        bool trapNearCube = false;
+        for (int i = 0; i < 7; i++)
+        {
+            int trapX = end.x - (int)trapOffset - (i * trapSpacing);
+            if (trapX > cubeX + cubeSize && trapX < cubeX + cubeSize + 170)
+                trapNearCube = true;
+        }
+
+        if (trapNearCube && cubeY >= cubeGroundY)
+            cubeVelocity = jumpSpeed;
+
+        cubeY += cubeVelocity * deltaTime;
+        cubeVelocity += gravity * deltaTime;
+        if (cubeY > cubeGroundY)
+        {
+            cubeY = cubeGroundY;
+            cubeVelocity = 0.0f;
+        }
+
+        SDL_Rect cube = {cubeX, (int)cubeY, cubeSize, cubeSize};
+
+        SDL_SetRenderDrawColor(renderer, 255, 127, 0, 255);
+        SDL_RenderFillRect(renderer, &cube);
+        SDL_SetRenderDrawColor(renderer, 40, 22, 18, 255);
+        SDL_RenderDrawRect(renderer, &cube);
+
+        for (int i = 0; i < 7; i++)
+        {
+            int trapX = end.x - (int)trapOffset - (i * trapSpacing);
+            if (trapX < -trapSize || trapX > end.x + trapSize)
+                continue;
+
+            filledTrigonRGBA(renderer,
+                trapX, lineY,
+                trapX + trapSize, lineY,
+                trapX + trapSize / 2, lineY - trapSize,
+                92, 52, 40, 255);
+            trigonRGBA(renderer,
+                trapX, lineY,
+                trapX + trapSize, lineY,
+                trapX + trapSize / 2, lineY - trapSize,
+                255, 127, 0, 255);
+        }
+
         // Render button
         playButton.render(renderer);
 
         SDL_RenderPresent(renderer);
     }
+
+    if (titleTexture)
+        SDL_DestroyTexture(titleTexture);
 
     return false;
 }
