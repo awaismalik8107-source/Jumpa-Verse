@@ -1,0 +1,20 @@
+
+digraph G {
+graph [rankdir=TB, bgcolor="transparent"];
+node [shape=box, style="rounded,filled", fillcolor="#FFF3E8", color="#F47C20", penwidth=2, fontname="DejaVu Sans"];
+edge [color="#7A3D12", penwidth=2, fontname="DejaVu Sans"];
+start [label="main() starts"];
+init [label="init(): SDL_Init, TTF_Init, IMG_Init, create window and renderer"];
+load [label="Load textures and font"];
+world [label="Create ground vector and first random platform"];
+menu [label="menuScreen(): Play or Exit"];
+loop [label="Game loop: poll events, calculate deltaTime, update cameraOffset"];
+gen [label="Generate more ground and traps when needed"];
+move [label="cameraMovmentObj() and renderTrap() move world left"];
+draw [label="Clear renderer, render ground, render traps, present frame"];
+fps [label="Delay to target 60 FPS and print FPS"];
+close [label="close(): destroy renderer/window and quit SDL"];
+start -> init -> load -> world -> menu -> loop -> gen -> move -> draw -> fps -> loop;
+menu -> close [label="Exit"];
+loop -> close [label="SDL_QUIT"];
+}

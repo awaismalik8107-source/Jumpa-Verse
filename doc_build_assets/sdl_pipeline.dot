@@ -1,0 +1,14 @@
+
+digraph G {
+graph [rankdir=LR, bgcolor="transparent"];
+node [shape=box, style="rounded,filled", fillcolor="#FFF3E8", color="#F47C20", penwidth=2, fontname="DejaVu Sans"];
+edge [color="#7A3D12", penwidth=2, fontname="DejaVu Sans"];
+window [label="SDL_Window\nvisible game window"];
+renderer [label="SDL_Renderer\nGPU/accelerated drawing target"];
+textures [label="SDL_Texture\nimages and text stored for fast rendering"];
+rects [label="SDL_Rect\nposition and size: x, y, w, h"];
+draw [label="SDL_RenderCopy / filledTrigonRGBA\ndraw into back buffer"];
+present [label="SDL_RenderPresent\nshow final frame"];
+window -> renderer -> textures -> draw -> present;
+rects -> draw;
+}

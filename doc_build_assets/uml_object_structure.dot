@@ -1,0 +1,19 @@
+
+digraph G {
+graph [rankdir=TB, bgcolor="transparent", pad=0.25, nodesep=0.6, ranksep=0.6];
+node [shape=record, style="rounded,filled", fillcolor="#FFF3E8", color="#F47C20", penwidth=2, fontname="DejaVu Sans", fontsize=11];
+edge [color="#7A3D12", penwidth=2, fontname="DejaVu Sans"];
+hitBox [label="{hitBox|+ int x\l+ int y\l+ int w\l+ int h\l|+ hitBox(x,y,w,h)\l+ hitBox()\l}"];
+ground [label="{ground_Class|+ int divw\l+ int trapCount\l+ vector of SDL_Rect ground\l+ 2D vector of SDL_Rect groundUnder\l+ SDL_Texture* groundTexture\l+ SDL_Texture* ugTexture\l+ int perboxwidth=50\l+ int perboxheight=50\l|+ rebuild()\l+ seterForElements(...)\l+ render(renderer)\l}"];
+trap [label="{trapSpike|+ SDL_Point p1, p2, p3\l|+ setterNew(x)\l+ render(renderer,cameraOffset)\l+ updatePosition(x,y)\l}"];
+option [label="{optionBoxes|+ SDL_Texture* textTexture\l+ SDL_Texture* exitTexture\l+ bool state\l+ bool stateExit\l+ SDL_Rect box\l+ SDL_Rect boxExit\l+ string exitText\l|+ box_Initializer(...)\l+ render(renderer)\l+ stateHolder(...)\l+ ~optionBoxes()\l}"];
+color [label="{mainMenuColor|+ static SDL_Color background\l+ static SDL_Color buttonNormal\l+ static SDL_Color buttonHover\l+ static SDL_Color buttonActive\l+ static SDL_Color text\l|static menu palette\l}"];
+funcs [shape=record, fillcolor="#FFE0BF", label="{Project Functions|init() / close()\lground_generator()\lgroundRandomgenerator()\lfreeMemory()\lcameraMovmentObj()\ltrapTriangle()\lrenderTrap()\ltrapFreeMemory()\lmenuScreen()\l}"];
+hitBox -> ground [label="inherits"];
+hitBox -> trap [label="inherits"];
+hitBox -> option [label="inherits"];
+option -> color [style=dashed, label="uses colors"];
+funcs -> ground [style=dashed, label="creates/updates"];
+funcs -> trap [style=dashed, label="creates/updates"];
+funcs -> option [style=dashed, label="menu"];
+}

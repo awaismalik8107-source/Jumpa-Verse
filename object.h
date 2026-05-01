@@ -184,13 +184,13 @@ class trapSpike :public hitBox
         p1.x + cameraOffset, p1.y,
         p2.x + cameraOffset, p2.y,
         p3.x + cameraOffset, p3.y,
-        255,255,255,255);
+        92,52,40,255);
 
     trigonRGBA(renderer,
         p1.x + cameraOffset, p1.y,
         p2.x + cameraOffset, p2.y,
         p3.x + cameraOffset, p3.y,
-        0,0,0,255);
+        40,22,18,255);
 }
 
       void updatePosition(int x, int y)
