@@ -37,21 +37,22 @@ bool menuScreen(SDL_Renderer* renderer, TTF_Font* font)
             SDL_FreeSurface(titleSurface);
         }
     }
-    SDL_Point start={0,1000};
-    SDL_Point end={1980,1000};
+    SDL_Point start={0,1100};
+    SDL_Point end={1980,1100};
 
     bool running = true;
     SDL_Event event;
     int mousex,mousey;
     int selectedButton = 0;
     bool playSelected = true;
+    bool scoresSelected = false;
     bool exitSelected = false;
     Uint32 lastFrameTime = SDL_GetTicks();
     float cubeVelocity = 0.0f;
     float cubeY = 1000.0f - 45.0f;
     float trapOffset = 0.0f;
 
-    playButton.stateHolder(renderer, font, "Play", playSelected, exitSelected);
+    playButton.stateHolder(renderer, font, "Play", playSelected, scoresSelected, exitSelected);
 
     
 
@@ -76,9 +77,14 @@ bool menuScreen(SDL_Renderer* renderer, TTF_Font* font)
             {
                 if (event.key.keysym.sym == SDLK_UP || event.key.keysym.sym == SDLK_DOWN)
                 {
-                    selectedButton = 1 - selectedButton;
+                    if (event.key.keysym.sym == SDLK_UP)
+                        selectedButton = (selectedButton + 2) % 3;
+                    else
+                        selectedButton = (selectedButton + 1) % 3;
+
                     playSelected = selectedButton == 0;
-                    exitSelected = selectedButton == 1;
+                    scoresSelected = selectedButton == 1;
+                    exitSelected = selectedButton == 2;
                 }
                 else if (event.key.keysym.sym == SDLK_RETURN || event.key.keysym.sym == SDLK_SPACE)
                 {
@@ -89,10 +95,13 @@ bool menuScreen(SDL_Renderer* renderer, TTF_Font* font)
                         return true;
                     }
 
-                    exitb = true;
-                    if (titleTexture)
-                        SDL_DestroyTexture(titleTexture);
-                    return true;
+                    if (selectedButton == 2)
+                    {
+                        exitb = true;
+                        if (titleTexture)
+                            SDL_DestroyTexture(titleTexture);
+                        return true;
+                    }
                 }
             }
 
@@ -108,6 +117,15 @@ bool menuScreen(SDL_Renderer* renderer, TTF_Font* font)
                     if (titleTexture)
                         SDL_DestroyTexture(titleTexture);
                     return true; 
+                }
+
+                if (mx >= playButton.boxScores.x && mx <= playButton.boxScores.x + playButton.boxScores.w &&
+                    my >= playButton.boxScores.y && my <= playButton.boxScores.y + playButton.boxScores.h)
+                {
+                    selectedButton = 1;
+                    playSelected = false;
+                    scoresSelected = true;
+                    exitSelected = false;
                 }
 
                 if (mx >= playButton.boxExit.x && mx <= playButton.boxExit.x + playButton.boxExit.w &&
@@ -129,6 +147,7 @@ bool menuScreen(SDL_Renderer* renderer, TTF_Font* font)
         {
             selectedButton = 0;
             playSelected = true;
+            scoresSelected = false;
             exitSelected = false;
         }
         // else{
@@ -136,14 +155,23 @@ bool menuScreen(SDL_Renderer* renderer, TTF_Font* font)
         //     playButton.stateHolder(renderer, font, "Play",false,false);
         // }
 
-        else if(mousex>=playButton.boxExit.x && mousex<=playButton.boxExit.x + playButton.boxExit.w && mousey>=playButton.boxExit.y && mousey<=playButton.boxExit.y+ playButton.boxExit.h)
+        else if(mousex>=playButton.boxScores.x && mousex<=playButton.boxScores.x + playButton.boxScores.w && mousey>=playButton.boxScores.y && mousey<=playButton.boxScores.y+ playButton.boxScores.h)
         {
             selectedButton = 1;
             playSelected = false;
+            scoresSelected = true;
+            exitSelected = false;
+        }
+
+        else if(mousex>=playButton.boxExit.x && mousex<=playButton.boxExit.x + playButton.boxExit.w && mousey>=playButton.boxExit.y && mousey<=playButton.boxExit.y+ playButton.boxExit.h)
+        {
+            selectedButton = 2;
+            playSelected = false;
+            scoresSelected = false;
             exitSelected = true;
         }
 
-        playButton.stateHolder(renderer, font, "Play", playSelected, exitSelected);
+        playButton.stateHolder(renderer, font, "Play", playSelected, scoresSelected, exitSelected);
 
              // Clear screen
         SDL_SetRenderDrawColor(renderer,
