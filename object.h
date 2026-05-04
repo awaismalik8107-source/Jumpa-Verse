@@ -383,3 +383,50 @@ public:
         box_Initializer(renderer, font, text);
     }
 };
+
+
+/*---------------------Character------------------------*/
+
+
+
+class player : public hitBox
+{
+public:
+    SDL_Rect character ;
+    float jumpVelocity = 0.0f;
+    float gravity = 3000.0f;
+    float jumpPower = -950.0f;
+    bool onGround = false;
+    bool dash=false;
+    float ofsset=100.0f;
+    float returnSpeed=-20.0f;
+    float fallOffest=0;
+
+    player(int sx=150,int sy=100,int sw=50,int sh=50):hitBox(sx,sy,sw,sh){
+
+        character={x,y,w,h};
+    }
+
+    void syncHitBox()
+    {
+        x = character.x;
+        y = character.y;
+        w = character.w;
+        h = character.h;
+    }
+
+    void newPosition(int nx, int ny, int nw, int nh)
+    {
+        character = {nx, ny, nw, nh};
+        syncHitBox();
+    }
+
+    void Render(SDL_Renderer* renderer)
+    {
+        // Set color (R, G, B, A)
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+
+        // Draw filled rectangle
+        SDL_RenderFillRect(renderer, &character);
+    }
+};

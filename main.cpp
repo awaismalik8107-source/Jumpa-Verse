@@ -19,6 +19,7 @@ int main()
     SDL_Window* window=nullptr;
     SDL_Renderer* renderer=nullptr;
 
+    player player1;
    
 
     if(!init(window,renderer))
@@ -69,7 +70,6 @@ int main()
         continue;
     }
     }
-      
 
     if (deltaTime > 0.05f)
     deltaTime = 0.05f;
@@ -98,11 +98,15 @@ int main()
                 quit=true;
             }
         }
+        const Uint8* keyboardState = SDL_GetKeyboardState(NULL);
+        player1.fallOffest=cammera_offSet;
+        physicsDevelop(player1, ground, deltaTime, keyboardState);
         //  trapTriangle(renderer,trap,ground,1);
         
 
         SDL_SetRenderDrawColor(renderer,135,206,235,255);  
         SDL_RenderClear(renderer);
+       
 
         // if(ground.size() < 100)
                
@@ -112,6 +116,7 @@ int main()
         ground.push_back(temp);
         }
         freeMemory(ground);  
+        
         trapFreeMemory(trap);     
  
         //  std::cout<<i<<std::endl;
@@ -127,6 +132,8 @@ int main()
         cameraMovmentObj(ground,cammera_offSet,trap);
         
         
+        
+      
       
         
          
@@ -142,9 +149,10 @@ int main()
              trap[j].render(renderer);
             //  std::cout<<trap[j].x<<std::endl;
         }
-        renderTrap(renderer,trap,cammera_offSet);
         
-
+        renderTrap(renderer,trap,cammera_offSet);
+        player1.Render(renderer);
+          
 
         SDL_RenderPresent(renderer);
 

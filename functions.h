@@ -5,6 +5,7 @@
 extern bool exitb;
 class ground_Class;
 class trapSpike;
+class player;
 bool init(SDL_Window*& Window, SDL_Renderer*& renderer);
 void close(SDL_Window* window, SDL_Renderer* renderer);
 
@@ -29,3 +30,8 @@ void renderTrap(SDL_Renderer* renderer,
 void trapFreeMemory(std::vector<trapSpike>&trap);
 
 bool menuScreen(SDL_Renderer* renderer, TTF_Font* font);
+
+void physicsDevelop(player& player1,
+                    std::vector<ground_Class>& g1,
+                    float deltaTime,
+                    const Uint8* keyboardState);
