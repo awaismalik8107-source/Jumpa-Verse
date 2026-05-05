@@ -1,4 +1,5 @@
 #include <SDL2/SDL_render.h>
+#include <SDL2/SDL_scancode.h>
 #include <SDL2/SDL_video.h>
 #include<iostream>
 #include<SDL2/SDL.h>
@@ -14,12 +15,14 @@
 #include<stdlib.h>
 #include<SDL2/SDL_ttf.h>
 #include<limits>
-
+int i=0;
 void physicsDevelop(player& player1,
                     std::vector<ground_Class>& g1,
                     float deltaTime,
                     const Uint8* keyboardState)
 {
+    Uint32 mouseState = SDL_GetMouseState(NULL, NULL);
+    
     if (deltaTime <= 0.0f)
     {
         return;
@@ -29,10 +32,48 @@ void physicsDevelop(player& player1,
                        keyboardState[SDL_SCANCODE_W] ||
                        keyboardState[SDL_SCANCODE_UP];
 
-    if (jumpPressed && player1.onGround)
+    bool characterDown=keyboardState[SDL_SCANCODE_LCTRL] ||
+                        keyboardState[SDL_SCANCODE_S]||
+                        keyboardState[SDL_SCANCODE_DOWN];
+
+    bool characterdash=keyboardState[SDL_SCANCODE_LSHIFT] ||
+                        keyboardState[SDL_SCANCODE_D]||
+                        keyboardState[SDL_SCANCODE_RIGHT];
+    bool backward=keyboardState[SDL_SCANCODE_A] ||
+                        keyboardState[SDL_SCANCODE_LEFT]||
+                        keyboardState[SDL_SCANCODE_LALT];
+
+        bool leftClick  = mouseState & SDL_BUTTON(SDL_BUTTON_LEFT);
+    bool rightClick = mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT);
+    bool middleClick= mouseState & SDL_BUTTON(SDL_BUTTON_MIDDLE);
+
+//     if (mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT))
+// {
+//     std::cout << "Right click detected\n";
+// }
+    if ((jumpPressed || leftClick)&& player1.onGround)
     {
         player1.jumpVelocity = player1.jumpPower;
         player1.onGround = false;
+    }
+    if (characterDown||rightClick)
+    {
+        player1.gravity+=2000;
+    }
+    if(characterdash && (player1.character.x+player1.character.w)<1980)
+    {
+        player1.character.x+=5;
+      
+    }
+    if (backward && player1.character.x>=0)
+    {
+       player1.character.x-=10;
+    }
+
+
+if((!characterDown && !rightClick) && player1.gravity != 1800)
+    {
+        player1.gravity = 1800;
     }
 
     SDL_Rect previous = player1.character;
@@ -59,8 +100,8 @@ void physicsDevelop(player& player1,
             nextGroundIndex = static_cast<int>(i+1);
         }
 
-        bool overlapX = (player1.character.x + player1.character.w > groundRect.x) &&
-                        (player1.character.x < groundRect.x + groundRect.w);
+        bool overlapX =(player1.character.x + player1.character.w > groundRect.x) &&
+        (player1.character.x < groundRect.x + groundRect.w);
         bool wasAboveGround = previous.y + previous.h <= groundRect.y;
         bool crossedGround = player1.character.y + player1.character.h >= groundRect.y;
 

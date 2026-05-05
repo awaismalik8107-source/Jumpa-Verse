@@ -30,9 +30,15 @@ public:
 class ground_Class : public hitBox
 {
 public:
+bool first_ground=false;
+/*Characterrizing ground into 3 types small medium and big*/
+    bool small=false;
+    bool big=false;
+    bool medium=false;
     int divw = 0;
     int trapCount=0;
 
+    bool trapFill=false;
     std::vector<SDL_Rect> ground;
     std::vector<std::vector<SDL_Rect>> groundUnder;
 
@@ -125,84 +131,106 @@ public:
 };
 
 
-class trapSpike :public hitBox
+class trapSpike : public hitBox
 {
-    public:
-    SDL_Point p1;
-    SDL_Point p2;
-    SDL_Point p3;
+public:
+    trapSpike() : hitBox(0, 0, 0, 0) {}
 
-    trapSpike():hitBox(0,0,0,0)
-    {
-
-    }
-
-    trapSpike(int x,int y,int w,int h):hitBox(x,y,w,h)
-    {
-
-        p1={x,y};
-        p2={x+50,y};
-        p3={x+25,y-50};
-
-        
-        /*
-        Trigon is present in #include <SDL2/SDL2_gfxPrimitives.h>
-        and is refered in the tutorial_image 
-        Trigon is a 3 dimension
-        Parameters:
-            renderer	The renderer to draw on.
-            x1	X coordinate of the first point of the trigon.
-            y1	Y coordinate of the first point of the trigon.
-            x2	X coordinate of the second point of the trigon.
-            y2	Y coordinate of the second point of the trigon.
-            x3	X coordinate of the third point of the trigon.
-            y3	Y coordinate of the third point of the trigon.
-            r	The red value of the trigon to draw.
-            g	The green value of the trigon to draw.
-            b	The blue value of the trigon to draw.
-            a	The alpha value of the trigon to draw.
-            
-
-            all the information is present in https://www.ferzkopp.net/Software/SDL2_gfx/Docs/html/_s_d_l2__gfx_primitives_8h.html#a152662f6985587d137837086aaa95311
-        */
-    //    filledTrigonRGBA(renderer,p1.x,p1.y,p2.x,p2.y,p3.x,p3.y,255,255,255,255);
-
-    }
+    trapSpike(int x, int y, int w, int h) : hitBox(x, y, w, h) {}
 
     void setterNew(int x)
     {
-        this->x=x;
-        p1={x,y};
-        p2={x+50,y};
-        p3={x+25,y-50};
+        this->x = x;
     }
 
-    void render(SDL_Renderer* renderer, float cameraOffset=0)
-{
-    
-    filledTrigonRGBA(renderer,
-        p1.x + cameraOffset, p1.y,
-        p2.x + cameraOffset, p2.y,
-        p3.x + cameraOffset, p3.y,
-        92,52,40,255);
-
-    trigonRGBA(renderer,
-        p1.x + cameraOffset, p1.y,
-        p2.x + cameraOffset, p2.y,
-        p3.x + cameraOffset, p3.y,
-        40,22,18,255);
-}
-
-      void updatePosition(int x, int y)
+    void render(SDL_Renderer* renderer, float cameraOffset = 0)
     {
-        // Useful for camera movement or animation
-        p1 = {x, y};
-        p2 = {x + w, y};
-        p3 = {x + w/2, y - h};
+        int x1 = x + (int)cameraOffset;
+        int y1 = y;
+        
+        // Visibility and Overflow Check:
+        // SDL2_gfx uses int16_t (-32768 to 32767). 
+        // We only render if it's reasonably near the screen to avoid overflow "streaks".
+        if (x1 < -500 || x1 > 3000) 
+        {
+            return;
+        }
+
+        int x2 = x1 + 50; 
+        int y2 = y1;
+        int x3 = x1 + 25; 
+        int y3 = y1 - 50; 
+
+        filledTrigonRGBA(renderer,
+                        x1, y1,
+                        x2, y2,
+                        x3, y3,
+                        92, 52, 40, 255);
+
+        trigonRGBA(renderer,
+                  x1, y1,
+                  x2, y2,
+                  x3, y3,
+                  40, 22, 18, 255);
     }
 
+    void updatePosition(int x, int y)
+    {
+        this->x = x;
+        this->y = y;
+    }
+};
 
+class Score
+{
+public:
+    Score();
+    ~Score();
 
+    Score(const Score&) = delete;
+    Score& operator=(const Score&) = delete;
+
+    void initialize();
+    void update(float deltaTime, bool playerAlive);
+    void render(SDL_Renderer* renderer, TTF_Font* font);
+    void reset();
+    int value() const;
+
+private:
+    int score = 0;
+    float timeAccumulator = 0.0f;
+};
+
+enum class DeathCause
+{
+    None,
+    FellOff,
+    HitTrap
+};
+
+enum class GameOverAction
+{
+    None,
+    TryAgain,
+    ReturnToMenu
+};
+
+class GameOver
+{
+public:
+    GameOver();
+
+    void reset();
+    void trigger(DeathCause cause, int score);
+    bool isActive() const;
+    DeathCause cause() const;
+    int finalScore() const;
+    std::string causeText() const;
+
+private:
+    bool active = false;
+    DeathCause deathCause = DeathCause::None;
+    int savedFinalScore = 0;
 };
 
 class mainMenuColor {
@@ -394,15 +422,18 @@ class player : public hitBox
 public:
     SDL_Rect character ;
     float jumpVelocity = 0.0f;
-    float gravity = 3000.0f;
+    float gravity = 1800.0f;
     float jumpPower = -950.0f;
     bool onGround = false;
-    bool dash=false;
+    bool dashcooldown=false;
+    bool dashstop=false;
     float ofsset=100.0f;
+    
     float returnSpeed=-20.0f;
     float fallOffest=0;
 
-    player(int sx=150,int sy=100,int sw=50,int sh=50):hitBox(sx,sy,sw,sh){
+    player(int sx=150,int sy=100,int sw=50,int sh=50):hitBox(sx,sy,sw,sh)
+    {
 
         character={x,y,w,h};
     }

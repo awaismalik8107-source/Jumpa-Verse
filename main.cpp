@@ -12,12 +12,13 @@
 #include "functions.h"
 #include<stdlib.h>
 #include<SDL2/SDL_ttf.h>
-
+float cammeraDash=0;
 bool exitb = false;
 int main()
 {
     SDL_Window* window=nullptr;
     SDL_Renderer* renderer=nullptr;
+     
 
     player player1;
    
@@ -35,21 +36,30 @@ int main()
     SDL_Texture* groundTex = IMG_LoadTexture(renderer, "Images_textures/ground.jpeg");
     SDL_Texture* ugTex = IMG_LoadTexture(renderer, "Images_textures/underGround.jpeg");
     TTF_Font *font =TTF_OpenFont("debrosee-font/Debrosee-ALPnL.ttf",100);
-     std::vector<trapSpike> trap;
-    std::vector<ground_Class> ground = ground_generator(renderer,groundTex,ugTex);
-    
-    ground_Class temp=groundRandomgenerator(renderer,groundTex,ugTex,ground,trap);
-   
-   
+    std::vector<trapSpike> trap;
+    std::vector<ground_Class> ground;
+    Score score;
+    GameOver gameOver;
+    auto resetGameplay = [&]()
+    {
+        player1 = player();
+        cammera_offSet = 0.5f;
+        trap.clear();
+        ground = ground_generator(renderer, groundTex, ugTex);
+        groundRandomgenerator(renderer, groundTex, ugTex, ground, trap);
+        // ground.push_back(temp);
+        resetScore(score);
+        gameOver.reset();
+    };
 
-    ground.push_back(temp);
+    initializeScore(score);
+    resetGameplay();
     bool quit=false;   
     SDL_Event eventManager;
      Uint32 lastTime = SDL_GetTicks();
     int i=0;
     int count=0;
     const float targetFrameTime = 1000.0f / 60.0f; // 16.67 ms
-    int score=0;
     bool menu=false;
     while(!quit)
     {
@@ -61,7 +71,7 @@ int main()
         lastTime = currentTime;
         float speed = 2.0f; // pixels per second
      
-    while(!menu)
+    while(!menu && !quit)
     {
     menu=menuScreen(renderer,font);
     if(exitb==true)
@@ -69,6 +79,8 @@ int main()
         quit=true;
         continue;
     }
+    resetGameplay();
+    lastTime = SDL_GetTicks();
     }
 
     if (deltaTime > 0.05f)
@@ -83,10 +95,6 @@ int main()
         {
             cammera_offSet -= speed * deltaTime;
         }
-        // std::cout<<cammera_offSet<<std::endl;
-       
-        // std::cout<<cammera_offSet<<std::endl;
-        
 
          i++;
       
@@ -101,57 +109,69 @@ int main()
         const Uint8* keyboardState = SDL_GetKeyboardState(NULL);
         player1.fallOffest=cammera_offSet;
         physicsDevelop(player1, ground, deltaTime, keyboardState);
-        //  trapTriangle(renderer,trap,ground,1);
+        if (playerFellOff(player1))
+        {
+            gameOver.trigger(DeathCause::FellOff, score.value());
+        }
+        else if (playerHitTrap(player1, trap))
+        {
+            gameOver.trigger(DeathCause::HitTrap, score.value());
+        }
+
+        if (gameOver.isActive())
+        {
+            saveFinalScore(gameOver);
+            GameOverAction action = runGameOverScreen(renderer, font, gameOver);
+            if (exitb)
+            {
+                quit = true;
+                continue;
+            }
+
+            resetGameplay();
+            lastTime = SDL_GetTicks();
+
+            if (action == GameOverAction::TryAgain)
+            {
+                menu = true;
+            }
+            else if (action == GameOverAction::ReturnToMenu)
+            {
+                menu = false;
+            }
+
+            continue;
+        }
+
+        bool playerAlive = !gameOver.isActive();
+        updateScore(score, deltaTime, playerAlive);
         
 
         SDL_SetRenderDrawColor(renderer,135,206,235,255);  
         SDL_RenderClear(renderer);
        
-
-        // if(ground.size() < 100)
-               
         if(ground.size()<30)
         {
-        temp=groundRandomgenerator(renderer,groundTex,ugTex,ground,trap);
-        ground.push_back(temp);
+        groundRandomgenerator(renderer,groundTex,ugTex,ground,trap);
         }
         freeMemory(ground);  
         
         trapFreeMemory(trap);     
  
-        //  std::cout<<i<<std::endl;
-           
-        //32MB heap malloc calloc 
-
-        // if (ground.size() > 100)
-        // {
-        //     ground.erase(ground.begin());
-        // }
-            
-        // cammera_offSet-=0.1f;
-        cameraMovmentObj(ground,cammera_offSet,trap);
+        cameraMovmentObj(ground,cammera_offSet+cammeraDash,trap);
         
-        
-        
-      
-      
-        
-         
         for(int j=0;j<ground.size();j++)
         {
-        ground[j].render(renderer);
-       
+            ground[j].render(renderer);
         }
 
         for(int j=0;j<trap.size();j++)
         {
-           
              trap[j].render(renderer);
-            //  std::cout<<trap[j].x<<std::endl;
         }
         
-        renderTrap(renderer,trap,cammera_offSet);
         player1.Render(renderer);
+        renderScore(score, renderer, font);
           
 
         SDL_RenderPresent(renderer);
@@ -172,7 +192,7 @@ int main()
     if (SDL_GetTicks() - fpsTimer >= 1000)
     {
         std::cout << "\rFPS: " << frames 
-          << "  Offset: " << cammera_offSet 
+          << "  Offset: " << cammera_offSet<<" "<<cammeraDash
           << std::flush;
         frames = 0;
         
