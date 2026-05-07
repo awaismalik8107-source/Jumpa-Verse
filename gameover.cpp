@@ -4,7 +4,9 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <fstream>
+#include <sstream>
 #include <string>
+#include <vector>
 
 namespace
 {
@@ -223,6 +225,58 @@ void saveFinalScore(const GameOver& gameOver, const std::string& path)
     }
 
     file << gameOver.finalScore() << '\n';
+}
+
+void saveLoggedInPlayerScore(const GameOver& gameOver, const std::string& path)
+{
+    if (currentPlayerUsername.empty())
+    {
+        return;
+    }
+
+    std::ifstream input(path);
+    if (!input)
+    {
+        return;
+    }
+
+    const std::string playerUsername = toUpperUsername(currentPlayerUsername);
+    std::vector<std::string> lines;
+    std::string line;
+    bool playerFound = false;
+
+    while (std::getline(input, line))
+    {
+        std::stringstream lineStream(line);
+        std::string username;
+        std::getline(lineStream, username, ',');
+
+        if (toUpperUsername(username) == playerUsername)
+        {
+            line += "," + std::to_string(gameOver.finalScore());
+            playerFound = true;
+        }
+
+        lines.push_back(line);
+    }
+
+    input.close();
+
+    if (!playerFound)
+    {
+        return;
+    }
+
+    std::ofstream output(path, std::ios::trunc);
+    if (!output)
+    {
+        return;
+    }
+
+    for (const std::string& savedLine : lines)
+    {
+        output << savedLine << '\n';
+    }
 }
 
 GameOverAction runGameOverScreen(SDL_Renderer* renderer, TTF_Font* font, GameOver& gameOver)

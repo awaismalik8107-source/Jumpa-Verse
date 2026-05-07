@@ -18,6 +18,22 @@ SDL_Color mainMenuColor::buttonNormal = {70, 130, 180, 255};
 SDL_Color mainMenuColor::buttonHover  = {100, 160, 210, 255};
 SDL_Color mainMenuColor::buttonActive = {40, 90, 140, 255};
 SDL_Color mainMenuColor::text         = {255, 255, 255, 255};
+
+namespace
+{
+    bool openLoginForPlay(SDL_Renderer* renderer, TTF_Font* font)
+    {
+        LoginScreenAction action = runLoginScreen(renderer, font);
+        if (action == LoginScreenAction::Quit)
+        {
+            exitb = true;
+            return true;
+        }
+
+        return action == LoginScreenAction::LoginSuccess;
+    }
+}
+
 //Run 
 bool menuScreen(SDL_Renderer* renderer, TTF_Font* font)
 {
@@ -90,9 +106,23 @@ bool menuScreen(SDL_Renderer* renderer, TTF_Font* font)
                 {
                     if (selectedButton == 0)
                     {
-                        if (titleTexture)
-                            SDL_DestroyTexture(titleTexture);
-                        return true;
+                        if (openLoginForPlay(renderer, font))
+                        {
+                            if (titleTexture)
+                                SDL_DestroyTexture(titleTexture);
+                            return true;
+                        }
+                    }
+
+                    if (selectedButton == 1)
+                    {
+                        runScoreMenu(renderer, font);
+                        if (exitb)
+                        {
+                            if (titleTexture)
+                                SDL_DestroyTexture(titleTexture);
+                            return true;
+                        }
                     }
 
                     if (selectedButton == 2)
@@ -114,9 +144,12 @@ bool menuScreen(SDL_Renderer* renderer, TTF_Font* font)
                 if (mx >= playButton.x && mx <= playButton.x + playButton.w &&
                     my >= playButton.y && my <= playButton.y + playButton.h)
                 {
-                    if (titleTexture)
-                        SDL_DestroyTexture(titleTexture);
-                    return true; 
+                    if (openLoginForPlay(renderer, font))
+                    {
+                        if (titleTexture)
+                            SDL_DestroyTexture(titleTexture);
+                        return true; 
+                    }
                 }
 
                 if (mx >= playButton.boxScores.x && mx <= playButton.boxScores.x + playButton.boxScores.w &&
@@ -126,6 +159,13 @@ bool menuScreen(SDL_Renderer* renderer, TTF_Font* font)
                     playSelected = false;
                     scoresSelected = true;
                     exitSelected = false;
+                    runScoreMenu(renderer, font);
+                    if (exitb)
+                    {
+                        if (titleTexture)
+                            SDL_DestroyTexture(titleTexture);
+                        return true;
+                    }
                 }
 
                 if (mx >= playButton.boxExit.x && mx <= playButton.boxExit.x + playButton.boxExit.w &&

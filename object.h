@@ -215,6 +215,20 @@ enum class GameOverAction
     ReturnToMenu
 };
 
+enum class LoginScreenAction
+{
+    Back,
+    LoginSuccess,
+    Quit
+};
+
+enum class RegisterScreenAction
+{
+    Back,
+    Registered,
+    Quit
+};
+
 class GameOver
 {
 public:
@@ -245,6 +259,40 @@ public:
 
     // Text color
     static SDL_Color text;
+};
+
+class LoginScreen
+{
+public:
+    LoginScreen();
+    LoginScreenAction run(SDL_Renderer* renderer, TTF_Font* font);
+
+private:
+    std::string username;
+    std::string password;
+    std::string message;
+    int activeField = 0;
+};
+
+class RegisterScreen
+{
+public:
+    RegisterScreen();
+    RegisterScreenAction run(SDL_Renderer* renderer, TTF_Font* font);
+
+private:
+    std::string username;
+    std::string password;
+    std::string confirmPassword;
+    std::string message;
+    int activeField = 0;
+};
+
+class ScoreMenu
+{
+public:
+    ScoreMenu();
+    void run(SDL_Renderer* renderer, TTF_Font* font);
 };
 
 

@@ -121,6 +121,7 @@ int main()
         if (gameOver.isActive())
         {
             saveFinalScore(gameOver);
+            saveLoggedInPlayerScore(gameOver);
             GameOverAction action = runGameOverScreen(renderer, font, gameOver);
             if (exitb)
             {
