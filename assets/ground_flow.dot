@@ -1,0 +1,16 @@
+digraph G {
+    
+    graph [bgcolor="transparent", rankdir=LR, splines=ortho, nodesep=0.55, ranksep=0.8];
+    node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=14, penwidth=2, color="#d96f00", fillcolor="#f3f4f6"];
+    edge [color="#55585f", penwidth=2, fontname="DejaVu Sans", fontsize=11];
+    
+    node [fillcolor="#fff3e8"];
+    screen [label="Read current screen size"];
+    ranges [label="Clamp Y, width, height, gap"];
+    rng [label="random_device + mt19937\nuniform_int_distribution"];
+    create [label="emplace_back ground_Class"];
+    classify [label="small / medium / big"];
+    traps [label="trapTriangle() repeated"];
+    cleanup [label="freeMemory() removes off-screen"];
+    screen -> ranges -> rng -> create -> classify -> traps -> cleanup;
+    }

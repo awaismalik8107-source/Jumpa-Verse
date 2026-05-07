@@ -60,14 +60,25 @@ void physicsDevelop(player& player1,
     {
         player1.gravity+=2000;
     }
+    const int playerMoveRight = std::min(9, std::max(5, currentScreenWidth / 360));
+    const int playerMoveLeft = std::min(14, std::max(8, currentScreenWidth / 240));
+    const int rightLimit = currentScreenWidth - player1.character.w;
     if(characterdash && (player1.character.x+player1.character.w)<currentScreenWidth)
     {
-        player1.character.x+=5;
+        player1.character.x += playerMoveRight;
+        if (player1.character.x > rightLimit)
+        {
+            player1.character.x = rightLimit;
+        }
       
     }
     if (backward && player1.character.x>=0)
     {
-       player1.character.x-=10;
+       player1.character.x -= playerMoveLeft;
+       if (player1.character.x < 0)
+       {
+           player1.character.x = 0;
+       }
     }
 
 

@@ -159,9 +159,13 @@ int main()
         SDL_SetRenderDrawColor(renderer,135,206,235,255);  
         SDL_RenderClear(renderer);
        
-        if(ground.size()<30)
+        const int generationBuffer = std::max(screenW, 1400);
+        const int maxGeneratedPlatforms = 10;
+        while(!ground.empty() &&
+              ground.back().x + ground.back().w < screenW + generationBuffer &&
+              (int)ground.size() < maxGeneratedPlatforms)
         {
-        groundRandomgenerator(renderer,groundTex,ugTex,ground,trap);
+            groundRandomgenerator(renderer,groundTex,ugTex,ground,trap);
         }
         freeMemory(ground);  
         

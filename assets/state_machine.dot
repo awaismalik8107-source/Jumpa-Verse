@@ -1,0 +1,26 @@
+digraph G {
+    
+    graph [bgcolor="transparent", rankdir=LR, splines=ortho, nodesep=0.55, ranksep=0.8];
+    node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=14, penwidth=2, color="#d96f00", fillcolor="#f3f4f6"];
+    edge [color="#55585f", penwidth=2, fontname="DejaVu Sans", fontsize=11];
+    
+    node [shape=ellipse, fillcolor="#fff3e8"];
+    boot [label="Boot"];
+    menu [label="Main Menu"];
+    login [label="Login"];
+    register [label="Register"];
+    play [label="Gameplay"];
+    over [label="Game Over"];
+    scores [label="Scores"];
+    exit [label="Exit"];
+    boot -> menu [label="init ok"];
+    menu -> login [label="Play"];
+    login -> register [label="register link"];
+    register -> login [label="registered/back"];
+    login -> play [label="success"];
+    play -> over [label="fall/trap"];
+    over -> play [label="try again"];
+    over -> menu [label="return"];
+    menu -> scores -> menu;
+    menu -> exit;
+    }

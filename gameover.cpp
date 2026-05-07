@@ -12,8 +12,8 @@ namespace
 {
     SDL_Rect trapVisibleHitbox(const trapSpike& trap)
     {
-        // The spike is rendered as a fixed 50x50 triangle with its base at trap.y.
-        return SDL_Rect{trap.x, trap.y - 50, 50, 50};
+        const int trapSize = trap.w > 0 ? trap.w : scaledTrapSize();
+        return SDL_Rect{trap.x, trap.y - trapSize, trapSize, trapSize};
     }
 
     bool rectsOverlap(const SDL_Rect& a, const SDL_Rect& b)

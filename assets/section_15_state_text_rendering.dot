@@ -1,0 +1,11 @@
+digraph G {
+    graph [bgcolor="transparent", rankdir=LR, splines=ortho, nodesep=0.48, ranksep=0.7];
+    node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=13, penwidth=2, color="#d96f00"];
+    edge [color="#55585f", penwidth=2, fontname="DejaVu Sans", fontsize=10];
+    label="Text Rendering - State";
+    labelloc="t";
+    fontsize=18;
+    fontname="DejaVu Sans Bold";
+    n0 [label="Idle", fillcolor="#fff3e8"]; n1 [label="Active", fillcolor="#f3f4f6"]; n2 [label="Decision", fillcolor="#f3f4f6"]; n3 [label="Success", fillcolor="#f3f4f6"]; n4 [label="Failure/Retry", fillcolor="#fff3e8"];
+    n0 -> n1 [label="enter"]; n1 -> n2 [label="evaluate"]; n2 -> n3 [label="valid"]; n2 -> n4 [label="invalid"]; n4 -> n1 [label="continue"];
+    }

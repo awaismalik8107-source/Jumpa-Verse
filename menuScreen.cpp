@@ -64,8 +64,9 @@ bool menuScreen(SDL_Renderer* renderer, TTF_Font* font)
     bool exitSelected = false;
     Uint32 lastFrameTime = SDL_GetTicks();
     float cubeVelocity = 0.0f;
-    float cubeY = 1000.0f - 45.0f;
+    float cubeY = (float)(start.y - 45);
     float trapOffset = 0.0f;
+    int lastSimulationLineY = start.y;
 
     playButton.stateHolder(renderer, font, "Play", playSelected, scoresSelected, exitSelected);
 
@@ -251,24 +252,32 @@ bool menuScreen(SDL_Renderer* renderer, TTF_Font* font)
         }
 
         const int lineY = start.y;
-        const int cubeSize = 45;
-        const int cubeX = 260;
+        const int cubeSize = std::min(96, std::max(45, screenW / 40));
+        const int cubeX = screenW > 0 ? screenW / 8 : 260;
         const int cubeGroundY = lineY - cubeSize;
+        if (lineY != lastSimulationLineY)
+        {
+            cubeY = (float)cubeGroundY;
+            cubeVelocity = 0.0f;
+            trapOffset = 0.0f;
+            lastSimulationLineY = lineY;
+        }
         const float gravity = 1800.0f;
         const float jumpSpeed = -720.0f;
         const float trapSpeed = 430.0f;
-        const int trapSpacing = 360;
-        const int trapSize = 50;
+        const int trapSize = std::min(96, std::max(50, screenW / 36));
+        const int trapSpacing = screenW > 0 ? std::min(760, std::max(trapSize * 5, screenW / 5)) : 360;
+        const int trapCount = screenW > 0 ? std::min(14, std::max(6, (screenW / trapSpacing) + 4)) : 7;
 
         trapOffset += trapSpeed * deltaTime;
         if (trapOffset >= trapSpacing)
             trapOffset -= trapSpacing;
 
         bool trapNearCube = false;
-        for (int i = 0; i < 7; i++)
+        for (int i = 0; i < trapCount; i++)
         {
             int trapX = end.x - (int)trapOffset - (i * trapSpacing);
-            if (trapX > cubeX + cubeSize && trapX < cubeX + cubeSize + 170)
+            if (trapX > cubeX + cubeSize && trapX < cubeX + cubeSize + trapSpacing / 2)
                 trapNearCube = true;
         }
 
@@ -290,7 +299,7 @@ bool menuScreen(SDL_Renderer* renderer, TTF_Font* font)
         SDL_SetRenderDrawColor(renderer, 40, 22, 18, 255);
         SDL_RenderDrawRect(renderer, &cube);
 
-        for (int i = 0; i < 7; i++)
+        for (int i = 0; i < trapCount; i++)
         {
             int trapX = end.x - (int)trapOffset - (i * trapSpacing);
             if (trapX < -trapSize || trapX > end.x + trapSize)

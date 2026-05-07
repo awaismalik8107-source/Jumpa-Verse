@@ -1,0 +1,54 @@
+digraph VariableDataFlow {
+  graph [rankdir=LR, bgcolor="white", labelloc="t", label="Jumpa Verse - Major Variable Dependency and Data Flow Map", fontsize=24, fontname="Helvetica", splines=ortho];
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, color="#334155"];
+  edge [fontname="Helvetica", fontsize=10, color="#ca8a04", arrowsize=0.8, style=dotted];
+
+  sdlhandles [label="window: SDL_Window*\nrenderer: SDL_Renderer*\nmain.cpp local\nCreated by init(), consumed by all rendering/input helpers", fillcolor="#ccfbf1"];
+  globals [label="currentScreenWidth/currentScreenHeight: int\nError_Handlers.cpp globals\nUpdated by init()/getScreenSize(); drives scaling/layout", fillcolor="#fef9c3"];
+  exitb [label="exitb: bool\nmain.cpp global extern in functions.h\nGlobal quit signal from menu/login/game-over/score screens", fillcolor="#fee2e2"];
+  camdash [label="cammeraDash: float\nmain.cpp global extern\nAdditional camera offset added before cameraMovmentObj()", fillcolor="#ffedd5"];
+  username [label="currentPlayerUsername: std::string\nloginScreen.cpp global extern\nSet after successful login; used when saving score", fillcolor="#fae8ff"];
+  textures [label="groundTex/ugTex: SDL_Texture*\nmain.cpp local\nShared texture handles stored in ground_Class objects", fillcolor="#ccfbf1"];
+  font [label="font: TTF_Font*\nmain.cpp local\nPassed to menu, score, game-over, text screens", fillcolor="#ccfbf1"];
+  player [label="player1: player\nmain.cpp local\ncharacter rect, gravity, jumpVelocity, onGround, fallOffest", fillcolor="#fee2e2"];
+  ground [label="ground: vector<ground_Class>\nmain.cpp local\nGenerated platforms; moved by camera; rendered every frame", fillcolor="#dcfce7"];
+  trap [label="trap: vector<trapSpike>\nmain.cpp local\nGenerated hazards; moved by camera; collision checked and rendered", fillcolor="#ffedd5"];
+  score [label="score: Score\nmain.cpp local\nscore/timeAccumulator; increments while alive", fillcolor="#fef9c3"];
+  gameover [label="gameOver: GameOver\nmain.cpp local\nactive/deathCause/savedFinalScore control game-over subloop", fillcolor="#fecaca"];
+  menuvar [label="menu: bool\nmain.cpp local\nfalse => menu loop; true => gameplay loop", fillcolor="#fae8ff"];
+  quit [label="quit: bool\nmain.cpp local\nTerminates outer loop and triggers cleanup", fillcolor="#fee2e2"];
+  dt [label="deltaTime: float\nmain.cpp local per frame\nFeeds camera, physics, score, menu preview animation", fillcolor="#ffedd5"];
+  camoffset [label="cammera_offSet: float\nmain.cpp local\nDecrements over time; scroll amount for platforms/traps", fillcolor="#ffedd5"];
+  keyboard [label="keyboardState: const Uint8*\nmain.cpp local\nSDL_GetKeyboardState snapshot used by physicsDevelop", fillcolor="#fae8ff"];
+  event [label="eventManager/event: SDL_Event\nmain/menu/screens local\nBranching input: quit, mouse, key, text, wheel", fillcolor="#fae8ff"];
+  csv [label="player.csv / score.csv\nPersistent CSV files\nLogin/register/scores/final score storage", shape=folder, fillcolor="#f8fafc"];
+
+  sdlhandles -> globals [label="getScreenSize"];
+  globals -> player [label="scaledPlayerSize/right limit"];
+  globals -> ground [label="scaledGroundTileSize/generation bounds"];
+  globals -> trap [label="scaledTrapSize/render culling"];
+  globals -> menuvar [label="screen layout"];
+  exitb -> quit [label="quit propagation"];
+  camdash -> camoffset [label="added to camera movement"];
+  textures -> ground [label="shared by each ground_Class"];
+  font -> menuvar [label="text rendering"];
+  font -> score [label="renderScore"];
+  font -> gameover [label="runGameOverScreen"];
+  dt -> camoffset [label="camera decrement"];
+  dt -> player [label="gravity integration"];
+  dt -> score [label="timeAccumulator"];
+  keyboard -> player [label="jump/down/dash/back"];
+  event -> quit [label="SDL_QUIT"];
+  event -> exitb [label="screens set global"];
+  camoffset -> player [label="fallOffest assignment"];
+  camoffset -> ground [label="cameraMovmentObj"];
+  camoffset -> trap [label="cameraMovmentObj"];
+  ground -> player [label="landing collision"];
+  trap -> gameover [label="playerHitTrap"];
+  player -> gameover [label="playerFellOff/playerHitTrap"];
+  score -> gameover [label="score.value on trigger"];
+  gameover -> csv [label="saveFinalScore/saveLoggedInPlayerScore"];
+  username -> csv [label="select row for player score"];
+  csv -> username [label="validateLogin"];
+  csv -> menuvar [label="score menu rows"];
+}

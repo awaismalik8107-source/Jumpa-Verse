@@ -1,0 +1,19 @@
+digraph G {
+    
+    graph [bgcolor="transparent", rankdir=LR, splines=ortho, nodesep=0.55, ranksep=0.8];
+    node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=14, penwidth=2, color="#d96f00", fillcolor="#f3f4f6"];
+    edge [color="#55585f", penwidth=2, fontname="DejaVu Sans", fontsize=11];
+    
+    main [label="main.cpp\nGame owner / loop", fillcolor="#fff3e8"];
+    init [label="Error_Handlers.cpp\nSDL init + fullscreen"];
+    obj [label="object.h/object.cpp\nShared classes"];
+    gen [label="ground.cpp + traps.cpp\nProcedural world"];
+    physics [label="player.cpp\nInput + physics"];
+    camera [label="camera.cpp\nWorld offset"];
+    ui [label="menu/login/register\nscore/gameover screens"];
+    files [label="player.csv / score.csv\nPersistence"];
+    render [label="SDL_Renderer\nFrame output", fillcolor="#ffe0bd"];
+    main -> init -> render;
+    main -> obj; main -> gen; main -> physics; main -> camera; main -> ui;
+    ui -> files; gen -> obj; physics -> obj; camera -> obj; main -> render; ui -> render; obj -> render;
+    }

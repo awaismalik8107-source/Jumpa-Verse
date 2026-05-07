@@ -1,0 +1,28 @@
+digraph G {
+    
+    graph [bgcolor="transparent", rankdir=LR, splines=ortho, nodesep=0.55, ranksep=0.8];
+    node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=14, penwidth=2, color="#d96f00", fillcolor="#f3f4f6"];
+    edge [color="#55585f", penwidth=2, fontname="DejaVu Sans", fontsize=11];
+    
+    rankdir=TB;
+    node [shape=box, style="rounded,filled", fillcolor="#fff3e8", color="#d96f00"];
+    hitbox [label="hitBox\nposition + size\nx, y, w, h"];
+    node [fillcolor="#f3f4f6"];
+    ground [label="ground_Class\nfirst_ground, small, medium, big\ntrapCount, divw\nground tile rectangles\nunderground tile matrix\nshared groundTexture + ugTexture"];
+    trap [label="trapSpike\ntriangle hazard\nclamped w/h\nrendered with SDL2_gfx"];
+    player [label="player\nSDL_Rect character\njumpVelocity, gravity, jumpPower\nonGround, dash flags\nRender + syncHitBox"];
+    option [label="optionBoxes\nbutton rectangles\ntext textures\nhover/active state"];
+    score [label="Score\nscore + timeAccumulator\ninitialize/update/render/reset"];
+    gameover [label="GameOver\nactive + DeathCause\nfinal score snapshot"];
+    login [label="LoginScreen\nusername/password/message\nactiveField"];
+    register [label="RegisterScreen\nusername/password/confirm\nactiveField"];
+    scoremenu [label="ScoreMenu\nleaderboard modal screen"];
+    hitbox -> ground [label="inherits"];
+    hitbox -> trap [label="inherits"];
+    hitbox -> player [label="inherits"];
+    hitbox -> option [label="inherits"];
+    ground -> trap [style=dashed, label="trapCount controls spawn"];
+    player -> gameover [style=dashed, label="fall / hit trap"];
+    login -> register [style=dashed, label="opens"];
+    score -> gameover [style=dashed, label="finalScore"];
+    }

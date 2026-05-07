@@ -1,0 +1,11 @@
+digraph G {
+    graph [bgcolor="transparent", rankdir=LR, splines=ortho, nodesep=0.48, ranksep=0.7];
+    node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=13, penwidth=2, color="#d96f00"];
+    edge [color="#55585f", penwidth=2, fontname="DejaVu Sans", fontsize=10];
+    label="Clamping System - Activity Flow";
+    labelloc="t";
+    fontsize=18;
+    fontname="DejaVu Sans Bold";
+    n0 [label="Read Resolution", fillcolor="#fff3e8"]; n1 [label="Choose Bounds", fillcolor="#f3f4f6"]; n2 [label="Apply Min", fillcolor="#f3f4f6"]; n3 [label="Apply Max", fillcolor="#f3f4f6"]; n4 [label="Limit Counts", fillcolor="#f3f4f6"]; n5 [label="Stable Gameplay", fillcolor="#fff3e8"];
+    n0 -> n1; n1 -> n2; n2 -> n3; n3 -> n4; n4 -> n5;
+    }

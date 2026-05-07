@@ -1,0 +1,11 @@
+digraph G {
+    graph [bgcolor="transparent", rankdir=TB, splines=ortho, nodesep=0.48, ranksep=0.7];
+    node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=13, penwidth=2, color="#d96f00"];
+    edge [color="#55585f", penwidth=2, fontname="DejaVu Sans", fontsize=10];
+    label="Ground System - Sequence";
+    labelloc="t";
+    fontsize=18;
+    fontname="DejaVu Sans Bold";
+    n0 [label="Caller", fillcolor="#fff3e8"]; n1 [label="System Function", fillcolor="#f3f4f6"]; n2 [label="Project Data", fillcolor="#f3f4f6"]; n3 [label="SDL/STL API", fillcolor="#f3f4f6"]; n4 [label="Result", fillcolor="#fff3e8"];
+    n0 -> n1 [label="call"]; n1 -> n2 [label="read/write"]; n1 -> n3 [label="delegate"]; n3 -> n4 [label="returns"]; n4 -> n0 [label="state/action"];
+    }

@@ -1,0 +1,17 @@
+digraph G {
+    
+    graph [bgcolor="transparent", rankdir=LR, splines=ortho, nodesep=0.55, ranksep=0.8];
+    node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=14, penwidth=2, color="#d96f00", fillcolor="#f3f4f6"];
+    edge [color="#55585f", penwidth=2, fontname="DejaVu Sans", fontsize=11];
+    
+    rankdir=LR;
+    main [label="main.cpp\nIMG_LoadTexture"];
+    gtex [label="SDL_Texture* groundTex", fillcolor="#ffe0bd"];
+    ugtex [label="SDL_Texture* ugTex", fillcolor="#ffe0bd"];
+    g1 [label="ground_Class A\nshared pointer"];
+    g2 [label="ground_Class B\nshared pointer"];
+    renderer [label="SDL_RenderCopy"];
+    main -> gtex; main -> ugtex;
+    gtex -> g1; gtex -> g2; ugtex -> g1; ugtex -> g2;
+    g1 -> renderer; g2 -> renderer;
+    }

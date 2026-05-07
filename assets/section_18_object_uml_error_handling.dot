@@ -1,0 +1,11 @@
+digraph G {
+    graph [bgcolor="transparent", rankdir=LR, splines=ortho, nodesep=0.48, ranksep=0.7];
+    node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=13, penwidth=2, color="#d96f00"];
+    edge [color="#55585f", penwidth=2, fontname="DejaVu Sans", fontsize=10];
+    label="Error Handling - Object Uml";
+    labelloc="t";
+    fontsize=18;
+    fontname="DejaVu Sans Bold";
+    n0 [label="Call SDL API", fillcolor="#fff3e8"]; n1 [label="Data / Objects", fillcolor="#f3f4f6"]; n2 [label="Controller Function", fillcolor="#f3f4f6"]; n3 [label="SDL Renderer", fillcolor="#f3f4f6"]; n4 [label="Quit SDL", fillcolor="#fff3e8"];
+    n0 -> n1 [label="owns/reads"]; n1 -> n2 [label="passes state"]; n2 -> n3 [label="draws/updates"]; n3 -> n4 [label="visible result"]; n2 -> n1 [label="mutates"];
+    }

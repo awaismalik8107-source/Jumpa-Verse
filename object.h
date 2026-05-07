@@ -12,6 +12,50 @@
 #include<SDL2/SDL_ttf.h>
 
 extern int currentScreenWidth;
+extern int currentScreenHeight;
+
+inline int scaledGroundTileSize()
+{
+    if (currentScreenWidth >= 3840)
+    {
+        return 96;
+    }
+    if (currentScreenWidth >= 3200)
+    {
+        return 80;
+    }
+    if (currentScreenWidth >= 2400)
+    {
+        return 64;
+    }
+    return 50;
+}
+
+inline int scaledTrapSize()
+{
+    if (currentScreenWidth >= 3200)
+    {
+        return 88;
+    }
+    if (currentScreenWidth >= 2400)
+    {
+        return 68;
+    }
+    return 50;
+}
+
+inline int scaledPlayerSize()
+{
+    if (currentScreenWidth >= 3200)
+    {
+        return 88;
+    }
+    if (currentScreenWidth >= 2400)
+    {
+        return 68;
+    }
+    return 50;
+}
 
 class hitBox
 {
@@ -47,8 +91,8 @@ bool first_ground=false;
     SDL_Texture* groundTexture = nullptr;  // shared (NOT owned)
     SDL_Texture* ugTexture = nullptr;      // shared (NOT owned)
 
-    int perboxwidth = 50;
-    int perboxheight = 50;
+    int perboxwidth = scaledGroundTileSize();
+    int perboxheight = scaledGroundTileSize();
 
 public:
     // Default constructor
@@ -158,10 +202,11 @@ public:
             return;
         }
 
-        int x2 = x1 + 50; 
+        const int trapSize = w > 0 ? w : scaledTrapSize();
+        int x2 = x1 + trapSize; 
         int y2 = y1;
-        int x3 = x1 + 25; 
-        int y3 = y1 - 50; 
+        int x3 = x1 + trapSize / 2; 
+        int y3 = y1 - trapSize; 
 
         filledTrigonRGBA(renderer,
                         x1, y1,
@@ -482,9 +527,13 @@ public:
     float returnSpeed=-20.0f;
     float fallOffest=0;
 
-    player(int sx=150,int sy=100,int sw=50,int sh=50):hitBox(sx,sy,sw,sh)
+    player(int sx=150,int sy=100,int sw=0,int sh=0):hitBox(sx,sy,sw,sh)
     {
-
+        if (w <= 0 || h <= 0)
+        {
+            w = scaledPlayerSize();
+            h = w;
+        }
         character={x,y,w,h};
     }
 

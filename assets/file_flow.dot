@@ -1,0 +1,19 @@
+digraph G {
+    
+    graph [bgcolor="transparent", rankdir=LR, splines=ortho, nodesep=0.55, ranksep=0.8];
+    node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=14, penwidth=2, color="#d96f00", fillcolor="#f3f4f6"];
+    edge [color="#55585f", penwidth=2, fontname="DejaVu Sans", fontsize=11];
+    
+    node [fillcolor="#fff3e8"];
+    login [label="LoginScreen\nvalidateLogin()"];
+    register [label="RegisterScreen\nregisterPlayer()"];
+    gameover [label="GameOver\nsave score"];
+    playercsv [label="player.csv\nusername,password,scores", fillcolor="#ffe0bd"];
+    scorecsv [label="score.csv\nfinal scores", fillcolor="#ffe0bd"];
+    scoremenu [label="ScoreMenu\nreadPlayerScores()"];
+    register -> playercsv [label="append"];
+    login -> playercsv [label="read"];
+    gameover -> playercsv [label="append player score"];
+    gameover -> scorecsv [label="append"];
+    playercsv -> scoremenu [label="read + sort"];
+    }

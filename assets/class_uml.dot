@@ -1,0 +1,18 @@
+digraph G {
+    
+    graph [bgcolor="transparent", rankdir=LR, splines=ortho, nodesep=0.55, ranksep=0.8];
+    node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=14, penwidth=2, color="#d96f00", fillcolor="#f3f4f6"];
+    edge [color="#55585f", penwidth=2, fontname="DejaVu Sans", fontsize=11];
+    
+    node [shape=box, style="rounded,filled", fillcolor="#f3f4f6", color="#d96f00"];
+    hitbox [label="hitBox\n+ x, y, w, h\n+ base rectangle"];
+    ground [label="ground_Class\n+ ground tile vector\n+ underground tile vector\n+ shared SDL_Texture pointers\n+ rebuild(), render()"];
+    trap [label="trapSpike\n+ triangle hazard dimensions\n+ setterNew(), render()"];
+    player [label="player\n+ SDL_Rect character\n+ jumpVelocity, gravity, onGround\n+ syncHitBox(), Render()"];
+    score [label="Score\n- score, timeAccumulator\n+ update(), render(), reset()"];
+    gameover [label="GameOver\n- active, deathCause, finalScore\n+ trigger(), reset(), causeText()"];
+    login [label="LoginScreen / RegisterScreen\n+ username/password state\n+ run() modal loop"];
+    hitbox -> ground [arrowhead=empty];
+    hitbox -> trap [arrowhead=empty];
+    hitbox -> player [arrowhead=empty];
+    }

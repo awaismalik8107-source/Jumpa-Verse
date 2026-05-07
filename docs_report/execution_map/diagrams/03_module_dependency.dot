@@ -1,0 +1,56 @@
+digraph ModuleDependency {
+  graph [rankdir=LR, bgcolor="white", labelloc="t", label="Jumpa Verse - Module Relationship and Function Dependency Map", fontsize=24, fontname="Helvetica", splines=ortho];
+  node [shape=component, style="filled", fontname="Helvetica", fontsize=11, color="#334155"];
+  edge [fontname="Helvetica", fontsize=10, color="#2563eb", arrowsize=0.8];
+
+  main [label="main.cpp\nmain(), resetGameplay lambda", fillcolor="#dbeafe"];
+  funcs [label="functions.h\nShared declarations + globals", fillcolor="#fef9c3"];
+  objh [label="object.h\nClasses, enums, inline scaling", fillcolor="#dcfce7"];
+  err [label="Error_Handlers.cpp\ninit, close, screen/window controls", fillcolor="#e0f2fe"];
+  ground [label="ground.cpp\nground generation/freeMemory", fillcolor="#dcfce7"];
+  traps [label="traps.cpp\ntrap generation/freeMemory", fillcolor="#ffedd5"];
+  camera [label="camera.cpp\ncameraMovmentObj", fillcolor="#ffedd5"];
+  player [label="player.cpp\nphysicsDevelop", fillcolor="#fee2e2"];
+  score [label="score.cpp\nScore + wrappers", fillcolor="#fef9c3"];
+  go [label="gameover.cpp\ncollision, score saving, game over screen", fillcolor="#fecaca"];
+  menu [label="menuScreen.cpp\nmain menu + preview animation", fillcolor="#fae8ff"];
+  login [label="loginScreen.cpp\nlogin text input + validation", fillcolor="#fae8ff"];
+  reg [label="register.cpp\nregistration text input + CSV write", fillcolor="#fae8ff"];
+  smenu [label="scoreMenu.cpp\nleaderboard read/sort/render", fillcolor="#fae8ff"];
+  sdl [label="SDL2 / SDL_image / SDL_ttf / SDL2_gfx", shape=box, fillcolor="#ccfbf1"];
+  files [label="Data files\nplayer.csv, score.csv\nImages_textures/*.jpeg\nDebrosee font", shape=folder, fillcolor="#f8fafc"];
+
+  main -> funcs;
+  main -> objh;
+  main -> err [label="init/close/window controls"];
+  main -> ground [label="ground_generator/groundRandomgenerator/freeMemory"];
+  main -> traps [label="trapFreeMemory indirectly trapTriangle"];
+  main -> camera [label="cameraMovmentObj"];
+  main -> player [label="physicsDevelop"];
+  main -> score [label="score wrappers"];
+  main -> go [label="collisions/game over"];
+  main -> menu [label="menuScreen"];
+  menu -> login [label="runLoginScreen"];
+  menu -> smenu [label="runScoreMenu"];
+  login -> reg [label="runRegisterScreen"];
+  go -> score [style=dotted, label="Score::value passed from main"];
+  ground -> traps [label="trapTriangle"];
+  err -> objh [label="uses GAME_WIDTH/HEIGHT globals"];
+  funcs -> objh [label="forward declarations/types"];
+  objh -> sdl;
+  err -> sdl;
+  menu -> sdl;
+  login -> sdl;
+  reg -> sdl;
+  smenu -> sdl;
+  score -> sdl;
+  go -> sdl;
+  ground -> sdl;
+  traps -> sdl;
+  player -> sdl;
+  main -> files [label="texture/font load"];
+  login -> files [label="read player.csv"];
+  reg -> files [label="append player.csv"];
+  smenu -> files [label="read player.csv"];
+  go -> files [label="append score.csv/update player.csv"];
+}

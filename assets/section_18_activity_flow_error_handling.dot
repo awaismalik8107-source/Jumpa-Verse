@@ -1,0 +1,11 @@
+digraph G {
+    graph [bgcolor="transparent", rankdir=LR, splines=ortho, nodesep=0.48, ranksep=0.7];
+    node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=13, penwidth=2, color="#d96f00"];
+    edge [color="#55585f", penwidth=2, fontname="DejaVu Sans", fontsize=10];
+    label="Error Handling - Activity Flow";
+    labelloc="t";
+    fontsize=18;
+    fontname="DejaVu Sans Bold";
+    n0 [label="Call SDL API", fillcolor="#fff3e8"]; n1 [label="Check Return", fillcolor="#f3f4f6"]; n2 [label="Print SDL Error", fillcolor="#f3f4f6"]; n3 [label="Abort Safely", fillcolor="#f3f4f6"]; n4 [label="Destroy Resources", fillcolor="#f3f4f6"]; n5 [label="Quit SDL", fillcolor="#fff3e8"];
+    n0 -> n1; n1 -> n2; n2 -> n3; n3 -> n4; n4 -> n5;
+    }

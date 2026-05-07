@@ -1,0 +1,36 @@
+digraph StateTransitions {
+  graph [rankdir=LR, bgcolor="white", labelloc="t", label="Jumpa Verse - Application State Transition Diagram", fontsize=24, fontname="Helvetica", splines=ortho];
+  node [shape=ellipse, style="filled", fontname="Helvetica", fontsize=12, color="#334155"];
+  edge [fontname="Helvetica", fontsize=10, color="#334155", arrowsize=0.8];
+
+  start [shape=circle, label="Start", fillcolor="#dcfce7"];
+  init [label="Initialize SDL/TTF/IMG\nCreate window/renderer\nLoad textures/font", fillcolor="#dbeafe"];
+  menu [label="Main Menu\nmenu=false gate\nPlay/Scores/Exit", fillcolor="#fae8ff"];
+  login [label="Login Screen\nusername/password\ncurrentPlayerUsername set on success", fillcolor="#fae8ff"];
+  register [label="Register Screen\nwrites player.csv", fillcolor="#fae8ff"];
+  scores [label="Scores Screen\nreads/sorts player.csv", fillcolor="#fae8ff"];
+  gameplay [label="Gameplay Running\nmenu=true\nupdate/render loop", fillcolor="#ffedd5"];
+  gameover [label="Game Over Screen\nTry Again / Return to Menu", fillcolor="#fecaca"];
+  quit [shape=doublecircle, label="Quit\nclose(window,renderer)", fillcolor="#dcfce7"];
+
+  start -> init [label="main()"];
+  init -> quit [label="init failure / return -1", color="#ef4444"];
+  init -> menu [label="resetGameplay then while !menu"];
+  menu -> login [label="Play"];
+  menu -> scores [label="Scores"];
+  menu -> quit [label="Exit or SDL_QUIT\nexitb=true", color="#ef4444"];
+  scores -> menu [label="Back/Escape"];
+  scores -> quit [label="SDL_QUIT sets exitb", color="#ef4444"];
+  login -> gameplay [label="LoginSuccess => menuScreen returns true"];
+  login -> register [label="register text clicked"];
+  login -> menu [label="Back/Escape"];
+  login -> quit [label="SDL_QUIT", color="#ef4444"];
+  register -> login [label="Registered / Back"];
+  register -> quit [label="SDL_QUIT", color="#ef4444"];
+  gameplay -> gameover [label="playerFellOff or playerHitTrap", color="#ef4444"];
+  gameplay -> quit [label="SDL_QUIT", color="#ef4444"];
+  gameplay -> gameplay [label="normal frame cycle\ninput -> physics -> render", color="#2563eb"];
+  gameover -> gameplay [label="Try Again\nresetGameplay; menu=true"];
+  gameover -> menu [label="ReturnToMenu\nresetGameplay; menu=false"];
+  gameover -> quit [label="SDL_QUIT / exitb", color="#ef4444"];
+}

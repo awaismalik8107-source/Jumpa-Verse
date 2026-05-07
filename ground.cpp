@@ -40,9 +40,9 @@ std::vector<ground_Class> ground_generator(SDL_Renderer* renderer,SDL_Texture* g
 
     const int minY = clampInt((int)(screenH * 0.40f), 160, screenH - 260);
     const int maxY = clampInt((int)(screenH * 0.72f), minY + 50, screenH - 120);
-    const int minW = clampInt((int)(screenW * 0.60f), 600, screenW + 200);
-    const int maxW = clampInt((int)(screenW * 1.25f), minW, screenW + 900);
-    const int maxH = clampInt((int)(screenH * 0.32f), 120, screenH / 2);
+    const int minW = clampInt((int)(screenW * 0.52f), 700, 1700);
+    const int maxW = clampInt((int)(screenW * 0.95f), minW, 3000);
+    const int maxH = clampInt((int)(screenH * 0.30f), 140, 460);
 
     std::uniform_int_distribution<> disty(minY, maxY);
     std::uniform_int_distribution<> distw(minW, maxW);
@@ -83,15 +83,15 @@ void groundRandomgenerator(SDL_Renderer* renderer,SDL_Texture* groundTex,SDL_Tex
 
     const int minY = clampInt((int)(screenH * 0.16f), 80, screenH - 260);
     const int maxY = clampInt((int)(screenH * 0.74f), minY + 50, screenH - 120);
-    const int minGap = clampInt((int)(screenW * 0.06f), 80, 180);
-    const int maxGap = clampInt((int)(screenW * 0.10f), minGap, 260);
-    const int minW = clampInt((int)(screenW * 0.16f), 280, screenW);
-    const int maxW = clampInt((int)(screenW * 1.25f), minW, screenW + 900);
-    const int maxH = clampInt((int)(screenH * 0.32f), 120, screenH / 2);
+    const int minGap = clampInt((int)(screenW * 0.055f), 120, 240);
+    const int maxGap = clampInt((int)(screenW * 0.09f), minGap, 380);
+    const int minW = clampInt((int)(screenW * 0.30f), 700, 1300);
+    const int maxW = clampInt((int)(screenW * 0.86f), minW, 2600);
+    const int maxH = clampInt((int)(screenH * 0.30f), 140, 460);
 
     std::uniform_int_distribution<> distx(prevGround.back().x + prevGround.back().w + minGap,
                                           prevGround.back().x + prevGround.back().w + maxGap);
-    std::uniform_int_distribution<> distw(minW, maxW);
+    std::uniform_int_distribution<> distw(minW, 2400);
     std::uniform_int_distribution<> disth(50, maxH);
     
 
@@ -113,8 +113,8 @@ void groundRandomgenerator(SDL_Renderer* renderer,SDL_Texture* groundTex,SDL_Tex
     prevGround.emplace_back(x, y, w, h, groundTex, ugTex);
     int currentnumberindex = (int)prevGround.size() - 1;
 
-    const int smallPlatformLimit = (int)(screenW * 0.35f);
-    const int mediumPlatformLimit = (int)(screenW * 0.86f);
+    const int smallPlatformLimit = clampInt((int)(screenW * 0.34f), 750, 1300);
+    const int mediumPlatformLimit = clampInt((int)(screenW * 0.66f), smallPlatformLimit + 250, 2100);
 
     if (prevGround[currentnumberindex].w < smallPlatformLimit)
     {
@@ -128,7 +128,7 @@ void groundRandomgenerator(SDL_Renderer* renderer,SDL_Texture* groundTex,SDL_Tex
         prevGround[currentnumberindex].small = false;
         prevGround[currentnumberindex].medium = true;
         prevGround[currentnumberindex].big = false;
-        settrap = 4;
+        settrap = 3;
     }
     else
     {

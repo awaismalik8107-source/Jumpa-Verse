@@ -1,0 +1,202 @@
+digraph MainExecutionFlow {
+  graph [
+    rankdir=TB,
+    bgcolor="white",
+    labelloc="t",
+    label="Jumpa Verse - Complete Runtime Execution Flow From main.cpp",
+    fontsize=24,
+    fontname="Helvetica",
+    nodesep=0.45,
+    ranksep=0.65,
+    splines=ortho
+  ];
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=11, margin="0.12,0.08", color="#334155", penwidth=1.2];
+  edge [fontname="Helvetica", fontsize=10, color="#1f2937", arrowsize=0.8];
+
+  subgraph cluster_legend {
+    label="Arrow Legend";
+    fontsize=14;
+    color="#cbd5e1";
+    style="rounded";
+    key_call [label="Function call", fillcolor="#e0f2fe"];
+    key_return [label="Return flow", fillcolor="#dcfce7"];
+    key_data [label="Data dependency", fillcolor="#fef9c3"];
+    key_input [label="Input handling", fillcolor="#fae8ff"];
+    key_physics [label="Physics/update", fillcolor="#ffedd5"];
+    key_render [label="Rendering", fillcolor="#ede9fe"];
+    key_call -> key_return [label="call", color="#2563eb"];
+    key_return -> key_data [label="return", color="#16a34a", style=dashed];
+    key_data -> key_input [label="data", color="#ca8a04", style=dotted];
+    key_input -> key_physics [label="input", color="#9333ea"];
+    key_physics -> key_render [label="physics/update", color="#ea580c"];
+    key_render -> key_call [label="render", color="#7c3aed"];
+  }
+
+  subgraph cluster_boot {
+    label="Initialization Phase";
+    color="#93c5fd";
+    style="rounded,filled";
+    fillcolor="#eff6ff";
+
+    main [label="main()\nmain.cpp\nint main()\nCreates SDL pointers, player, vectors, Score, GameOver", fillcolor="#dbeafe"];
+    window_renderer [label="SDL_Window* window = nullptr\nSDL_Renderer* renderer = nullptr\nLocal ownership handles", fillcolor="#fef9c3"];
+    player_ctor [label="player player1\nobject.h\nplayer(int sx=150, int sy=100, int sw=0, int sh=0)\nInitializes hitbox and SDL_Rect character", fillcolor="#dbeafe"];
+    init [label="init(window, renderer)\nError_Handlers.cpp\nbool init(SDL_Window*&, SDL_Renderer*&)\nInitializes SDL video, TTF, IMG, display size, window, renderer", fillcolor="#bfdbfe"];
+    init_fail [label="if (!init)\nPrint error, return -1", shape=diamond, fillcolor="#fee2e2"];
+    sdl_init [label="SDL_Init(SDL_INIT_VIDEO)\nTTF_Init()\nIMG_Init(IMG_INIT_JPG)", fillcolor="#e0f2fe"];
+    display [label="SDL_GetCurrentDisplayMode()\nupdates currentScreenWidth/currentScreenHeight", fillcolor="#fef9c3"];
+    create_window [label="SDL_CreateWindow(...FULLSCREEN_DESKTOP)\nSDL_SetWindowMinimumSize(960,540)", fillcolor="#e0f2fe"];
+    create_renderer [label="SDL_CreateRenderer(...ACCELERATED)\nrenderer returned by reference", fillcolor="#e0f2fe"];
+    load_assets [label="IMG_LoadTexture(ground.jpeg)\nIMG_LoadTexture(underGround.jpeg)\nTTF_OpenFont(Debrosee,100)\nShared resource handles", fillcolor="#ccfbf1"];
+    objects [label="std::vector<trapSpike> trap\nstd::vector<ground_Class> ground\nScore score\nGameOver gameOver", fillcolor="#fef9c3"];
+    initialize_score [label="initializeScore(score)\nscore.cpp\nvoid initializeScore(Score&)\nCalls Score::initialize() -> reset()", fillcolor="#dcfce7"];
+    reset_lambda [label="resetGameplay lambda\nmain.cpp\nRecreates player, resets camera, vectors, score, gameOver", fillcolor="#dcfce7"];
+    ground_generator [label="ground_generator(renderer, groundTex, ugTex)\nground.cpp\nstd::vector<ground_Class>\nCreates first platform with random y/w/h", fillcolor="#dcfce7"];
+    random_ground_boot [label="groundRandomgenerator(...ground, trap)\nground.cpp\nvoid\nAdds next platform and calls trapTriangle()", fillcolor="#dcfce7"];
+  }
+
+  subgraph cluster_menu {
+    label="Menu/Login Gate";
+    color="#d8b4fe";
+    style="rounded,filled";
+    fillcolor="#faf5ff";
+
+    outer_loop [label="while (!quit)\nmain.cpp\nTop-level application loop", fillcolor="#f5d0fe"];
+    timing [label="frameStart/currentTime/lastTime\ndeltaTime = (current-last)/1000\nClamp later to <= 0.05", fillcolor="#fef9c3"];
+    menu_loop [label="while (!menu && !quit)\nBlocks gameplay until menuScreen returns true", fillcolor="#f5d0fe"];
+    menu_screen [label="menuScreen(renderer, font)\nmenuScreen.cpp\nbool\nRuns main menu event/render loop", fillcolor="#f5d0fe"];
+    open_login [label="openLoginForPlay(renderer,font)\nmenuScreen.cpp anonymous namespace\nbool\nCalls runLoginScreen and sets exitb on quit", fillcolor="#f5d0fe"];
+    login [label="runLoginScreen(renderer,font)\nloginScreen.cpp\nLoginScreenAction\nConstructs LoginScreen then screen.run()", fillcolor="#f5d0fe"];
+    login_run [label="LoginScreen::run(renderer,font)\nloginScreen.cpp\nLoginScreenAction\nText input, validate login, optional register", fillcolor="#f5d0fe"];
+    register [label="runRegisterScreen(renderer,font)\nregister.cpp\nRegisterScreenAction\nConstructs RegisterScreen then screen.run()", fillcolor="#f5d0fe"];
+    score_menu [label="runScoreMenu(renderer,font)\nscoreMenu.cpp\nvoid\nConstructs ScoreMenu then screen.run()", fillcolor="#f5d0fe"];
+    exit_check [label="if (exitb == true)\nquit = true; continue", shape=diamond, fillcolor="#fee2e2"];
+    reset_after_menu [label="resetGameplay(); lastTime=SDL_GetTicks()\nPrepares fresh gameplay session", fillcolor="#dcfce7"];
+  }
+
+  subgraph cluster_game {
+    label="Gameplay Update Loop";
+    color="#fed7aa";
+    style="rounded,filled";
+    fillcolor="#fff7ed";
+
+    clamp_dt [label="if (deltaTime > 0.05f) deltaTime=0.05f\nPrevents large physics jumps", shape=diamond, fillcolor="#ffedd5"];
+    camera_offset [label="if (cammera_offSet > -9.0f)\ncammera_offSet -= speed * deltaTime", shape=diamond, fillcolor="#ffedd5"];
+    poll_events [label="while (SDL_PollEvent(&eventManager) != 0)\nGameplay SDL event processing", fillcolor="#fae8ff"];
+    window_controls [label="handleWindowControlEvent(renderer,event)\nError_Handlers.cpp\nbool\nMinimize/fullscreen buttons consume mouse events", fillcolor="#fae8ff"];
+    quit_event [label="event.type == SDL_QUIT\nquit = true", shape=diamond, fillcolor="#fee2e2"];
+    keyboard [label="SDL_GetKeyboardState(NULL)\nconst Uint8* keyboardState\nContinuous input snapshot", fillcolor="#fae8ff"];
+    fall_offset [label="player1.fallOffest = cammera_offSet\nClass member data assignment", fillcolor="#fef9c3"];
+    physics [label="physicsDevelop(player1, ground, deltaTime, keyboardState)\nplayer.cpp\nvoid\nJump, gravity, dash/back movement, platform landing collision", fillcolor="#ffedd5"];
+    fell [label="playerFellOff(player1)\ngameover.cpp\nbool\nChecks player.character.y >= screen height + 120", fillcolor="#fee2e2"];
+    hit_trap [label="playerHitTrap(player1, trap)\ngameover.cpp\nbool\nBuilds visible trap hitbox and SDL_HasIntersection", fillcolor="#fee2e2"];
+    trigger_go [label="gameOver.trigger(cause, score.value())\nobject.cpp\nvoid\nactive=true, deathCause, savedFinalScore", fillcolor="#fee2e2"];
+    go_active [label="if (gameOver.isActive())", shape=diamond, fillcolor="#fee2e2"];
+    save_score [label="saveFinalScore(gameOver)\nsaveLoggedInPlayerScore(gameOver)\ngameover.cpp\nAppend score.csv and update player.csv row", fillcolor="#fef9c3"];
+    go_screen [label="runGameOverScreen(renderer,font,gameOver)\ngameover.cpp\nGameOverAction\nNested event/render loop until Try Again/Menu/Quit", fillcolor="#fee2e2"];
+    go_action [label="GameOverAction\nTryAgain => menu=true\nReturnToMenu => menu=false\nBoth reset gameplay first", fillcolor="#fee2e2"];
+    update_score [label="updateScore(score, deltaTime, playerAlive)\nscore.cpp\nvoid\nScore::update adds 1 per accumulated second", fillcolor="#dcfce7"];
+    generate_more [label="while last platform is near viewport\nand ground.size() < 10\ngroundRandomgenerator(...)", fillcolor="#dcfce7"];
+    free_ground [label="freeMemory(ground)\nground.cpp\nvoid\nErase platforms fully left of screen", fillcolor="#dcfce7"];
+    free_trap [label="trapFreeMemory(trap)\ntraps.cpp\nvoid\nErase traps far left of screen", fillcolor="#dcfce7"];
+    camera_move [label="cameraMovmentObj(ground, cammera_offSet+cammeraDash, trap)\ncamera.cpp\nvoid\nMoves platform geometry and trap x positions", fillcolor="#ffedd5"];
+  }
+
+  subgraph cluster_render {
+    label="Rendering Phase";
+    color="#c4b5fd";
+    style="rounded,filled";
+    fillcolor="#f5f3ff";
+
+    clear [label="SDL_SetRenderDrawColor(sky)\nSDL_RenderClear(renderer)", fillcolor="#ede9fe"];
+    render_ground_loop [label="for each ground[j]\nground[j].render(renderer)", fillcolor="#ede9fe"];
+    ground_render [label="ground_Class::render(renderer)\nobject.h\nvoid\nSDL_RenderCopy groundTexture and ugTexture tiles", fillcolor="#ede9fe"];
+    render_trap_loop [label="for each trap[j]\ntrap[j].render(renderer)", fillcolor="#ede9fe"];
+    trap_render [label="trapSpike::render(renderer, cameraOffset=0)\nobject.h\nvoid\nDraw filledTrigonRGBA + outline", fillcolor="#ede9fe"];
+    player_render [label="player1.Render(renderer)\nobject.h\nvoid\nDraw red SDL_Rect", fillcolor="#ede9fe"];
+    score_render [label="renderScore(score, renderer, font)\nscore.cpp\nvoid\nScore::render creates text textures, draws score box", fillcolor="#ede9fe"];
+    controls_render [label="renderWindowControls(renderer)\nError_Handlers.cpp\nvoid\nDraw minimize/fullscreen controls", fillcolor="#ede9fe"];
+    present [label="SDL_RenderPresent(renderer)\nSwap frame to screen", fillcolor="#ede9fe"];
+    frame_limit [label="frameTime = SDL_GetTicks() - frameStart\nif < 16.67ms SDL_Delay(...)\nFPS print each second", fillcolor="#e0f2fe"];
+  }
+
+  subgraph cluster_cleanup {
+    label="Cleanup Phase";
+    color="#a7f3d0";
+    style="rounded,filled";
+    fillcolor="#ecfdf5";
+
+    cleanup [label="close(window, renderer)\nError_Handlers.cpp\nvoid\nSDL_DestroyRenderer, SDL_DestroyWindow, IMG_Quit, SDL_Quit", fillcolor="#dcfce7"];
+    return0 [label="return 0\nmain.cpp", fillcolor="#dcfce7"];
+  }
+
+  main -> window_renderer [label="local vars", color="#ca8a04", style=dotted];
+  main -> player_ctor [label="construct", color="#2563eb"];
+  main -> init [label="call", color="#2563eb"];
+  init -> sdl_init [label="call", color="#2563eb"];
+  init -> display [label="call/data", color="#ca8a04", style=dotted];
+  init -> create_window [label="call", color="#2563eb"];
+  init -> create_renderer [label="call", color="#2563eb"];
+  create_renderer -> init [label="returns renderer", color="#16a34a", style=dashed];
+  init -> init_fail [label="bool return", color="#16a34a", style=dashed];
+  init_fail -> load_assets [label="success", color="#16a34a"];
+  init_fail -> return0 [label="failure returns -1", color="#ef4444"];
+  load_assets -> objects [label="construct resources", color="#2563eb"];
+  objects -> initialize_score [label="call", color="#2563eb"];
+  initialize_score -> reset_lambda [label="return", color="#16a34a", style=dashed];
+  reset_lambda -> player_ctor [label="player1 = player()", color="#2563eb"];
+  reset_lambda -> ground_generator [label="call", color="#2563eb"];
+  reset_lambda -> random_ground_boot [label="call", color="#2563eb"];
+  reset_lambda -> outer_loop [label="return to main", color="#16a34a", style=dashed];
+
+  outer_loop -> timing [label="each frame", color="#2563eb"];
+  timing -> menu_loop [label="check menu state", color="#2563eb"];
+  menu_loop -> menu_screen [label="call while !menu", color="#2563eb"];
+  menu_screen -> open_login [label="Play", color="#2563eb"];
+  open_login -> login [label="call", color="#2563eb"];
+  login -> login_run [label="screen.run", color="#2563eb"];
+  login_run -> register [label="register link", color="#2563eb"];
+  menu_screen -> score_menu [label="Scores", color="#2563eb"];
+  menu_screen -> exit_check [label="returns bool / may set exitb", color="#16a34a", style=dashed];
+  exit_check -> reset_after_menu [label="not quitting", color="#16a34a"];
+  reset_after_menu -> clamp_dt [label="continue gameplay", color="#16a34a", style=dashed];
+
+  timing -> clamp_dt [label="already in-game", color="#2563eb"];
+  clamp_dt -> camera_offset [label="update camera speed", color="#ea580c"];
+  camera_offset -> poll_events [label="input phase", color="#9333ea"];
+  poll_events -> window_controls [label="mouse click", color="#9333ea"];
+  poll_events -> quit_event [label="SDL_QUIT", color="#9333ea"];
+  poll_events -> keyboard [label="after event queue", color="#9333ea"];
+  keyboard -> fall_offset [label="data", color="#ca8a04", style=dotted];
+  fall_offset -> physics [label="call", color="#ea580c"];
+  physics -> fell [label="return then check", color="#16a34a", style=dashed];
+  fell -> trigger_go [label="true: FellOff", color="#ef4444"];
+  fell -> hit_trap [label="false", color="#16a34a"];
+  hit_trap -> trigger_go [label="true: HitTrap", color="#ef4444"];
+  trigger_go -> go_active [label="state mutation", color="#ca8a04", style=dotted];
+  hit_trap -> go_active [label="false or triggered", color="#16a34a", style=dashed];
+  go_active -> save_score [label="true", color="#ef4444"];
+  save_score -> go_screen [label="call", color="#2563eb"];
+  go_screen -> go_action [label="returns action", color="#16a34a", style=dashed];
+  go_action -> outer_loop [label="continue after reset", color="#16a34a", style=dashed];
+  go_active -> update_score [label="false", color="#16a34a"];
+  update_score -> clear [label="render phase", color="#7c3aed"];
+  clear -> generate_more [label="world generation", color="#2563eb"];
+  generate_more -> random_ground_boot [label="calls", color="#2563eb"];
+  generate_more -> free_ground [label="cleanup world vectors", color="#2563eb"];
+  free_ground -> free_trap [label="call", color="#2563eb"];
+  free_trap -> camera_move [label="call", color="#ea580c"];
+  camera_move -> render_ground_loop [label="render scrolled state", color="#7c3aed"];
+  render_ground_loop -> ground_render [label="call", color="#7c3aed"];
+  ground_render -> render_trap_loop [label="return", color="#16a34a", style=dashed];
+  render_trap_loop -> trap_render [label="call", color="#7c3aed"];
+  trap_render -> player_render [label="return", color="#16a34a", style=dashed];
+  player_render -> score_render [label="call", color="#7c3aed"];
+  score_render -> controls_render [label="call", color="#7c3aed"];
+  controls_render -> present [label="call", color="#7c3aed"];
+  present -> frame_limit [label="return", color="#16a34a", style=dashed];
+  frame_limit -> outer_loop [label="next frame cycle", color="#2563eb", penwidth=2.0];
+  quit_event -> cleanup [label="quit true exits loop", color="#ef4444"];
+  outer_loop -> cleanup [label="loop ends", color="#ef4444"];
+  cleanup -> return0 [label="return", color="#16a34a", style=dashed];
+}

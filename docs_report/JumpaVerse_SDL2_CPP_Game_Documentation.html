@@ -1,0 +1,4217 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Jumpa Verse SDL2 C++ Documentation</title><style>
+@page { size: A4; margin: 0.72in; }
+body { font-family: Arial, Helvetica, sans-serif; color: #181c24; line-height: 1.42; font-size: 10.5pt; }
+.cover { text-align:center; padding-top: 120px; page-break-after: always; }
+.cover h1 { font-size: 34pt; color: #ff7f00; margin-bottom: 10px; }
+.cover h2 { font-size: 18pt; color: #2b333f; }
+h1 { font-size: 21pt; color: #1f2a37; border-bottom: 3px solid #ff7f00; padding-bottom: 8px; page-break-before: always; }
+h2 { font-size: 15pt; color: #2f5f93; margin-top: 20px; }
+h3 { font-size: 12.5pt; color: #384354; }
+p { margin: 7px 0 10px 0; text-align: justify; }
+figure { margin: 18px auto 20px auto; text-align: center; page-break-inside: avoid; }
+figure img { width: 4.85in; height: auto; max-width: 4.85in; max-height: 2.91in; object-fit: contain; border: 1px solid #cfd8e3; }
+figcaption { font-weight: bold; color: #2b333f; margin-top: 6px; }
+.figure-note { font-size: 9.5pt; color: #4f5f70; text-align: center; }
+pre { background: #fff3e0; color: #b45309; padding: 12px; border-left: 5px solid #ff7f00; border-top: 1px solid #ffd7a8; border-bottom: 1px solid #ffd7a8; font-family: Consolas, 'Courier New', monospace; font-size: 8.2pt; white-space: pre-wrap; }
+pre code { color: #b45309; background: #fff3e0; }
+code { font-family: Consolas, 'Courier New', monospace; color: #c45a00; background: #fff7ed; }
+table { border-collapse: collapse; width: 100%; margin: 14px 0; page-break-inside: avoid; }
+caption { font-weight: bold; margin-bottom: 6px; color: #2b333f; }
+th { background: #2b333f; color: white; }
+td, th { border: 1px solid #cfd8e3; padding: 7px; vertical-align: top; }
+.front { page-break-after: always; }
+ul { margin-top: 6px; }
+</style></head>
+<body>
+<section class="cover">
+<h1>Jumpa Verse</h1>
+<h2>Complete Premium SDL2 + C++ Game Documentation</h2>
+<p style="text-align:center;margin-top:60px;">Professional software engineering thesis, UML guide, beginner handbook, and technical game development documentation.</p>
+<p style="text-align:center;">Generated from the actual project source files in <b>/home/error_343/Desktop/Jumpa-Verse</b>.</p>
+</section>
+<section class="front"><h1>Abstract</h1><p>This document explains Jumpa Verse, a 2D SDL2 and C++ side-scrolling platform game, from theory to implementation. It covers architecture, rendering, texture handling, procedural ground generation, camera illusion, trap spawning, menu screens, login and registration, score storage, fullscreen behavior, clamping, random generation, and the complete main loop. The report is written for beginners while preserving professional software architecture detail.</p></section>
+<section class="front"><h1>Acknowledgement</h1><p>This report acknowledges the SDL2 ecosystem, the C++ standard library, and the project implementation effort represented by the Jumpa Verse source files. The explanations are designed to help a beginner understand the codebase and also help an evaluator inspect the software engineering decisions.</p></section>
+<section class="front"><h1>Table of Contents</h1><ol><li>Chapter 1 - INTRODUCTION TO THE GAME</li><li>Chapter 2 - COLOR SCHEME, UI STYLE, FONT SYSTEM</li><li>Chapter 3 - TEXTURE SYSTEM AND GROUND TEXTURING</li><li>Chapter 4 - GROUND GENERATION SYSTEM</li><li>Chapter 5 - CAMERA SYSTEM</li><li>Chapter 6 - TRAP SYSTEM</li><li>Chapter 7 - MENU SYSTEM</li><li>Chapter 8 - PLAYER SYSTEM AND MOVEMENT</li><li>Chapter 9 - TEXT RENDERING ISSUES</li><li>Chapter 10 - ERROR HANDLING SYSTEM</li><li>Chapter 11 - LOGIN SCREEN AND GAME OVER SCREEN</li><li>Chapter 12 - FILE HANDLING</li><li>Chapter 13 - LOGIN/REGISTRATION ANIMATIONS</li><li>Chapter 14 - COMPLETE GAME FLOW</li><li>Chapter 15 - RANDOM NUMBER GENERATION</li><li>Chapter 16 - LIBRARIES USED</li><li>Chapter 17 - FULLSCREEN IMPLEMENTATION</li><li>Chapter 18 - CLAMPING SYSTEM</li><li>Chapter 19 - MAIN.CPP COMPLETE FLOW</li></ol></section>
+<section class="front"><h1>List of Figures</h1><ol><li>Figure 1: Game Architecture Overview</li><li>Figure 2: Gameplay Flowchart</li><li>Figure 3: Real-Time Game Loop</li><li>Figure 4: Character State Diagram</li><li>Figure 5: Color Palette and Contrast</li><li>Figure 6: Main Menu UI Mockup</li><li>Figure 7: Typography Role Comparison</li><li>Figure 8: Ground Texture Tiling Atlas</li><li>Figure 9: Texture Pointer Memory Model</li><li>Figure 10: Texture Rendering Pipeline</li><li>Figure 11: Texture and Ground UML</li><li>Figure 12: Ground Lifecycle</li><li>Figure 13: Vector Storage and Recycling</li><li>Figure 14: Ground Generation Sequence</li><li>Figure 15: Camera Illusion</li><li>Figure 16: Before and After Offset</li><li>Figure 17: Coordinate Conversion</li><li>Figure 18: Trap Collision and Hitbox</li><li>Figure 19: Trap Probability and Attempts</li><li>Figure 20: Trap Lifecycle</li><li>Figure 21: Trap UML and Relationships</li><li>Figure 22: Menu Screen Composition</li><li>Figure 23: Button Hover State</li><li>Figure 24: Menu State Transitions</li><li>Figure 25: Player Movement Forces</li><li>Figure 26: Physics Flowchart</li><li>Figure 27: Player Boolean State</li><li>Figure 28: Text Rendering Pipeline</li><li>Figure 29: Font Fallback System</li><li>Figure 30: Initialization Flowchart</li><li>Figure 31: Error Handling Branches</li><li>Figure 32: Screen Transitions</li><li>Figure 33: Namespace Helper Boundary</li><li>Figure 34: File IO Data Flow</li><li>Figure 35: Read Write System</li><li>Figure 36: UI Animation Timeline</li><li>Figure 37: Frame Progression</li><li>Figure 38: Master Architecture</li><li>Figure 39: Complete Program Sequence</li><li>Figure 40: RNG Flowchart</li><li>Figure 41: Probability Systems</li><li>Figure 42: Library Dependency Diagram</li><li>Figure 43: Header Role Map</li><li>Figure 44: Fullscreen Toggle Flow</li><li>Figure 45: Resolution Comparison</li><li>Figure 46: Coordinate Limits</li><li>Figure 47: Boundary Control Flow</li><li>Figure 48: Main.cpp Execution Flow</li><li>Figure 49: Physics and Rendering Cycle</li></ol></section>
+<section class="front"><h1>List of Tables</h1><ol><li>SDL2 and extension functions used by Jumpa Verse</li><li>Library roles and project responsibilities</li></ol></section>
+
+<h1>Chapter 1 - INTRODUCTION TO THE GAME</h1>
+<p>Theory: this chapter starts from the beginner concept, then connects it to the concrete C++ and SDL2 implementation used in Jumpa Verse.</p>
+<p>Concept: the module is built as a small real-time system where state is stored in C++ objects, updated once per frame, and drawn through SDL2 renderer commands.</p>
+<p>Implementation: the relevant source surface for this chapter is main.cpp, object.h. The code favors simple classes, vectors, SDL_Rect geometry, shared SDL_Texture pointers, and explicit event polling.</p>
+
+
+<figure>
+  <img src="figures/ch01_architecture.png" alt="Figure 1.1 Game architecture diagram" width="490" height="294" />
+  <figcaption>Figure 1.1 Game architecture diagram</figcaption>
+  <p class="figure-note">The architecture places main.cpp as the coordinator between SDL2, gameplay entities, screen states, and asset files.</p>
+</figure>
+
+
+<figure>
+  <img src="figures/ch01_gameplay_flow.png" alt="Figure 1.2 Gameplay flowchart" width="490" height="294" />
+  <figcaption>Figure 1.2 Gameplay flowchart</figcaption>
+  <p class="figure-note">This flow matches the nested menu loop and active gameplay loop in main.cpp.</p>
+</figure>
+
+
+<figure>
+  <img src="figures/ch01_loop.png" alt="Figure 1.3 Main game loop diagram" width="490" height="294" />
+  <figcaption>Figure 1.3 Main game loop diagram</figcaption>
+  <p class="figure-note">Each frame moves from event input to update logic to rendering and presentation.</p>
+</figure>
+
+
+<figure>
+  <img src="figures/ch01_state.png" alt="Figure 1.4 Character state diagram" width="490" height="294" />
+  <figcaption>Figure 1.4 Character state diagram</figcaption>
+  <p class="figure-note">The player state is expressed by onGround, jumpVelocity, gravity, and collision checks.</p>
+</figure>
+
+
+<h2>Concepts Before Code</h2>
+<p>C++ concepts used here include classes, constructors, references, pointers, enums, namespaces, stack variables, dynamic containers, and RAII-style cleanup where SDL objects are manually destroyed. STL concepts include std::vector storage, push/emplace operations, erase-based recycling, std::string text state, fstream streams, sorting, and iterating by index or reference. SDL2 concepts include renderer ownership, event queues, rectangles as geometry, texture resources, surfaces as temporary CPU bitmaps, and frame presentation.</p>
+<h2>Implementation Notes</h2>
+<p>Jumpa Verse is a side-scrolling survival platform game. The player is a rectangle-like avatar that jumps over procedurally placed spike traps while the world scrolls left. Death occurs when the player falls below the visible play field or intersects a trap hitbox.</p>
+<h3>Code Excerpt: main.cpp</h3>
+<pre><code>#include &lt;SDL2/SDL_render.h&gt;
+#include &lt;SDL2/SDL_video.h&gt;
+#include&lt;iostream&gt;
+#include&lt;SDL2/SDL.h&gt;
+#include &lt;iterator&gt;
+#include&lt;vector&gt;
+#include&lt;string.h&gt;
+#include&lt;vector&gt;
+#include&lt;algorithm&gt;//For basic algorithim like sorting 
+#include&quot;object.h&quot;
+#include&lt;SDL2/SDL_image.h&gt;
+#include &quot;functions.h&quot;
+#include&lt;stdlib.h&gt;
+#include&lt;SDL2/SDL_ttf.h&gt;
+float cammeraDash=0;
+bool exitb = false;
+int main()
+{
+    SDL_Window* window=nullptr;
+    SDL_Renderer* renderer=nullptr;
+     
+
+    player player1;
+   
+
+    if(!init(window,renderer))
+    {
+        std::cerr&lt;&lt;&quot;FAILD TO START &quot;&lt;&lt;std::endl;
+        return -1;
+    }
+
+    float cammera_offSet=0.5f; //no 2d camera in sdl2 so we create an illusion 
+    //  ground_Class ground(100,900,500,100,renderer,&quot;Images_textures/ground.jpeg&quot;,&quot;Images_textures/underGround.jpeg&quot;);
+
+    //    ground=groundRandomgenerator(ground,renderer);
+    SDL_Texture* groundTex = IMG_LoadTexture(renderer, &quot;Images_textures/ground.jpeg&quot;);
+    SDL_Texture* ugTex = IMG_LoadTexture(renderer, &quot;Images_textures/underGround.jpeg&quot;);
+    TTF_Font *font =TTF_OpenFont(&quot;debrosee-font/Debrosee-ALPnL.ttf&quot;,100);
+    std::vector&lt;trapSpike&gt; trap;
+    std::vector&lt;ground_Class&gt; ground;
+    Score score;
+    GameOver gameOver;
+    auto resetGameplay = [&amp;]()
+    {
+        player1 = player();
+        cammera_offSet = 0.5f;
+        trap.clear();
+        ground = ground_generator(renderer, groundTex, ugTex);
+        groundRandomgenerator(renderer, groundTex, ugTex, ground, trap);
+        // ground.push_back(temp);
+        resetScore(score);
+        gameOver.reset();
+    };
+
+    initializeScore(score);
+    resetGameplay();
+    bool quit=false;   
+    SDL_Event eventManager;
+     Uint32 lastTime = SDL_GetTicks();
+    int i=0;
+    int count=0;
+    const float targetFrameTime = 1000.0f / 60.0f; // 16.67 ms
+    bool menu=false;
+    while(!quit)
+    {
+
+       Uint32 frameStart = SDL_GetTicks();
+        int screenW = currentScreenWidth;
+        int screenH = currentScreenHeight;
+        getScreenSize(renderer, screenW, screenH);
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h3>Code Excerpt: object.h</h3>
+<pre><code>#pragma once
+
+#include &lt;SDL2/SDL.h&gt;
+#include &lt;SDL2/SDL_rect.h&gt;
+#include &lt;SDL2/SDL_image.h&gt;
+#include &lt;SDL2/SDL_render.h&gt;
+#include &lt;SDL2/SDL_surface.h&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
+#include &lt;SDL2/SDL2_gfxPrimitives.h&gt;//to import trigons
+#include&lt;SDL2/SDL_ttf.h&gt;
+
+extern int currentScreenWidth;
+extern int currentScreenHeight;
+
+inline int scaledGroundTileSize()
+{
+    if (currentScreenWidth &gt;= 3840)
+    {
+        return 96;
+    }
+    if (currentScreenWidth &gt;= 3200)
+    {
+        return 80;
+    }
+    if (currentScreenWidth &gt;= 2400)
+    {
+        return 64;
+    }
+    return 50;
+}
+
+inline int scaledTrapSize()
+{
+    if (currentScreenWidth &gt;= 3200)
+    {
+        return 88;
+    }
+    if (currentScreenWidth &gt;= 2400)
+    {
+        return 68;
+    }
+    return 50;
+}
+
+inline int scaledPlayerSize()
+{
+    if (currentScreenWidth &gt;= 3200)
+    {
+        return 88;
+    }
+    if (currentScreenWidth &gt;= 2400)
+    {
+        return 68;
+    }
+    return 50;
+}
+
+class hitBox
+{
+public:
+    int x, y, w, h;
+
+    hitBox(int x, int y, int w, int h)
+    {
+        this-&gt;x = x;
+        this-&gt;y = y;
+        this-&gt;w = w;
+        this-&gt;h = h;
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h2>Issues Faced and Solutions</h2>
+<p>Typical issues in this module include invalid SDL pointers, oversized coordinates, shallow-copy confusion for textures, repeated text texture creation, off-screen objects growing memory, and input state transitions. The implemented solution pattern is to validate pointers, clamp screen-dependent values, share texture pointers without ownership, erase off-screen objects, cap deltaTime, and centralize screen-size queries.</p>
+<h1>Chapter 2 - COLOR SCHEME, UI STYLE, FONT SYSTEM</h1>
+<p>Theory: this chapter starts from the beginner concept, then connects it to the concrete C++ and SDL2 implementation used in Jumpa Verse.</p>
+<p>Concept: the module is built as a small real-time system where state is stored in C++ objects, updated once per frame, and drawn through SDL2 renderer commands.</p>
+<p>Implementation: the relevant source surface for this chapter is menuScreen.cpp, score.cpp. The code favors simple classes, vectors, SDL_Rect geometry, shared SDL_Texture pointers, and explicit event polling.</p>
+
+
+<figure>
+  <img src="figures/ch02_palette.png" alt="Figure 2.1 Color palette figure" width="490" height="294" />
+  <figcaption>Figure 2.1 Color palette figure</figcaption>
+  <p class="figure-note">Orange is the action color; dark gray is the stable background; white and silver maintain readability.</p>
+</figure>
+
+
+<figure>
+  <img src="figures/ch02_menu_mockup.png" alt="Figure 2.2 UI preview layout" width="490" height="294" />
+  <figcaption>Figure 2.2 UI preview layout</figcaption>
+  <p class="figure-note">The mockup mirrors menuScreen.cpp with title, Play/Scores/Exit buttons, ground line, cube, and animated trap preview.</p>
+</figure>
+
+
+<figure>
+  <img src="figures/ch02_typography.png" alt="Figure 2.3 Typography comparison" width="490" height="294" />
+  <figcaption>Figure 2.3 Typography comparison</figcaption>
+  <p class="figure-note">Different text roles are handled by TTF_OpenFont and text-to-texture rendering.</p>
+</figure>
+
+
+<h2>Concepts Before Code</h2>
+<p>C++ concepts used here include classes, constructors, references, pointers, enums, namespaces, stack variables, dynamic containers, and RAII-style cleanup where SDL objects are manually destroyed. STL concepts include std::vector storage, push/emplace operations, erase-based recycling, std::string text state, fstream streams, sorting, and iterating by index or reference. SDL2 concepts include renderer ownership, event queues, rectangles as geometry, texture resources, surfaces as temporary CPU bitmaps, and frame presentation.</p>
+<h2>Implementation Notes</h2>
+<p>The UI uses a high-contrast dark background, orange highlight, silver inactive buttons, and white text. The custom Debrosee typeface gives title identity, while system fonts are used as numeric fallbacks so integer scores remain readable.</p>
+<h3>Code Excerpt: menuScreen.cpp</h3>
+<pre><code>#include &lt;SDL2/SDL_rect.h&gt;
+#include &lt;SDL2/SDL_render.h&gt;
+#include &lt;SDL2/SDL_video.h&gt;
+#include&lt;iostream&gt;
+#include&lt;SDL2/SDL.h&gt;
+#include &lt;iterator&gt;
+#include&lt;vector&gt;
+#include&lt;string.h&gt;
+#include&lt;algorithm&gt;//For basic algorithim like sorting 
+#include&quot;object.h&quot;
+#include&lt;SDL2/SDL_image.h&gt;
+#include&lt;SDL2/SDL2_gfxPrimitives.h&gt;
+#include&lt;random&gt;
+#include &quot;functions.h&quot;
+
+SDL_Color mainMenuColor::background   = {30, 30, 30, 255};
+SDL_Color mainMenuColor::buttonNormal = {70, 130, 180, 255};
+SDL_Color mainMenuColor::buttonHover  = {100, 160, 210, 255};
+SDL_Color mainMenuColor::buttonActive = {40, 90, 140, 255};
+SDL_Color mainMenuColor::text         = {255, 255, 255, 255};
+
+namespace
+{
+    bool openLoginForPlay(SDL_Renderer* renderer, TTF_Font* font)
+    {
+        LoginScreenAction action = runLoginScreen(renderer, font);
+        if (action == LoginScreenAction::Quit)
+        {
+            exitb = true;
+            return true;
+        }
+
+        return action == LoginScreenAction::LoginSuccess;
+    }
+}
+
+//Run 
+bool menuScreen(SDL_Renderer* renderer, TTF_Font* font)
+{
+    optionBoxes playButton(740, 430, 500, 150);
+    playButton.box_Initializer(renderer, font, &quot;Play&quot;);
+    SDL_Texture* titleTexture = nullptr;
+    if (font)
+    {
+        SDL_Surface* titleSurface = TTF_RenderText_Blended(font, &quot;Jumpa Verse&quot;, SDL_Color{255, 127, 0, 255});
+        if (titleSurface)
+        {
+            titleTexture = SDL_CreateTextureFromSurface(renderer, titleSurface);
+            SDL_FreeSurface(titleSurface);
+        }
+    }
+    int screenW = currentScreenWidth;
+    int screenH = currentScreenHeight;
+    getScreenSize(renderer, screenW, screenH);
+    SDL_Point start={0, screenH - 160};
+    SDL_Point end={screenW, screenH - 160};
+
+    bool running = true;
+    SDL_Event event;
+    int mousex,mousey;
+    int selectedButton = 0;
+    bool playSelected = true;
+    bool scoresSelected = false;
+    bool exitSelected = false;
+    Uint32 lastFrameTime = SDL_GetTicks();
+    float cubeVelocity = 0.0f;
+    float cubeY = (float)(start.y - 45);
+    float trapOffset = 0.0f;
+    int lastSimulationLineY = start.y;
+
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h3>Code Excerpt: score.cpp</h3>
+<pre><code>#include &quot;object.h&quot;
+#include &quot;functions.h&quot;
+
+#include &lt;SDL2/SDL_ttf.h&gt;
+#include &lt;SDL2/SDL.h&gt;
+#include &lt;string&gt;
+
+Score::Score()
+{
+    initialize();
+}
+
+Score::~Score() = default;
+
+void Score::initialize()
+{
+    reset();
+}
+
+void Score::update(float deltaTime, bool playerAlive)
+{
+    if (!playerAlive || deltaTime &lt;= 0.0f)
+    {
+        return;
+    }
+
+    timeAccumulator += deltaTime;
+    if (timeAccumulator &gt;= 1.0f)
+    {
+        score += 1;
+        timeAccumulator = 0.0f;
+    }
+}
+
+void Score::render(SDL_Renderer* renderer, TTF_Font* font)
+{
+    if (!renderer)
+    {
+        return;
+    }
+
+    static TTF_Font* labelFont = nullptr;
+    if (!labelFont)
+    {
+        labelFont = TTF_OpenFont(&quot;debrosee-font/Debrosee-ALPnL.ttf&quot;, 26);
+        if (!labelFont)
+        {
+            labelFont = font;
+        }
+    }
+
+    static TTF_Font* digitFont = nullptr;
+    if (!digitFont)
+    {
+        digitFont = TTF_OpenFont(&quot;/usr/share/fonts/liberation/LiberationSans-Bold.ttf&quot;, 26);
+        if (!digitFont)
+        {
+            digitFont = TTF_OpenFont(&quot;/usr/share/fonts/TTF/DejaVuSans-Bold.ttf&quot;, 26);
+        }
+    }
+
+    if (!labelFont || !digitFont)
+    {
+        return;
+    }
+
+    int screenW = currentScreenWidth;
+    int screenH = currentScreenHeight;
+    getScreenSize(renderer, screenW, screenH);
+
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h2>Issues Faced and Solutions</h2>
+<p>Typical issues in this module include invalid SDL pointers, oversized coordinates, shallow-copy confusion for textures, repeated text texture creation, off-screen objects growing memory, and input state transitions. The implemented solution pattern is to validate pointers, clamp screen-dependent values, share texture pointers without ownership, erase off-screen objects, cap deltaTime, and centralize screen-size queries.</p>
+<h1>Chapter 3 - TEXTURE SYSTEM AND GROUND TEXTURING</h1>
+<p>Theory: this chapter starts from the beginner concept, then connects it to the concrete C++ and SDL2 implementation used in Jumpa Verse.</p>
+<p>Concept: the module is built as a small real-time system where state is stored in C++ objects, updated once per frame, and drawn through SDL2 renderer commands.</p>
+<p>Implementation: the relevant source surface for this chapter is object.h, main.cpp. The code favors simple classes, vectors, SDL_Rect geometry, shared SDL_Texture pointers, and explicit event polling.</p>
+
+
+<figure>
+  <img src="figures/ch03_atlas.png" alt="Figure 3.1 Texture atlas and tiling visual" width="490" height="294" />
+  <figcaption>Figure 3.1 Texture atlas and tiling visual</figcaption>
+  <p class="figure-note">The platform surface is repeated with SDL_RenderCopy into individual destination rectangles.</p>
+</figure>
+
+
+<figure>
+  <img src="figures/ch03_memory.png" alt="Figure 3.2 Texture memory layout" width="490" height="294" />
+  <figcaption>Figure 3.2 Texture memory layout</figcaption>
+  <p class="figure-note">The diagram separates object geometry from shared renderer-owned texture resources.</p>
+</figure>
+
+
+<figure>
+  <img src="figures/ch03_pipeline.png" alt="Figure 3.3 Rendering flow diagram" width="490" height="294" />
+  <figcaption>Figure 3.3 Rendering flow diagram</figcaption>
+  <p class="figure-note">Texture pixels move from image files into GPU textures, then are copied to rectangles every frame.</p>
+</figure>
+
+
+<figure>
+  <img src="figures/ch03_uml.png" alt="Figure 3.4 UML diagram for texture-ground relation" width="490" height="294" />
+  <figcaption>Figure 3.4 UML diagram for texture-ground relation</figcaption>
+  <p class="figure-note">ground_Class composes rectangle vectors and associates with shared SDL_Texture pointers.</p>
+</figure>
+
+<table><caption>SDL2 and extension functions used by Jumpa Verse</caption><thead><tr><th>Syntax</th><th>Return</th><th>Project role</th></tr></thead><tbody><tr><td><code>SDL_Init(Uint32 flags)</code></td><td>int</td><td>Initializes SDL subsystems; called in init() before creating the window.</td></tr><tr><td><code>SDL_CreateWindow(title,x,y,w,h,flags)</code></td><td>SDL_Window*</td><td>Allocates the native game window and applies fullscreen/resizable flags.</td></tr><tr><td><code>SDL_CreateRenderer(window,index,flags)</code></td><td>SDL_Renderer*</td><td>Creates the accelerated rendering context used by all draw calls.</td></tr><tr><td><code>SDL_PollEvent(SDL_Event*)</code></td><td>int</td><td>Pulls queued keyboard, mouse, text, quit, and window events inside each loop.</td></tr><tr><td><code>SDL_GetKeyboardState(int*)</code></td><td>const Uint8*</td><td>Returns the current keyboard state array used by physicsDevelop().</td></tr><tr><td><code>SDL_GetMouseState(int*,int*)</code></td><td>Uint32</td><td>Reads mouse position/buttons for menu hover and player jump shortcuts.</td></tr><tr><td><code>SDL_SetRenderDrawColor(renderer,r,g,b,a)</code></td><td>int</td><td>Selects the drawing color for clear, rectangles, borders, and UI.</td></tr><tr><td><code>SDL_RenderClear(renderer)</code></td><td>int</td><td>Clears the current back buffer before drawing the next frame.</td></tr><tr><td><code>SDL_RenderFillRect(renderer, rect)</code></td><td>int</td><td>Draws filled UI buttons, player body, and panels.</td></tr><tr><td><code>SDL_RenderDrawRect(renderer, rect)</code></td><td>int</td><td>Draws borders for score boxes, controls, and hitbox-style UI.</td></tr><tr><td><code>SDL_RenderCopy(renderer, texture, src, dst)</code></td><td>int</td><td>Copies texture pixels into a target rectangle for ground and text.</td></tr><tr><td><code>SDL_RenderPresent(renderer)</code></td><td>void</td><td>Swaps the rendered back buffer to the visible screen.</td></tr><tr><td><code>IMG_Init(flags)</code></td><td>int</td><td>Initializes SDL_image JPEG support for ground texture loading.</td></tr><tr><td><code>IMG_LoadTexture(renderer,path)</code></td><td>SDL_Texture*</td><td>Loads image files directly into GPU texture resources.</td></tr><tr><td><code>TTF_OpenFont(path,size)</code></td><td>TTF_Font*</td><td>Loads typefaces used by menus, score display, and screens.</td></tr><tr><td><code>TTF_RenderText_Blended(font,text,color)</code></td><td>SDL_Surface*</td><td>Rasterizes text into a temporary CPU surface.</td></tr><tr><td><code>SDL_CreateTextureFromSurface(renderer,surface)</code></td><td>SDL_Texture*</td><td>Uploads the text surface into a GPU texture.</td></tr><tr><td><code>filledTrigonRGBA(renderer,...)</code></td><td>int</td><td>SDL2_gfx filled triangle used for solid spike traps.</td></tr><tr><td><code>trigonRGBA(renderer,...)</code></td><td>int</td><td>SDL2_gfx outline triangle used for trap edges.</td></tr><tr><td><code>SDL_SetWindowFullscreen(window, flags)</code></td><td>int</td><td>Toggles desktop fullscreen and windowed mode in custom controls.</td></tr></tbody></table>
+<h2>Concepts Before Code</h2>
+<p>C++ concepts used here include classes, constructors, references, pointers, enums, namespaces, stack variables, dynamic containers, and RAII-style cleanup where SDL objects are manually destroyed. STL concepts include std::vector storage, push/emplace operations, erase-based recycling, std::string text state, fstream streams, sorting, and iterating by index or reference. SDL2 concepts include renderer ownership, event queues, rectangles as geometry, texture resources, surfaces as temporary CPU bitmaps, and frame presentation.</p>
+<h2>Implementation Notes</h2>
+<p>Ground rendering divides each platform into SDL_Rect tiles. The top row uses ground.jpeg and the lower rows use underGround.jpeg. Textures are loaded once in main.cpp and shared by pointer to avoid expensive duplicated GPU allocations.</p>
+<h3>Code Excerpt: object.h</h3>
+<pre><code>#pragma once
+
+#include &lt;SDL2/SDL.h&gt;
+#include &lt;SDL2/SDL_rect.h&gt;
+#include &lt;SDL2/SDL_image.h&gt;
+#include &lt;SDL2/SDL_render.h&gt;
+#include &lt;SDL2/SDL_surface.h&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
+#include &lt;SDL2/SDL2_gfxPrimitives.h&gt;//to import trigons
+#include&lt;SDL2/SDL_ttf.h&gt;
+
+extern int currentScreenWidth;
+extern int currentScreenHeight;
+
+inline int scaledGroundTileSize()
+{
+    if (currentScreenWidth &gt;= 3840)
+    {
+        return 96;
+    }
+    if (currentScreenWidth &gt;= 3200)
+    {
+        return 80;
+    }
+    if (currentScreenWidth &gt;= 2400)
+    {
+        return 64;
+    }
+    return 50;
+}
+
+inline int scaledTrapSize()
+{
+    if (currentScreenWidth &gt;= 3200)
+    {
+        return 88;
+    }
+    if (currentScreenWidth &gt;= 2400)
+    {
+        return 68;
+    }
+    return 50;
+}
+
+inline int scaledPlayerSize()
+{
+    if (currentScreenWidth &gt;= 3200)
+    {
+        return 88;
+    }
+    if (currentScreenWidth &gt;= 2400)
+    {
+        return 68;
+    }
+    return 50;
+}
+
+class hitBox
+{
+public:
+    int x, y, w, h;
+
+    hitBox(int x, int y, int w, int h)
+    {
+        this-&gt;x = x;
+        this-&gt;y = y;
+        this-&gt;w = w;
+        this-&gt;h = h;
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h3>Code Excerpt: main.cpp</h3>
+<pre><code>#include &lt;SDL2/SDL_render.h&gt;
+#include &lt;SDL2/SDL_video.h&gt;
+#include&lt;iostream&gt;
+#include&lt;SDL2/SDL.h&gt;
+#include &lt;iterator&gt;
+#include&lt;vector&gt;
+#include&lt;string.h&gt;
+#include&lt;vector&gt;
+#include&lt;algorithm&gt;//For basic algorithim like sorting 
+#include&quot;object.h&quot;
+#include&lt;SDL2/SDL_image.h&gt;
+#include &quot;functions.h&quot;
+#include&lt;stdlib.h&gt;
+#include&lt;SDL2/SDL_ttf.h&gt;
+float cammeraDash=0;
+bool exitb = false;
+int main()
+{
+    SDL_Window* window=nullptr;
+    SDL_Renderer* renderer=nullptr;
+     
+
+    player player1;
+   
+
+    if(!init(window,renderer))
+    {
+        std::cerr&lt;&lt;&quot;FAILD TO START &quot;&lt;&lt;std::endl;
+        return -1;
+    }
+
+    float cammera_offSet=0.5f; //no 2d camera in sdl2 so we create an illusion 
+    //  ground_Class ground(100,900,500,100,renderer,&quot;Images_textures/ground.jpeg&quot;,&quot;Images_textures/underGround.jpeg&quot;);
+
+    //    ground=groundRandomgenerator(ground,renderer);
+    SDL_Texture* groundTex = IMG_LoadTexture(renderer, &quot;Images_textures/ground.jpeg&quot;);
+    SDL_Texture* ugTex = IMG_LoadTexture(renderer, &quot;Images_textures/underGround.jpeg&quot;);
+    TTF_Font *font =TTF_OpenFont(&quot;debrosee-font/Debrosee-ALPnL.ttf&quot;,100);
+    std::vector&lt;trapSpike&gt; trap;
+    std::vector&lt;ground_Class&gt; ground;
+    Score score;
+    GameOver gameOver;
+    auto resetGameplay = [&amp;]()
+    {
+        player1 = player();
+        cammera_offSet = 0.5f;
+        trap.clear();
+        ground = ground_generator(renderer, groundTex, ugTex);
+        groundRandomgenerator(renderer, groundTex, ugTex, ground, trap);
+        // ground.push_back(temp);
+        resetScore(score);
+        gameOver.reset();
+    };
+
+    initializeScore(score);
+    resetGameplay();
+    bool quit=false;   
+    SDL_Event eventManager;
+     Uint32 lastTime = SDL_GetTicks();
+    int i=0;
+    int count=0;
+    const float targetFrameTime = 1000.0f / 60.0f; // 16.67 ms
+    bool menu=false;
+    while(!quit)
+    {
+
+       Uint32 frameStart = SDL_GetTicks();
+        int screenW = currentScreenWidth;
+        int screenH = currentScreenHeight;
+        getScreenSize(renderer, screenW, screenH);
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h2>Issues Faced and Solutions</h2>
+<p>Typical issues in this module include invalid SDL pointers, oversized coordinates, shallow-copy confusion for textures, repeated text texture creation, off-screen objects growing memory, and input state transitions. The implemented solution pattern is to validate pointers, clamp screen-dependent values, share texture pointers without ownership, erase off-screen objects, cap deltaTime, and centralize screen-size queries.</p>
+<h1>Chapter 4 - GROUND GENERATION SYSTEM</h1>
+<p>Theory: this chapter starts from the beginner concept, then connects it to the concrete C++ and SDL2 implementation used in Jumpa Verse.</p>
+<p>Concept: the module is built as a small real-time system where state is stored in C++ objects, updated once per frame, and drawn through SDL2 renderer commands.</p>
+<p>Implementation: the relevant source surface for this chapter is ground.cpp, object.h. The code favors simple classes, vectors, SDL_Rect geometry, shared SDL_Texture pointers, and explicit event polling.</p>
+
+
+<figure>
+  <img src="figures/ch04_lifecycle.png" alt="Figure 4.1 Ground lifecycle diagram" width="490" height="294" />
+  <figcaption>Figure 4.1 Ground lifecycle diagram</figcaption>
+  <p class="figure-note">The lifecycle directly follows ground_generator, groundRandomgenerator, cameraMovmentObj, and freeMemory.</p>
+</figure>
+
+
+<figure>
+  <img src="figures/ch04_vector.png" alt="Figure 4.2 Vector memory diagram" width="490" height="294" />
+  <figcaption>Figure 4.2 Vector memory diagram</figcaption>
+  <p class="figure-note">The vector stores platform objects by value and shrinks as old platforms are removed.</p>
+</figure>
+
+
+<figure>
+  <img src="figures/ch04_sequence.png" alt="Figure 4.3 Sequence diagram" width="490" height="294" />
+  <figcaption>Figure 4.3 Sequence diagram</figcaption>
+  <p class="figure-note">main.cpp generates new platforms when the last platform does not extend far enough ahead.</p>
+</figure>
+
+
+<h2>Concepts Before Code</h2>
+<p>C++ concepts used here include classes, constructors, references, pointers, enums, namespaces, stack variables, dynamic containers, and RAII-style cleanup where SDL objects are manually destroyed. STL concepts include std::vector storage, push/emplace operations, erase-based recycling, std::string text state, fstream streams, sorting, and iterating by index or reference. SDL2 concepts include renderer ownership, event queues, rectangles as geometry, texture resources, surfaces as temporary CPU bitmaps, and frame presentation.</p>
+<h2>Implementation Notes</h2>
+<p>Ground generation uses std::random_device, std::mt19937, and uniform distributions to create platform width, height, gap, and y-position. Existing platforms are recycled by erasing objects that leave the left side of the screen.</p>
+<h3>Code Excerpt: ground.cpp</h3>
+<pre><code>#include &lt;SDL2/SDL_rect.h&gt;
+#include &lt;SDL2/SDL_render.h&gt;
+#include &lt;SDL2/SDL_video.h&gt;
+#include&lt;iostream&gt;
+#include&lt;SDL2/SDL.h&gt;
+#include &lt;iterator&gt;
+#include&lt;vector&gt;
+#include&lt;string.h&gt;
+
+#include&lt;algorithm&gt;//For basic algorithim like sorting 
+#include&quot;object.h&quot;
+#include&lt;SDL2/SDL_image.h&gt;
+#include&lt;random&gt;
+#include &quot;functions.h&quot;
+
+namespace
+{
+    int clampInt(int value, int minValue, int maxValue)
+    {
+        if (value &lt; minValue)
+        {
+            return minValue;
+        }
+        if (value &gt; maxValue)
+        {
+            return maxValue;
+        }
+        return value;
+    }
+}
+
+std::vector&lt;ground_Class&gt; ground_generator(SDL_Renderer* renderer,SDL_Texture* groundTex,SDL_Texture* ugTex)
+{
+    int screenW = currentScreenWidth;
+    int screenH = currentScreenHeight;
+    getScreenSize(renderer, screenW, screenH);
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    const int minY = clampInt((int)(screenH * 0.40f), 160, screenH - 260);
+    const int maxY = clampInt((int)(screenH * 0.72f), minY + 50, screenH - 120);
+    const int minW = clampInt((int)(screenW * 0.52f), 700, 1700);
+    const int maxW = clampInt((int)(screenW * 0.95f), minW, 3000);
+    const int maxH = clampInt((int)(screenH * 0.30f), 140, 460);
+
+    std::uniform_int_distribution&lt;&gt; disty(minY, maxY);
+    std::uniform_int_distribution&lt;&gt; distw(minW, maxW);
+    std::uniform_int_distribution&lt;&gt; disth(50, maxH);
+
+    int x = 0;
+    int y = disty(gen);
+    int w = distw(gen);
+    int h = disth(gen);
+
+    std::vector&lt;ground_Class&gt; ground;
+
+    ground.emplace_back(
+        x, y, w, h,
+       groundTex,ugTex
+    );
+    ground[0].first_ground=true;
+
+    return ground;
+}
+
+
+void groundRandomgenerator(SDL_Renderer* renderer,SDL_Texture* groundTex,SDL_Texture* ugTex,std::vector&lt;ground_Class&gt; &amp;prevGround,std::vector&lt;trapSpike&gt;&amp; trap)
+{   
+    if (prevGround.empty())
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h3>Code Excerpt: object.h</h3>
+<pre><code>#pragma once
+
+#include &lt;SDL2/SDL.h&gt;
+#include &lt;SDL2/SDL_rect.h&gt;
+#include &lt;SDL2/SDL_image.h&gt;
+#include &lt;SDL2/SDL_render.h&gt;
+#include &lt;SDL2/SDL_surface.h&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
+#include &lt;SDL2/SDL2_gfxPrimitives.h&gt;//to import trigons
+#include&lt;SDL2/SDL_ttf.h&gt;
+
+extern int currentScreenWidth;
+extern int currentScreenHeight;
+
+inline int scaledGroundTileSize()
+{
+    if (currentScreenWidth &gt;= 3840)
+    {
+        return 96;
+    }
+    if (currentScreenWidth &gt;= 3200)
+    {
+        return 80;
+    }
+    if (currentScreenWidth &gt;= 2400)
+    {
+        return 64;
+    }
+    return 50;
+}
+
+inline int scaledTrapSize()
+{
+    if (currentScreenWidth &gt;= 3200)
+    {
+        return 88;
+    }
+    if (currentScreenWidth &gt;= 2400)
+    {
+        return 68;
+    }
+    return 50;
+}
+
+inline int scaledPlayerSize()
+{
+    if (currentScreenWidth &gt;= 3200)
+    {
+        return 88;
+    }
+    if (currentScreenWidth &gt;= 2400)
+    {
+        return 68;
+    }
+    return 50;
+}
+
+class hitBox
+{
+public:
+    int x, y, w, h;
+
+    hitBox(int x, int y, int w, int h)
+    {
+        this-&gt;x = x;
+        this-&gt;y = y;
+        this-&gt;w = w;
+        this-&gt;h = h;
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h2>Issues Faced and Solutions</h2>
+<p>Typical issues in this module include invalid SDL pointers, oversized coordinates, shallow-copy confusion for textures, repeated text texture creation, off-screen objects growing memory, and input state transitions. The implemented solution pattern is to validate pointers, clamp screen-dependent values, share texture pointers without ownership, erase off-screen objects, cap deltaTime, and centralize screen-size queries.</p>
+<h1>Chapter 5 - CAMERA SYSTEM</h1>
+<p>Theory: this chapter starts from the beginner concept, then connects it to the concrete C++ and SDL2 implementation used in Jumpa Verse.</p>
+<p>Concept: the module is built as a small real-time system where state is stored in C++ objects, updated once per frame, and drawn through SDL2 renderer commands.</p>
+<p>Implementation: the relevant source surface for this chapter is camera.cpp, main.cpp. The code favors simple classes, vectors, SDL_Rect geometry, shared SDL_Texture pointers, and explicit event polling.</p>
+
+
+<figure>
+  <img src="figures/ch05_illusion.png" alt="Figure 5.1 Camera illusion diagram" width="490" height="294" />
+  <figcaption>Figure 5.1 Camera illusion diagram</figcaption>
+  <p class="figure-note">The side-scrolling effect is created by changing object coordinates before rendering.</p>
+</figure>
+
+
+<figure>
+  <img src="figures/ch05_before_after.png" alt="Figure 5.2 Side scrolling figure" width="490" height="294" />
+  <figcaption>Figure 5.2 Side scrolling figure</figcaption>
+  <p class="figure-note">Ground and traps shift together, preserving relative positions.</p>
+</figure>
+
+
+<figure>
+  <img src="figures/ch05_conversion.png" alt="Figure 5.3 Coordinate conversion visual" width="490" height="294" />
+  <figcaption>Figure 5.3 Coordinate conversion visual</figcaption>
+  <p class="figure-note">cameraMovmentObj updates platform geometry and trap x positions in the same pass.</p>
+</figure>
+
+
+<h2>Concepts Before Code</h2>
+<p>C++ concepts used here include classes, constructors, references, pointers, enums, namespaces, stack variables, dynamic containers, and RAII-style cleanup where SDL objects are manually destroyed. STL concepts include std::vector storage, push/emplace operations, erase-based recycling, std::string text state, fstream streams, sorting, and iterating by index or reference. SDL2 concepts include renderer ownership, event queues, rectangles as geometry, texture resources, surfaces as temporary CPU bitmaps, and frame presentation.</p>
+<h2>Implementation Notes</h2>
+<p>SDL2 does not provide a game camera. Jumpa Verse simulates one by shifting world objects left using camera offsets while the player remains visually near the same screen region.</p>
+<h3>Code Excerpt: camera.cpp</h3>
+<pre><code>#include&lt;iostream&gt;
+#include&lt;vector&gt;
+#include&lt;SDL2/SDL.h&gt;
+#include &quot;object.h&quot;
+#include &quot;functions.h&quot;
+
+void cameraMovmentObj(std::vector&lt;ground_Class&gt;&amp; ground, float cameraOffset, std::vector&lt;trapSpike&gt;&amp; trap)
+{
+   
+    int intOffset = (int)cameraOffset;
+    if (intOffset == 0 &amp;&amp; cameraOffset != 0)
+    {
+        // If the offset is fractional but less than 1, we might want to still move
+        // but since x is int, we can&#x27;t. However, we can at least ensure ground and traps move together.
+    }
+
+    for (size_t i = 0; i &lt; ground.size(); i++)
+    {
+        ground[i].seterForElements(
+            ground[i].x + intOffset,
+            ground[i].y,
+            ground[i].w,
+            ground[i].h
+        );
+    }
+
+    for (size_t i = 0; i &lt; trap.size(); i++)
+    {
+        trap[i].setterNew(trap[i].x + intOffset);
+    }
+}
+
+// std::vector&lt;ground_Class&gt;(std::vector&lt;ground_Class&gt; ground, float cameraOffset)
+// {
+//     for (int i = 0; i &lt; ground.size(); i++)
+//     {
+//         ground[i].seterForElements(
+//             ground[i].x + (int)cameraOffset,
+//             ground[i].y,
+//             ground[i].w,
+//             ground[i].h
+//         );
+//     }
+//return ground;
+// }</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h3>Code Excerpt: main.cpp</h3>
+<pre><code>#include &lt;SDL2/SDL_render.h&gt;
+#include &lt;SDL2/SDL_video.h&gt;
+#include&lt;iostream&gt;
+#include&lt;SDL2/SDL.h&gt;
+#include &lt;iterator&gt;
+#include&lt;vector&gt;
+#include&lt;string.h&gt;
+#include&lt;vector&gt;
+#include&lt;algorithm&gt;//For basic algorithim like sorting 
+#include&quot;object.h&quot;
+#include&lt;SDL2/SDL_image.h&gt;
+#include &quot;functions.h&quot;
+#include&lt;stdlib.h&gt;
+#include&lt;SDL2/SDL_ttf.h&gt;
+float cammeraDash=0;
+bool exitb = false;
+int main()
+{
+    SDL_Window* window=nullptr;
+    SDL_Renderer* renderer=nullptr;
+     
+
+    player player1;
+   
+
+    if(!init(window,renderer))
+    {
+        std::cerr&lt;&lt;&quot;FAILD TO START &quot;&lt;&lt;std::endl;
+        return -1;
+    }
+
+    float cammera_offSet=0.5f; //no 2d camera in sdl2 so we create an illusion 
+    //  ground_Class ground(100,900,500,100,renderer,&quot;Images_textures/ground.jpeg&quot;,&quot;Images_textures/underGround.jpeg&quot;);
+
+    //    ground=groundRandomgenerator(ground,renderer);
+    SDL_Texture* groundTex = IMG_LoadTexture(renderer, &quot;Images_textures/ground.jpeg&quot;);
+    SDL_Texture* ugTex = IMG_LoadTexture(renderer, &quot;Images_textures/underGround.jpeg&quot;);
+    TTF_Font *font =TTF_OpenFont(&quot;debrosee-font/Debrosee-ALPnL.ttf&quot;,100);
+    std::vector&lt;trapSpike&gt; trap;
+    std::vector&lt;ground_Class&gt; ground;
+    Score score;
+    GameOver gameOver;
+    auto resetGameplay = [&amp;]()
+    {
+        player1 = player();
+        cammera_offSet = 0.5f;
+        trap.clear();
+        ground = ground_generator(renderer, groundTex, ugTex);
+        groundRandomgenerator(renderer, groundTex, ugTex, ground, trap);
+        // ground.push_back(temp);
+        resetScore(score);
+        gameOver.reset();
+    };
+
+    initializeScore(score);
+    resetGameplay();
+    bool quit=false;   
+    SDL_Event eventManager;
+     Uint32 lastTime = SDL_GetTicks();
+    int i=0;
+    int count=0;
+    const float targetFrameTime = 1000.0f / 60.0f; // 16.67 ms
+    bool menu=false;
+    while(!quit)
+    {
+
+       Uint32 frameStart = SDL_GetTicks();
+        int screenW = currentScreenWidth;
+        int screenH = currentScreenHeight;
+        getScreenSize(renderer, screenW, screenH);
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h2>Issues Faced and Solutions</h2>
+<p>Typical issues in this module include invalid SDL pointers, oversized coordinates, shallow-copy confusion for textures, repeated text texture creation, off-screen objects growing memory, and input state transitions. The implemented solution pattern is to validate pointers, clamp screen-dependent values, share texture pointers without ownership, erase off-screen objects, cap deltaTime, and centralize screen-size queries.</p>
+<h1>Chapter 6 - TRAP SYSTEM</h1>
+<p>Theory: this chapter starts from the beginner concept, then connects it to the concrete C++ and SDL2 implementation used in Jumpa Verse.</p>
+<p>Concept: the module is built as a small real-time system where state is stored in C++ objects, updated once per frame, and drawn through SDL2 renderer commands.</p>
+<p>Implementation: the relevant source surface for this chapter is traps.cpp, object.h. The code favors simple classes, vectors, SDL_Rect geometry, shared SDL_Texture pointers, and explicit event polling.</p>
+
+
+<figure>
+  <img src="figures/ch06_collision.png" alt="Figure 6.1 Trap collision diagram" width="490" height="294" />
+  <figcaption>Figure 6.1 Trap collision diagram</figcaption>
+  <p class="figure-note">The visible triangle is approximated by a rectangle for SDL_HasIntersection collision checks.</p>
+</figure>
+
+
+<figure>
+  <img src="figures/ch06_probability.png" alt="Figure 6.2 Spawn probability chart" width="490" height="294" />
+  <figcaption>Figure 6.2 Spawn probability chart</figcaption>
+  <p class="figure-note">Each attempt has a probability gate, and the loop stops after maxAttempts to avoid runaway logic.</p>
+</figure>
+
+
+<figure>
+  <img src="figures/ch06_lifecycle.png" alt="Figure 6.3 Trap lifecycle flowchart" width="490" height="294" />
+  <figcaption>Figure 6.3 Trap lifecycle flowchart</figcaption>
+  <p class="figure-note">The trap system is linked to platform generation and off-screen cleanup.</p>
+</figure>
+
+
+<figure>
+  <img src="figures/ch06_uml.png" alt="Figure 6.4 Trap UML diagram" width="490" height="294" />
+  <figcaption>Figure 6.4 Trap UML diagram</figcaption>
+  <p class="figure-note">trapSpike inherits hitBox and depends on SDL2_gfx rendering functions.</p>
+</figure>
+
+<p>Specific fixes: trap overlap is reduced with minTrapSpacing; probability is controlled by chances(0,1000) &lt; 100; stack overflow/infinite loop risk is controlled by maxAttempts; SDL2_gfx int16 overflow streaks are reduced by visibility checks in trapSpike::render; trap color line issues are handled by drawing a filled triangle first and a darker outline second.</p>
+<h2>Concepts Before Code</h2>
+<p>C++ concepts used here include classes, constructors, references, pointers, enums, namespaces, stack variables, dynamic containers, and RAII-style cleanup where SDL objects are manually destroyed. STL concepts include std::vector storage, push/emplace operations, erase-based recycling, std::string text state, fstream streams, sorting, and iterating by index or reference. SDL2 concepts include renderer ownership, event queues, rectangles as geometry, texture resources, surfaces as temporary CPU bitmaps, and frame presentation.</p>
+<h2>Implementation Notes</h2>
+<p>Traps are spike triangles rendered with SDL2_gfx. Spawn probability is bounded by attempts, platform width margins, maximum trap count, and minimum spacing so traps do not overlap excessively or create infinite generation loops.</p>
+<h3>Code Excerpt: traps.cpp</h3>
+<pre><code>#include &lt;SDL2/SDL_rect.h&gt;
+#include &lt;SDL2/SDL_render.h&gt;
+#include &lt;SDL2/SDL_video.h&gt;
+#include&lt;iostream&gt;
+#include&lt;SDL2/SDL.h&gt;
+#include &lt;iterator&gt;
+#include&lt;vector&gt;
+#include&lt;string.h&gt;
+#include&lt;algorithm&gt;//For basic algorithim like sorting 
+#include&quot;object.h&quot;
+#include&lt;SDL2/SDL_image.h&gt;
+#include&lt;random&gt;
+#include &quot;functions.h&quot;
+
+void trapTriangle(SDL_Renderer* renderer, std::vector&lt;trapSpike&gt;&amp; trap, std::vector&lt;ground_Class&gt;&amp; ground, int i, int maxTraps)
+{
+    if (ground[i].first_ground || ground[i].trapCount &gt;= maxTraps)
+    {
+        return;
+    }
+
+    int screenW = currentScreenWidth;
+    int screenH = currentScreenHeight;
+    getScreenSize(renderer, screenW, screenH);
+    (void)screenH;
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    // Add a safety limit to prevent infinite looping if conditions are hard to meet
+    int attempts = 0;
+    const int maxAttempts = 100;
+
+    while (attempts &lt; maxAttempts)
+    {
+        attempts++;
+        std::uniform_int_distribution&lt;&gt; chances(0, 1000);
+
+        // Probability check
+        if (chances(gen) &lt; 100) // Adjusted probability for more consistent generation
+        {
+            const int trapSize = scaledTrapSize();
+            const int margin = std::max(100, trapSize * 2);
+            if (ground[i].w &lt;= margin * 2)
+            {
+                return;
+            }
+
+            std::uniform_int_distribution&lt;&gt; distp(ground[i].x + margin,
+                                                  (ground[i].x + ground[i].w) - margin);
+            int spikeX = distp(gen);
+
+            // Check for overlap with existing traps
+            bool overlapping = false;
+            const int minTrapSpacing = std::min(300, std::max(trapSize * 2, screenW / 10));
+            for (const auto&amp; existingTrap : trap)
+            {
+                if (spikeX - existingTrap.x &lt;= minTrapSpacing &amp;&amp;
+                    spikeX - existingTrap.x &gt;= -minTrapSpacing)
+                {
+                    overlapping = true;
+                    break;
+                }
+            }
+
+            if (!overlapping &amp;&amp; ground[i].trapCount &lt; maxTraps)
+            {
+                ground[i].trapCount++;
+                trap.emplace_back(spikeX, ground[i].y, trapSize, trapSize);
+                return; // Successfully added one trap
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h3>Code Excerpt: object.h</h3>
+<pre><code>#pragma once
+
+#include &lt;SDL2/SDL.h&gt;
+#include &lt;SDL2/SDL_rect.h&gt;
+#include &lt;SDL2/SDL_image.h&gt;
+#include &lt;SDL2/SDL_render.h&gt;
+#include &lt;SDL2/SDL_surface.h&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
+#include &lt;SDL2/SDL2_gfxPrimitives.h&gt;//to import trigons
+#include&lt;SDL2/SDL_ttf.h&gt;
+
+extern int currentScreenWidth;
+extern int currentScreenHeight;
+
+inline int scaledGroundTileSize()
+{
+    if (currentScreenWidth &gt;= 3840)
+    {
+        return 96;
+    }
+    if (currentScreenWidth &gt;= 3200)
+    {
+        return 80;
+    }
+    if (currentScreenWidth &gt;= 2400)
+    {
+        return 64;
+    }
+    return 50;
+}
+
+inline int scaledTrapSize()
+{
+    if (currentScreenWidth &gt;= 3200)
+    {
+        return 88;
+    }
+    if (currentScreenWidth &gt;= 2400)
+    {
+        return 68;
+    }
+    return 50;
+}
+
+inline int scaledPlayerSize()
+{
+    if (currentScreenWidth &gt;= 3200)
+    {
+        return 88;
+    }
+    if (currentScreenWidth &gt;= 2400)
+    {
+        return 68;
+    }
+    return 50;
+}
+
+class hitBox
+{
+public:
+    int x, y, w, h;
+
+    hitBox(int x, int y, int w, int h)
+    {
+        this-&gt;x = x;
+        this-&gt;y = y;
+        this-&gt;w = w;
+        this-&gt;h = h;
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h2>Issues Faced and Solutions</h2>
+<p>Typical issues in this module include invalid SDL pointers, oversized coordinates, shallow-copy confusion for textures, repeated text texture creation, off-screen objects growing memory, and input state transitions. The implemented solution pattern is to validate pointers, clamp screen-dependent values, share texture pointers without ownership, erase off-screen objects, cap deltaTime, and centralize screen-size queries.</p>
+<h1>Chapter 7 - MENU SYSTEM</h1>
+<p>Theory: this chapter starts from the beginner concept, then connects it to the concrete C++ and SDL2 implementation used in Jumpa Verse.</p>
+<p>Concept: the module is built as a small real-time system where state is stored in C++ objects, updated once per frame, and drawn through SDL2 renderer commands.</p>
+<p>Implementation: the relevant source surface for this chapter is menuScreen.cpp, object.h. The code favors simple classes, vectors, SDL_Rect geometry, shared SDL_Texture pointers, and explicit event polling.</p>
+
+
+<figure>
+  <img src="figures/ch07_ui.png" alt="Figure 7.1 Menu UI diagram" width="490" height="294" />
+  <figcaption>Figure 7.1 Menu UI diagram</figcaption>
+  <p class="figure-note">The visible screen uses SDL_RenderFillRect, text textures, line drawing, and SDL2_gfx triangles.</p>
+</figure>
+
+
+<figure>
+  <img src="figures/ch07_hover.png" alt="Figure 7.2 Hover effect flow" width="490" height="294" />
+  <figcaption>Figure 7.2 Hover effect flow</figcaption>
+  <p class="figure-note">Hover state changes selected colors and text textures.</p>
+</figure>
+
+
+<figure>
+  <img src="figures/ch07_state.png" alt="Figure 7.3 Menu state diagram" width="490" height="294" />
+  <figcaption>Figure 7.3 Menu state diagram</figcaption>
+  <p class="figure-note">The menu is the root navigation state for the application.</p>
+</figure>
+
+
+<h2>Concepts Before Code</h2>
+<p>C++ concepts used here include classes, constructors, references, pointers, enums, namespaces, stack variables, dynamic containers, and RAII-style cleanup where SDL objects are manually destroyed. STL concepts include std::vector storage, push/emplace operations, erase-based recycling, std::string text state, fstream streams, sorting, and iterating by index or reference. SDL2 concepts include renderer ownership, event queues, rectangles as geometry, texture resources, surfaces as temporary CPU bitmaps, and frame presentation.</p>
+<h2>Implementation Notes</h2>
+<p>The menu is an interactive SDL screen that draws the title, buttons, animated preview objects, and custom window controls. It handles keyboard selection, mouse hover, click actions, and transitions to login, score menu, or exit.</p>
+<h3>Code Excerpt: menuScreen.cpp</h3>
+<pre><code>#include &lt;SDL2/SDL_rect.h&gt;
+#include &lt;SDL2/SDL_render.h&gt;
+#include &lt;SDL2/SDL_video.h&gt;
+#include&lt;iostream&gt;
+#include&lt;SDL2/SDL.h&gt;
+#include &lt;iterator&gt;
+#include&lt;vector&gt;
+#include&lt;string.h&gt;
+#include&lt;algorithm&gt;//For basic algorithim like sorting 
+#include&quot;object.h&quot;
+#include&lt;SDL2/SDL_image.h&gt;
+#include&lt;SDL2/SDL2_gfxPrimitives.h&gt;
+#include&lt;random&gt;
+#include &quot;functions.h&quot;
+
+SDL_Color mainMenuColor::background   = {30, 30, 30, 255};
+SDL_Color mainMenuColor::buttonNormal = {70, 130, 180, 255};
+SDL_Color mainMenuColor::buttonHover  = {100, 160, 210, 255};
+SDL_Color mainMenuColor::buttonActive = {40, 90, 140, 255};
+SDL_Color mainMenuColor::text         = {255, 255, 255, 255};
+
+namespace
+{
+    bool openLoginForPlay(SDL_Renderer* renderer, TTF_Font* font)
+    {
+        LoginScreenAction action = runLoginScreen(renderer, font);
+        if (action == LoginScreenAction::Quit)
+        {
+            exitb = true;
+            return true;
+        }
+
+        return action == LoginScreenAction::LoginSuccess;
+    }
+}
+
+//Run 
+bool menuScreen(SDL_Renderer* renderer, TTF_Font* font)
+{
+    optionBoxes playButton(740, 430, 500, 150);
+    playButton.box_Initializer(renderer, font, &quot;Play&quot;);
+    SDL_Texture* titleTexture = nullptr;
+    if (font)
+    {
+        SDL_Surface* titleSurface = TTF_RenderText_Blended(font, &quot;Jumpa Verse&quot;, SDL_Color{255, 127, 0, 255});
+        if (titleSurface)
+        {
+            titleTexture = SDL_CreateTextureFromSurface(renderer, titleSurface);
+            SDL_FreeSurface(titleSurface);
+        }
+    }
+    int screenW = currentScreenWidth;
+    int screenH = currentScreenHeight;
+    getScreenSize(renderer, screenW, screenH);
+    SDL_Point start={0, screenH - 160};
+    SDL_Point end={screenW, screenH - 160};
+
+    bool running = true;
+    SDL_Event event;
+    int mousex,mousey;
+    int selectedButton = 0;
+    bool playSelected = true;
+    bool scoresSelected = false;
+    bool exitSelected = false;
+    Uint32 lastFrameTime = SDL_GetTicks();
+    float cubeVelocity = 0.0f;
+    float cubeY = (float)(start.y - 45);
+    float trapOffset = 0.0f;
+    int lastSimulationLineY = start.y;
+
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h3>Code Excerpt: object.h</h3>
+<pre><code>#pragma once
+
+#include &lt;SDL2/SDL.h&gt;
+#include &lt;SDL2/SDL_rect.h&gt;
+#include &lt;SDL2/SDL_image.h&gt;
+#include &lt;SDL2/SDL_render.h&gt;
+#include &lt;SDL2/SDL_surface.h&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
+#include &lt;SDL2/SDL2_gfxPrimitives.h&gt;//to import trigons
+#include&lt;SDL2/SDL_ttf.h&gt;
+
+extern int currentScreenWidth;
+extern int currentScreenHeight;
+
+inline int scaledGroundTileSize()
+{
+    if (currentScreenWidth &gt;= 3840)
+    {
+        return 96;
+    }
+    if (currentScreenWidth &gt;= 3200)
+    {
+        return 80;
+    }
+    if (currentScreenWidth &gt;= 2400)
+    {
+        return 64;
+    }
+    return 50;
+}
+
+inline int scaledTrapSize()
+{
+    if (currentScreenWidth &gt;= 3200)
+    {
+        return 88;
+    }
+    if (currentScreenWidth &gt;= 2400)
+    {
+        return 68;
+    }
+    return 50;
+}
+
+inline int scaledPlayerSize()
+{
+    if (currentScreenWidth &gt;= 3200)
+    {
+        return 88;
+    }
+    if (currentScreenWidth &gt;= 2400)
+    {
+        return 68;
+    }
+    return 50;
+}
+
+class hitBox
+{
+public:
+    int x, y, w, h;
+
+    hitBox(int x, int y, int w, int h)
+    {
+        this-&gt;x = x;
+        this-&gt;y = y;
+        this-&gt;w = w;
+        this-&gt;h = h;
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h2>Issues Faced and Solutions</h2>
+<p>Typical issues in this module include invalid SDL pointers, oversized coordinates, shallow-copy confusion for textures, repeated text texture creation, off-screen objects growing memory, and input state transitions. The implemented solution pattern is to validate pointers, clamp screen-dependent values, share texture pointers without ownership, erase off-screen objects, cap deltaTime, and centralize screen-size queries.</p>
+<h1>Chapter 8 - PLAYER SYSTEM AND MOVEMENT</h1>
+<p>Theory: this chapter starts from the beginner concept, then connects it to the concrete C++ and SDL2 implementation used in Jumpa Verse.</p>
+<p>Concept: the module is built as a small real-time system where state is stored in C++ objects, updated once per frame, and drawn through SDL2 renderer commands.</p>
+<p>Implementation: the relevant source surface for this chapter is player.cpp, object.h. The code favors simple classes, vectors, SDL_Rect geometry, shared SDL_Texture pointers, and explicit event polling.</p>
+
+
+<figure>
+  <img src="figures/ch08_movement.png" alt="Figure 8.1 Movement diagram" width="490" height="294" />
+  <figcaption>Figure 8.1 Movement diagram</figcaption>
+  <p class="figure-note">Jump velocity pushes up, gravity pulls down, and platform collision snaps the player onto the ground.</p>
+</figure>
+
+
+<figure>
+  <img src="figures/ch08_physics.png" alt="Figure 8.2 Physics flowchart" width="490" height="294" />
+  <figcaption>Figure 8.2 Physics flowchart</figcaption>
+  <p class="figure-note">physicsDevelop applies input before resolving vertical collision.</p>
+</figure>
+
+
+<figure>
+  <img src="figures/ch08_state.png" alt="Figure 8.3 Player state diagram" width="490" height="294" />
+  <figcaption>Figure 8.3 Player state diagram</figcaption>
+  <p class="figure-note">The state cycle is controlled by onGround and jumpVelocity.</p>
+</figure>
+
+
+<h2>Concepts Before Code</h2>
+<p>C++ concepts used here include classes, constructors, references, pointers, enums, namespaces, stack variables, dynamic containers, and RAII-style cleanup where SDL objects are manually destroyed. STL concepts include std::vector storage, push/emplace operations, erase-based recycling, std::string text state, fstream streams, sorting, and iterating by index or reference. SDL2 concepts include renderer ownership, event queues, rectangles as geometry, texture resources, surfaces as temporary CPU bitmaps, and frame presentation.</p>
+<h2>Implementation Notes</h2>
+<p>The player is a rectangle with velocity, gravity, jump power, and onGround state. Movement combines SDL keyboard state, mouse buttons, gravity integration, horizontal clamping, and top-only platform collision.</p>
+<h3>Code Excerpt: player.cpp</h3>
+<pre><code>#include &lt;SDL2/SDL_render.h&gt;
+#include &lt;SDL2/SDL_scancode.h&gt;
+#include &lt;SDL2/SDL_video.h&gt;
+#include&lt;iostream&gt;
+#include&lt;SDL2/SDL.h&gt;
+#include &lt;iterator&gt;
+#include &lt;ostream&gt;
+#include&lt;vector&gt;
+#include&lt;string.h&gt;
+#include&lt;vector&gt;
+#include&lt;algorithm&gt;//For basic algorithim like sorting 
+#include&quot;object.h&quot;
+#include&lt;SDL2/SDL_image.h&gt;
+#include &quot;functions.h&quot;
+#include&lt;stdlib.h&gt;
+#include&lt;SDL2/SDL_ttf.h&gt;
+#include&lt;limits&gt;
+int i=0;
+void physicsDevelop(player&amp; player1,
+                    std::vector&lt;ground_Class&gt;&amp; g1,
+                    float deltaTime,
+                    const Uint8* keyboardState)
+{
+    Uint32 mouseState = SDL_GetMouseState(NULL, NULL);
+    
+    if (deltaTime &lt;= 0.0f)
+    {
+        return;
+    }
+
+    bool jumpPressed = keyboardState[SDL_SCANCODE_SPACE] ||
+                       keyboardState[SDL_SCANCODE_W] ||
+                       keyboardState[SDL_SCANCODE_UP];
+
+    bool characterDown=keyboardState[SDL_SCANCODE_LCTRL] ||
+                        keyboardState[SDL_SCANCODE_S]||
+                        keyboardState[SDL_SCANCODE_DOWN];
+
+    bool characterdash=keyboardState[SDL_SCANCODE_LSHIFT] ||
+                        keyboardState[SDL_SCANCODE_D]||
+                        keyboardState[SDL_SCANCODE_RIGHT];
+    bool backward=keyboardState[SDL_SCANCODE_A] ||
+                        keyboardState[SDL_SCANCODE_LEFT]||
+                        keyboardState[SDL_SCANCODE_LALT];
+
+        bool leftClick  = mouseState &amp; SDL_BUTTON(SDL_BUTTON_LEFT);
+    bool rightClick = mouseState &amp; SDL_BUTTON(SDL_BUTTON_RIGHT);
+    bool middleClick= mouseState &amp; SDL_BUTTON(SDL_BUTTON_MIDDLE);
+
+//     if (mouseState &amp; SDL_BUTTON(SDL_BUTTON_RIGHT))
+// {
+//     std::cout &lt;&lt; &quot;Right click detected\n&quot;;
+// }
+    if ((jumpPressed || leftClick)&amp;&amp; player1.onGround)
+    {
+        player1.jumpVelocity = player1.jumpPower;
+        player1.onGround = false;
+    }
+    if (characterDown||rightClick)
+    {
+        player1.gravity+=2000;
+    }
+    const int playerMoveRight = std::min(9, std::max(5, currentScreenWidth / 360));
+    const int playerMoveLeft = std::min(14, std::max(8, currentScreenWidth / 240));
+    const int rightLimit = currentScreenWidth - player1.character.w;
+    if(characterdash &amp;&amp; (player1.character.x+player1.character.w)&lt;currentScreenWidth)
+    {
+        player1.character.x += playerMoveRight;
+        if (player1.character.x &gt; rightLimit)
+        {
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h3>Code Excerpt: object.h</h3>
+<pre><code>#pragma once
+
+#include &lt;SDL2/SDL.h&gt;
+#include &lt;SDL2/SDL_rect.h&gt;
+#include &lt;SDL2/SDL_image.h&gt;
+#include &lt;SDL2/SDL_render.h&gt;
+#include &lt;SDL2/SDL_surface.h&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
+#include &lt;SDL2/SDL2_gfxPrimitives.h&gt;//to import trigons
+#include&lt;SDL2/SDL_ttf.h&gt;
+
+extern int currentScreenWidth;
+extern int currentScreenHeight;
+
+inline int scaledGroundTileSize()
+{
+    if (currentScreenWidth &gt;= 3840)
+    {
+        return 96;
+    }
+    if (currentScreenWidth &gt;= 3200)
+    {
+        return 80;
+    }
+    if (currentScreenWidth &gt;= 2400)
+    {
+        return 64;
+    }
+    return 50;
+}
+
+inline int scaledTrapSize()
+{
+    if (currentScreenWidth &gt;= 3200)
+    {
+        return 88;
+    }
+    if (currentScreenWidth &gt;= 2400)
+    {
+        return 68;
+    }
+    return 50;
+}
+
+inline int scaledPlayerSize()
+{
+    if (currentScreenWidth &gt;= 3200)
+    {
+        return 88;
+    }
+    if (currentScreenWidth &gt;= 2400)
+    {
+        return 68;
+    }
+    return 50;
+}
+
+class hitBox
+{
+public:
+    int x, y, w, h;
+
+    hitBox(int x, int y, int w, int h)
+    {
+        this-&gt;x = x;
+        this-&gt;y = y;
+        this-&gt;w = w;
+        this-&gt;h = h;
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h2>Issues Faced and Solutions</h2>
+<p>Typical issues in this module include invalid SDL pointers, oversized coordinates, shallow-copy confusion for textures, repeated text texture creation, off-screen objects growing memory, and input state transitions. The implemented solution pattern is to validate pointers, clamp screen-dependent values, share texture pointers without ownership, erase off-screen objects, cap deltaTime, and centralize screen-size queries.</p>
+<h1>Chapter 9 - TEXT RENDERING ISSUES</h1>
+<p>Theory: this chapter starts from the beginner concept, then connects it to the concrete C++ and SDL2 implementation used in Jumpa Verse.</p>
+<p>Concept: the module is built as a small real-time system where state is stored in C++ objects, updated once per frame, and drawn through SDL2 renderer commands.</p>
+<p>Implementation: the relevant source surface for this chapter is score.cpp, loginScreen.cpp. The code favors simple classes, vectors, SDL_Rect geometry, shared SDL_Texture pointers, and explicit event polling.</p>
+
+
+<figure>
+  <img src="figures/ch09_pipeline.png" alt="Figure 9.1 Text rendering pipeline" width="490" height="294" />
+  <figcaption>Figure 9.1 Text rendering pipeline</figcaption>
+  <p class="figure-note">Every visible text label is converted into texture data before it can be copied by the renderer.</p>
+</figure>
+
+
+<figure>
+  <img src="figures/ch09_font.png" alt="Figure 9.2 Font system visual" width="490" height="294" />
+  <figcaption>Figure 9.2 Font system visual</figcaption>
+  <p class="figure-note">The score system uses a digit fallback to solve integer rendering/readability issues.</p>
+</figure>
+
+
+<h2>Concepts Before Code</h2>
+<p>C++ concepts used here include classes, constructors, references, pointers, enums, namespaces, stack variables, dynamic containers, and RAII-style cleanup where SDL objects are manually destroyed. STL concepts include std::vector storage, push/emplace operations, erase-based recycling, std::string text state, fstream streams, sorting, and iterating by index or reference. SDL2 concepts include renderer ownership, event queues, rectangles as geometry, texture resources, surfaces as temporary CPU bitmaps, and frame presentation.</p>
+<h2>Implementation Notes</h2>
+<p>Text rendering in SDL_ttf is a two-step process: first rasterize a string to SDL_Surface, then upload it as SDL_Texture. The project uses font fallbacks for numeric score values because decorative fonts can make integers hard to read.</p>
+<h3>Code Excerpt: score.cpp</h3>
+<pre><code>#include &quot;object.h&quot;
+#include &quot;functions.h&quot;
+
+#include &lt;SDL2/SDL_ttf.h&gt;
+#include &lt;SDL2/SDL.h&gt;
+#include &lt;string&gt;
+
+Score::Score()
+{
+    initialize();
+}
+
+Score::~Score() = default;
+
+void Score::initialize()
+{
+    reset();
+}
+
+void Score::update(float deltaTime, bool playerAlive)
+{
+    if (!playerAlive || deltaTime &lt;= 0.0f)
+    {
+        return;
+    }
+
+    timeAccumulator += deltaTime;
+    if (timeAccumulator &gt;= 1.0f)
+    {
+        score += 1;
+        timeAccumulator = 0.0f;
+    }
+}
+
+void Score::render(SDL_Renderer* renderer, TTF_Font* font)
+{
+    if (!renderer)
+    {
+        return;
+    }
+
+    static TTF_Font* labelFont = nullptr;
+    if (!labelFont)
+    {
+        labelFont = TTF_OpenFont(&quot;debrosee-font/Debrosee-ALPnL.ttf&quot;, 26);
+        if (!labelFont)
+        {
+            labelFont = font;
+        }
+    }
+
+    static TTF_Font* digitFont = nullptr;
+    if (!digitFont)
+    {
+        digitFont = TTF_OpenFont(&quot;/usr/share/fonts/liberation/LiberationSans-Bold.ttf&quot;, 26);
+        if (!digitFont)
+        {
+            digitFont = TTF_OpenFont(&quot;/usr/share/fonts/TTF/DejaVuSans-Bold.ttf&quot;, 26);
+        }
+    }
+
+    if (!labelFont || !digitFont)
+    {
+        return;
+    }
+
+    int screenW = currentScreenWidth;
+    int screenH = currentScreenHeight;
+    getScreenSize(renderer, screenW, screenH);
+
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h3>Code Excerpt: loginScreen.cpp</h3>
+<pre><code>#include &quot;object.h&quot;
+#include &quot;functions.h&quot;
+
+#include &lt;SDL2/SDL.h&gt;
+#include &lt;SDL2/SDL_ttf.h&gt;
+#include &lt;fstream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+namespace
+{
+    const std::string playerFile = &quot;player.csv&quot;;
+
+    bool pointInside(const SDL_Rect&amp; rect, int x, int y)
+    {
+        return x &gt;= rect.x &amp;&amp; x &lt;= rect.x + rect.w &amp;&amp;
+               y &gt;= rect.y &amp;&amp; y &lt;= rect.y + rect.h;
+    }
+
+    TTF_Font* openFont(int size, TTF_Font* fallback)
+    {
+        TTF_Font* font = TTF_OpenFont(&quot;debrosee-font/Debrosee-ALPnL.ttf&quot;, size);
+        return font ? font : fallback;
+    }
+
+    void drawText(SDL_Renderer* renderer,
+                  TTF_Font* font,
+                  const std::string&amp; text,
+                  SDL_Color color,
+                  SDL_Rect bounds,
+                  bool center = true)
+    {
+        if (!renderer || !font || text.empty())
+        {
+            return;
+        }
+
+        SDL_Surface* surface = TTF_RenderUTF8_Blended(font, text.c_str(), color);
+        if (!surface)
+        {
+            return;
+        }
+
+        SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_FreeSurface(surface);
+        if (!texture)
+        {
+            return;
+        }
+
+        int textW = 0;
+        int textH = 0;
+        SDL_QueryTexture(texture, nullptr, nullptr, &amp;textW, &amp;textH);
+        float scaleW = textW &gt; 0 ? (float)bounds.w / (float)textW : 1.0f;
+        float scaleH = textH &gt; 0 ? (float)bounds.h / (float)textH : 1.0f;
+        float scale = scaleW &lt; scaleH ? scaleW : scaleH;
+        if (scale &gt; 1.0f)
+        {
+            scale = 1.0f;
+        }
+
+        int drawW = (int)(textW * scale);
+        int drawH = (int)(textH * scale);
+        SDL_Rect target = {
+            center ? bounds.x + (bounds.w - drawW) / 2 : bounds.x,
+            bounds.y + (bounds.h - drawH) / 2,
+            drawW,
+            drawH
+        };
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h2>Issues Faced and Solutions</h2>
+<p>Typical issues in this module include invalid SDL pointers, oversized coordinates, shallow-copy confusion for textures, repeated text texture creation, off-screen objects growing memory, and input state transitions. The implemented solution pattern is to validate pointers, clamp screen-dependent values, share texture pointers without ownership, erase off-screen objects, cap deltaTime, and centralize screen-size queries.</p>
+<h1>Chapter 10 - ERROR HANDLING SYSTEM</h1>
+<p>Theory: this chapter starts from the beginner concept, then connects it to the concrete C++ and SDL2 implementation used in Jumpa Verse.</p>
+<p>Concept: the module is built as a small real-time system where state is stored in C++ objects, updated once per frame, and drawn through SDL2 renderer commands.</p>
+<p>Implementation: the relevant source surface for this chapter is Error_Handlers.cpp, main.cpp. The code favors simple classes, vectors, SDL_Rect geometry, shared SDL_Texture pointers, and explicit event polling.</p>
+
+
+<figure>
+  <img src="figures/ch10_init.png" alt="Figure 10.1 Initialization flowchart" width="490" height="294" />
+  <figcaption>Figure 10.1 Initialization flowchart</figcaption>
+  <p class="figure-note">Each initialization step must succeed before gameplay begins.</p>
+</figure>
+
+
+<figure>
+  <img src="figures/ch10_error.png" alt="Figure 10.2 Error handling diagram" width="490" height="294" />
+  <figcaption>Figure 10.2 Error handling diagram</figcaption>
+  <p class="figure-note">The system prevents null window or renderer usage.</p>
+</figure>
+
+
+<h2>Concepts Before Code</h2>
+<p>C++ concepts used here include classes, constructors, references, pointers, enums, namespaces, stack variables, dynamic containers, and RAII-style cleanup where SDL objects are manually destroyed. STL concepts include std::vector storage, push/emplace operations, erase-based recycling, std::string text state, fstream streams, sorting, and iterating by index or reference. SDL2 concepts include renderer ownership, event queues, rectangles as geometry, texture resources, surfaces as temporary CPU bitmaps, and frame presentation.</p>
+<h2>Implementation Notes</h2>
+<p>Initialization is defensive: SDL, SDL_ttf, SDL_image, window creation, and renderer creation are each checked. Failure returns false and main.cpp exits early instead of entering an invalid render loop.</p>
+<h3>Code Excerpt: Error_Handlers.cpp</h3>
+<pre><code>#include &lt;SDL2/SDL_render.h&gt;
+#include &lt;SDL2/SDL_video.h&gt;
+#include&lt;iostream&gt;
+#include&lt;SDL2/SDL.h&gt;
+#include&lt;vector&gt;
+#include&lt;string.h&gt;
+#include&lt;vector&gt;
+#include&lt;algorithm&gt;//For basic algorithim like sorting 
+#include&quot;object.h&quot;
+#include&quot;functions.h&quot;
+#include&lt;SDL2/SDL_image.h&gt;
+
+
+
+bool init(SDL_Window*&amp; Window,SDL_Renderer *&amp;renderer);//Check 
+void close(SDL_Window* window,SDL_Renderer* renderer);
+
+int currentScreenWidth = GAME_WIDTH;
+int currentScreenHeight = GAME_HEIGHT;
+
+bool init(SDL_Window*&amp; Window,SDL_Renderer *&amp;renderer)
+{
+    if(SDL_Init(SDL_INIT_VIDEO)&lt;0)
+    {
+        std::cerr&lt;&lt;&quot;SDL couldnt be initialized! \t\t\t Error Type:\t&quot;&lt;&lt;SDL_GetError()&lt;&lt;std::endl;
+        return false;
+    }
+    if(TTF_Init()&lt;0)
+    {
+        std::cout&lt;&lt;&quot;TTF NOT FOUND&quot;&lt;&lt;std::endl;
+        return false;
+    }
+
+    if (!(IMG_Init(IMG_INIT_JPG) &amp; IMG_INIT_JPG))
+{
+    std::cerr &lt;&lt; &quot;SDL_image could not initialize! Error: &quot; &lt;&lt; IMG_GetError() &lt;&lt; std::endl;
+    return false;
+}
+
+
+    SDL_DisplayMode displayMode;
+    if (SDL_GetCurrentDisplayMode(0, &amp;displayMode) == 0)
+    {
+        currentScreenWidth = displayMode.w;
+        currentScreenHeight = displayMode.h;
+    }
+
+    Window = SDL_CreateWindow(&quot;Jumpa Verse&quot;,
+                              SDL_WINDOWPOS_CENTERED,
+                              SDL_WINDOWPOS_CENTERED,
+                              currentScreenWidth,
+                              currentScreenHeight,
+                              SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_FULLSCREEN_DESKTOP);
+
+    if(!Window)
+    {
+        std::cerr&lt;&lt;&quot;SDL WINDOW COULDNT START \t\t\tERROR TYPE:\t&quot;&lt;&lt;SDL_GetError()&lt;&lt;std::endl;
+        return false;
+    }
+    renderer=SDL_CreateRenderer(Window,-1,SDL_RENDERER_ACCELERATED);
+
+    if(!renderer)
+    {
+        std::cerr&lt;&lt;&quot;RENDERER COULDNT LOAD!\t\t\tSDL ERROR:\t&quot;&lt;&lt;SDL_GetError()&lt;&lt;std::endl;
+        return false;
+    }
+
+    SDL_SetWindowMinimumSize(Window, 960, 540);
+
+    return true;
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h3>Code Excerpt: main.cpp</h3>
+<pre><code>#include &lt;SDL2/SDL_render.h&gt;
+#include &lt;SDL2/SDL_video.h&gt;
+#include&lt;iostream&gt;
+#include&lt;SDL2/SDL.h&gt;
+#include &lt;iterator&gt;
+#include&lt;vector&gt;
+#include&lt;string.h&gt;
+#include&lt;vector&gt;
+#include&lt;algorithm&gt;//For basic algorithim like sorting 
+#include&quot;object.h&quot;
+#include&lt;SDL2/SDL_image.h&gt;
+#include &quot;functions.h&quot;
+#include&lt;stdlib.h&gt;
+#include&lt;SDL2/SDL_ttf.h&gt;
+float cammeraDash=0;
+bool exitb = false;
+int main()
+{
+    SDL_Window* window=nullptr;
+    SDL_Renderer* renderer=nullptr;
+     
+
+    player player1;
+   
+
+    if(!init(window,renderer))
+    {
+        std::cerr&lt;&lt;&quot;FAILD TO START &quot;&lt;&lt;std::endl;
+        return -1;
+    }
+
+    float cammera_offSet=0.5f; //no 2d camera in sdl2 so we create an illusion 
+    //  ground_Class ground(100,900,500,100,renderer,&quot;Images_textures/ground.jpeg&quot;,&quot;Images_textures/underGround.jpeg&quot;);
+
+    //    ground=groundRandomgenerator(ground,renderer);
+    SDL_Texture* groundTex = IMG_LoadTexture(renderer, &quot;Images_textures/ground.jpeg&quot;);
+    SDL_Texture* ugTex = IMG_LoadTexture(renderer, &quot;Images_textures/underGround.jpeg&quot;);
+    TTF_Font *font =TTF_OpenFont(&quot;debrosee-font/Debrosee-ALPnL.ttf&quot;,100);
+    std::vector&lt;trapSpike&gt; trap;
+    std::vector&lt;ground_Class&gt; ground;
+    Score score;
+    GameOver gameOver;
+    auto resetGameplay = [&amp;]()
+    {
+        player1 = player();
+        cammera_offSet = 0.5f;
+        trap.clear();
+        ground = ground_generator(renderer, groundTex, ugTex);
+        groundRandomgenerator(renderer, groundTex, ugTex, ground, trap);
+        // ground.push_back(temp);
+        resetScore(score);
+        gameOver.reset();
+    };
+
+    initializeScore(score);
+    resetGameplay();
+    bool quit=false;   
+    SDL_Event eventManager;
+     Uint32 lastTime = SDL_GetTicks();
+    int i=0;
+    int count=0;
+    const float targetFrameTime = 1000.0f / 60.0f; // 16.67 ms
+    bool menu=false;
+    while(!quit)
+    {
+
+       Uint32 frameStart = SDL_GetTicks();
+        int screenW = currentScreenWidth;
+        int screenH = currentScreenHeight;
+        getScreenSize(renderer, screenW, screenH);
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h2>Issues Faced and Solutions</h2>
+<p>Typical issues in this module include invalid SDL pointers, oversized coordinates, shallow-copy confusion for textures, repeated text texture creation, off-screen objects growing memory, and input state transitions. The implemented solution pattern is to validate pointers, clamp screen-dependent values, share texture pointers without ownership, erase off-screen objects, cap deltaTime, and centralize screen-size queries.</p>
+<h1>Chapter 11 - LOGIN SCREEN AND GAME OVER SCREEN</h1>
+<p>Theory: this chapter starts from the beginner concept, then connects it to the concrete C++ and SDL2 implementation used in Jumpa Verse.</p>
+<p>Concept: the module is built as a small real-time system where state is stored in C++ objects, updated once per frame, and drawn through SDL2 renderer commands.</p>
+<p>Implementation: the relevant source surface for this chapter is loginScreen.cpp, register.cpp, gameover.cpp. The code favors simple classes, vectors, SDL_Rect geometry, shared SDL_Texture pointers, and explicit event polling.</p>
+
+
+<figure>
+  <img src="figures/ch11_transition.png" alt="Figure 11.1 Screen transition diagram" width="490" height="294" />
+  <figcaption>Figure 11.1 Screen transition diagram</figcaption>
+  <p class="figure-note">Screen action enums make transitions explicit and readable.</p>
+</figure>
+
+
+<figure>
+  <img src="figures/ch11_namespace.png" alt="Figure 11.2 Namespace diagram" width="490" height="294" />
+  <figcaption>Figure 11.2 Namespace diagram</figcaption>
+  <p class="figure-note">Anonymous namespaces keep helper functions private to their translation units.</p>
+</figure>
+
+
+<h2>Concepts Before Code</h2>
+<p>C++ concepts used here include classes, constructors, references, pointers, enums, namespaces, stack variables, dynamic containers, and RAII-style cleanup where SDL objects are manually destroyed. STL concepts include std::vector storage, push/emplace operations, erase-based recycling, std::string text state, fstream streams, sorting, and iterating by index or reference. SDL2 concepts include renderer ownership, event queues, rectangles as geometry, texture resources, surfaces as temporary CPU bitmaps, and frame presentation.</p>
+<h2>Implementation Notes</h2>
+<p>Login, registration, scores, and game over are separate screen loops. They use namespaces for helper functions, enums for actions, text input events for form fields, and CSV files for persistent player data.</p>
+<h3>Code Excerpt: loginScreen.cpp</h3>
+<pre><code>#include &quot;object.h&quot;
+#include &quot;functions.h&quot;
+
+#include &lt;SDL2/SDL.h&gt;
+#include &lt;SDL2/SDL_ttf.h&gt;
+#include &lt;fstream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+namespace
+{
+    const std::string playerFile = &quot;player.csv&quot;;
+
+    bool pointInside(const SDL_Rect&amp; rect, int x, int y)
+    {
+        return x &gt;= rect.x &amp;&amp; x &lt;= rect.x + rect.w &amp;&amp;
+               y &gt;= rect.y &amp;&amp; y &lt;= rect.y + rect.h;
+    }
+
+    TTF_Font* openFont(int size, TTF_Font* fallback)
+    {
+        TTF_Font* font = TTF_OpenFont(&quot;debrosee-font/Debrosee-ALPnL.ttf&quot;, size);
+        return font ? font : fallback;
+    }
+
+    void drawText(SDL_Renderer* renderer,
+                  TTF_Font* font,
+                  const std::string&amp; text,
+                  SDL_Color color,
+                  SDL_Rect bounds,
+                  bool center = true)
+    {
+        if (!renderer || !font || text.empty())
+        {
+            return;
+        }
+
+        SDL_Surface* surface = TTF_RenderUTF8_Blended(font, text.c_str(), color);
+        if (!surface)
+        {
+            return;
+        }
+
+        SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_FreeSurface(surface);
+        if (!texture)
+        {
+            return;
+        }
+
+        int textW = 0;
+        int textH = 0;
+        SDL_QueryTexture(texture, nullptr, nullptr, &amp;textW, &amp;textH);
+        float scaleW = textW &gt; 0 ? (float)bounds.w / (float)textW : 1.0f;
+        float scaleH = textH &gt; 0 ? (float)bounds.h / (float)textH : 1.0f;
+        float scale = scaleW &lt; scaleH ? scaleW : scaleH;
+        if (scale &gt; 1.0f)
+        {
+            scale = 1.0f;
+        }
+
+        int drawW = (int)(textW * scale);
+        int drawH = (int)(textH * scale);
+        SDL_Rect target = {
+            center ? bounds.x + (bounds.w - drawW) / 2 : bounds.x,
+            bounds.y + (bounds.h - drawH) / 2,
+            drawW,
+            drawH
+        };
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h3>Code Excerpt: register.cpp</h3>
+<pre><code>#include &quot;object.h&quot;
+#include &quot;functions.h&quot;
+
+#include &lt;SDL2/SDL.h&gt;
+#include &lt;SDL2/SDL_ttf.h&gt;
+#include &lt;fstream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+
+namespace
+{
+    const std::string playerFile = &quot;player.csv&quot;;
+
+    bool pointInside(const SDL_Rect&amp; rect, int x, int y)
+    {
+        return x &gt;= rect.x &amp;&amp; x &lt;= rect.x + rect.w &amp;&amp;
+               y &gt;= rect.y &amp;&amp; y &lt;= rect.y + rect.h;
+    }
+
+    TTF_Font* openFont(int size, TTF_Font* fallback)
+    {
+        TTF_Font* font = TTF_OpenFont(&quot;debrosee-font/Debrosee-ALPnL.ttf&quot;, size);
+        return font ? font : fallback;
+    }
+
+    void drawText(SDL_Renderer* renderer,
+                  TTF_Font* font,
+                  const std::string&amp; text,
+                  SDL_Color color,
+                  SDL_Rect bounds,
+                  bool center = true)
+    {
+        if (!renderer || !font || text.empty())
+        {
+            return;
+        }
+
+        SDL_Surface* surface = TTF_RenderUTF8_Blended(font, text.c_str(), color);
+        if (!surface)
+        {
+            return;
+        }
+
+        SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_FreeSurface(surface);
+        if (!texture)
+        {
+            return;
+        }
+
+        int textW = 0;
+        int textH = 0;
+        SDL_QueryTexture(texture, nullptr, nullptr, &amp;textW, &amp;textH);
+        float scaleW = textW &gt; 0 ? (float)bounds.w / (float)textW : 1.0f;
+        float scaleH = textH &gt; 0 ? (float)bounds.h / (float)textH : 1.0f;
+        float scale = scaleW &lt; scaleH ? scaleW : scaleH;
+        if (scale &gt; 1.0f)
+        {
+            scale = 1.0f;
+        }
+
+        int drawW = (int)(textW * scale);
+        int drawH = (int)(textH * scale);
+        SDL_Rect target = {
+            center ? bounds.x + (bounds.w - drawW) / 2 : bounds.x,
+            bounds.y + (bounds.h - drawH) / 2,
+            drawW,
+            drawH
+        };
+
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h2>Issues Faced and Solutions</h2>
+<p>Typical issues in this module include invalid SDL pointers, oversized coordinates, shallow-copy confusion for textures, repeated text texture creation, off-screen objects growing memory, and input state transitions. The implemented solution pattern is to validate pointers, clamp screen-dependent values, share texture pointers without ownership, erase off-screen objects, cap deltaTime, and centralize screen-size queries.</p>
+<h1>Chapter 12 - FILE HANDLING</h1>
+<p>Theory: this chapter starts from the beginner concept, then connects it to the concrete C++ and SDL2 implementation used in Jumpa Verse.</p>
+<p>Concept: the module is built as a small real-time system where state is stored in C++ objects, updated once per frame, and drawn through SDL2 renderer commands.</p>
+<p>Implementation: the relevant source surface for this chapter is loginScreen.cpp, register.cpp, gameover.cpp, scoreMenu.cpp. The code favors simple classes, vectors, SDL_Rect geometry, shared SDL_Texture pointers, and explicit event polling.</p>
+
+
+<figure>
+  <img src="figures/ch12_fileio.png" alt="Figure 12.1 File IO diagram" width="490" height="294" />
+  <figcaption>Figure 12.1 File IO diagram</figcaption>
+  <p class="figure-note">The player file stores username,password,score history in comma-separated lines.</p>
+</figure>
+
+
+<figure>
+  <img src="figures/ch12_readwrite.png" alt="Figure 12.2 Data flow visual" width="490" height="294" />
+  <figcaption>Figure 12.2 Data flow visual</figcaption>
+  <p class="figure-note">The game over screen appends scores to the logged-in player row.</p>
+</figure>
+
+
+<h2>Concepts Before Code</h2>
+<p>C++ concepts used here include classes, constructors, references, pointers, enums, namespaces, stack variables, dynamic containers, and RAII-style cleanup where SDL objects are manually destroyed. STL concepts include std::vector storage, push/emplace operations, erase-based recycling, std::string text state, fstream streams, sorting, and iterating by index or reference. SDL2 concepts include renderer ownership, event queues, rectangles as geometry, texture resources, surfaces as temporary CPU bitmaps, and frame presentation.</p>
+<h2>Implementation Notes</h2>
+<p>CSV persistence is intentionally beginner-friendly. ifstream reads existing players and scores, ofstream appends final scores, and fstream appends registered players. String streams parse comma-separated records.</p>
+<h3>Code Excerpt: loginScreen.cpp</h3>
+<pre><code>#include &quot;object.h&quot;
+#include &quot;functions.h&quot;
+
+#include &lt;SDL2/SDL.h&gt;
+#include &lt;SDL2/SDL_ttf.h&gt;
+#include &lt;fstream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+namespace
+{
+    const std::string playerFile = &quot;player.csv&quot;;
+
+    bool pointInside(const SDL_Rect&amp; rect, int x, int y)
+    {
+        return x &gt;= rect.x &amp;&amp; x &lt;= rect.x + rect.w &amp;&amp;
+               y &gt;= rect.y &amp;&amp; y &lt;= rect.y + rect.h;
+    }
+
+    TTF_Font* openFont(int size, TTF_Font* fallback)
+    {
+        TTF_Font* font = TTF_OpenFont(&quot;debrosee-font/Debrosee-ALPnL.ttf&quot;, size);
+        return font ? font : fallback;
+    }
+
+    void drawText(SDL_Renderer* renderer,
+                  TTF_Font* font,
+                  const std::string&amp; text,
+                  SDL_Color color,
+                  SDL_Rect bounds,
+                  bool center = true)
+    {
+        if (!renderer || !font || text.empty())
+        {
+            return;
+        }
+
+        SDL_Surface* surface = TTF_RenderUTF8_Blended(font, text.c_str(), color);
+        if (!surface)
+        {
+            return;
+        }
+
+        SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_FreeSurface(surface);
+        if (!texture)
+        {
+            return;
+        }
+
+        int textW = 0;
+        int textH = 0;
+        SDL_QueryTexture(texture, nullptr, nullptr, &amp;textW, &amp;textH);
+        float scaleW = textW &gt; 0 ? (float)bounds.w / (float)textW : 1.0f;
+        float scaleH = textH &gt; 0 ? (float)bounds.h / (float)textH : 1.0f;
+        float scale = scaleW &lt; scaleH ? scaleW : scaleH;
+        if (scale &gt; 1.0f)
+        {
+            scale = 1.0f;
+        }
+
+        int drawW = (int)(textW * scale);
+        int drawH = (int)(textH * scale);
+        SDL_Rect target = {
+            center ? bounds.x + (bounds.w - drawW) / 2 : bounds.x,
+            bounds.y + (bounds.h - drawH) / 2,
+            drawW,
+            drawH
+        };
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h3>Code Excerpt: register.cpp</h3>
+<pre><code>#include &quot;object.h&quot;
+#include &quot;functions.h&quot;
+
+#include &lt;SDL2/SDL.h&gt;
+#include &lt;SDL2/SDL_ttf.h&gt;
+#include &lt;fstream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+
+namespace
+{
+    const std::string playerFile = &quot;player.csv&quot;;
+
+    bool pointInside(const SDL_Rect&amp; rect, int x, int y)
+    {
+        return x &gt;= rect.x &amp;&amp; x &lt;= rect.x + rect.w &amp;&amp;
+               y &gt;= rect.y &amp;&amp; y &lt;= rect.y + rect.h;
+    }
+
+    TTF_Font* openFont(int size, TTF_Font* fallback)
+    {
+        TTF_Font* font = TTF_OpenFont(&quot;debrosee-font/Debrosee-ALPnL.ttf&quot;, size);
+        return font ? font : fallback;
+    }
+
+    void drawText(SDL_Renderer* renderer,
+                  TTF_Font* font,
+                  const std::string&amp; text,
+                  SDL_Color color,
+                  SDL_Rect bounds,
+                  bool center = true)
+    {
+        if (!renderer || !font || text.empty())
+        {
+            return;
+        }
+
+        SDL_Surface* surface = TTF_RenderUTF8_Blended(font, text.c_str(), color);
+        if (!surface)
+        {
+            return;
+        }
+
+        SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_FreeSurface(surface);
+        if (!texture)
+        {
+            return;
+        }
+
+        int textW = 0;
+        int textH = 0;
+        SDL_QueryTexture(texture, nullptr, nullptr, &amp;textW, &amp;textH);
+        float scaleW = textW &gt; 0 ? (float)bounds.w / (float)textW : 1.0f;
+        float scaleH = textH &gt; 0 ? (float)bounds.h / (float)textH : 1.0f;
+        float scale = scaleW &lt; scaleH ? scaleW : scaleH;
+        if (scale &gt; 1.0f)
+        {
+            scale = 1.0f;
+        }
+
+        int drawW = (int)(textW * scale);
+        int drawH = (int)(textH * scale);
+        SDL_Rect target = {
+            center ? bounds.x + (bounds.w - drawW) / 2 : bounds.x,
+            bounds.y + (bounds.h - drawH) / 2,
+            drawW,
+            drawH
+        };
+
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h2>Issues Faced and Solutions</h2>
+<p>Typical issues in this module include invalid SDL pointers, oversized coordinates, shallow-copy confusion for textures, repeated text texture creation, off-screen objects growing memory, and input state transitions. The implemented solution pattern is to validate pointers, clamp screen-dependent values, share texture pointers without ownership, erase off-screen objects, cap deltaTime, and centralize screen-size queries.</p>
+<h1>Chapter 13 - LOGIN/REGISTRATION ANIMATIONS</h1>
+<p>Theory: this chapter starts from the beginner concept, then connects it to the concrete C++ and SDL2 implementation used in Jumpa Verse.</p>
+<p>Concept: the module is built as a small real-time system where state is stored in C++ objects, updated once per frame, and drawn through SDL2 renderer commands.</p>
+<p>Implementation: the relevant source surface for this chapter is loginScreen.cpp, register.cpp. The code favors simple classes, vectors, SDL_Rect geometry, shared SDL_Texture pointers, and explicit event polling.</p>
+
+
+<figure>
+  <img src="figures/ch13_timeline.png" alt="Figure 13.1 Animation timeline" width="490" height="294" />
+  <figcaption>Figure 13.1 Animation timeline</figcaption>
+  <p class="figure-note">Interactive feedback is produced by redrawing selected states each frame.</p>
+</figure>
+
+
+<figure>
+  <img src="figures/ch13_frames.png" alt="Figure 13.2 Frame progression visual" width="490" height="294" />
+  <figcaption>Figure 13.2 Frame progression visual</figcaption>
+  <p class="figure-note">The user sees animation because the render loop keeps presenting updated states.</p>
+</figure>
+
+
+<h2>Concepts Before Code</h2>
+<p>C++ concepts used here include classes, constructors, references, pointers, enums, namespaces, stack variables, dynamic containers, and RAII-style cleanup where SDL objects are manually destroyed. STL concepts include std::vector storage, push/emplace operations, erase-based recycling, std::string text state, fstream streams, sorting, and iterating by index or reference. SDL2 concepts include renderer ownership, event queues, rectangles as geometry, texture resources, surfaces as temporary CPU bitmaps, and frame presentation.</p>
+<h2>Implementation Notes</h2>
+<p>The account screens use frame-by-frame redraws, hover highlights, active input borders, and message transitions. The animation model is simple: each loop handles events, updates visual state, clears, draws, presents, and delays.</p>
+<h3>Code Excerpt: loginScreen.cpp</h3>
+<pre><code>#include &quot;object.h&quot;
+#include &quot;functions.h&quot;
+
+#include &lt;SDL2/SDL.h&gt;
+#include &lt;SDL2/SDL_ttf.h&gt;
+#include &lt;fstream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+namespace
+{
+    const std::string playerFile = &quot;player.csv&quot;;
+
+    bool pointInside(const SDL_Rect&amp; rect, int x, int y)
+    {
+        return x &gt;= rect.x &amp;&amp; x &lt;= rect.x + rect.w &amp;&amp;
+               y &gt;= rect.y &amp;&amp; y &lt;= rect.y + rect.h;
+    }
+
+    TTF_Font* openFont(int size, TTF_Font* fallback)
+    {
+        TTF_Font* font = TTF_OpenFont(&quot;debrosee-font/Debrosee-ALPnL.ttf&quot;, size);
+        return font ? font : fallback;
+    }
+
+    void drawText(SDL_Renderer* renderer,
+                  TTF_Font* font,
+                  const std::string&amp; text,
+                  SDL_Color color,
+                  SDL_Rect bounds,
+                  bool center = true)
+    {
+        if (!renderer || !font || text.empty())
+        {
+            return;
+        }
+
+        SDL_Surface* surface = TTF_RenderUTF8_Blended(font, text.c_str(), color);
+        if (!surface)
+        {
+            return;
+        }
+
+        SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_FreeSurface(surface);
+        if (!texture)
+        {
+            return;
+        }
+
+        int textW = 0;
+        int textH = 0;
+        SDL_QueryTexture(texture, nullptr, nullptr, &amp;textW, &amp;textH);
+        float scaleW = textW &gt; 0 ? (float)bounds.w / (float)textW : 1.0f;
+        float scaleH = textH &gt; 0 ? (float)bounds.h / (float)textH : 1.0f;
+        float scale = scaleW &lt; scaleH ? scaleW : scaleH;
+        if (scale &gt; 1.0f)
+        {
+            scale = 1.0f;
+        }
+
+        int drawW = (int)(textW * scale);
+        int drawH = (int)(textH * scale);
+        SDL_Rect target = {
+            center ? bounds.x + (bounds.w - drawW) / 2 : bounds.x,
+            bounds.y + (bounds.h - drawH) / 2,
+            drawW,
+            drawH
+        };
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h3>Code Excerpt: register.cpp</h3>
+<pre><code>#include &quot;object.h&quot;
+#include &quot;functions.h&quot;
+
+#include &lt;SDL2/SDL.h&gt;
+#include &lt;SDL2/SDL_ttf.h&gt;
+#include &lt;fstream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+
+namespace
+{
+    const std::string playerFile = &quot;player.csv&quot;;
+
+    bool pointInside(const SDL_Rect&amp; rect, int x, int y)
+    {
+        return x &gt;= rect.x &amp;&amp; x &lt;= rect.x + rect.w &amp;&amp;
+               y &gt;= rect.y &amp;&amp; y &lt;= rect.y + rect.h;
+    }
+
+    TTF_Font* openFont(int size, TTF_Font* fallback)
+    {
+        TTF_Font* font = TTF_OpenFont(&quot;debrosee-font/Debrosee-ALPnL.ttf&quot;, size);
+        return font ? font : fallback;
+    }
+
+    void drawText(SDL_Renderer* renderer,
+                  TTF_Font* font,
+                  const std::string&amp; text,
+                  SDL_Color color,
+                  SDL_Rect bounds,
+                  bool center = true)
+    {
+        if (!renderer || !font || text.empty())
+        {
+            return;
+        }
+
+        SDL_Surface* surface = TTF_RenderUTF8_Blended(font, text.c_str(), color);
+        if (!surface)
+        {
+            return;
+        }
+
+        SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_FreeSurface(surface);
+        if (!texture)
+        {
+            return;
+        }
+
+        int textW = 0;
+        int textH = 0;
+        SDL_QueryTexture(texture, nullptr, nullptr, &amp;textW, &amp;textH);
+        float scaleW = textW &gt; 0 ? (float)bounds.w / (float)textW : 1.0f;
+        float scaleH = textH &gt; 0 ? (float)bounds.h / (float)textH : 1.0f;
+        float scale = scaleW &lt; scaleH ? scaleW : scaleH;
+        if (scale &gt; 1.0f)
+        {
+            scale = 1.0f;
+        }
+
+        int drawW = (int)(textW * scale);
+        int drawH = (int)(textH * scale);
+        SDL_Rect target = {
+            center ? bounds.x + (bounds.w - drawW) / 2 : bounds.x,
+            bounds.y + (bounds.h - drawH) / 2,
+            drawW,
+            drawH
+        };
+
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h2>Issues Faced and Solutions</h2>
+<p>Typical issues in this module include invalid SDL pointers, oversized coordinates, shallow-copy confusion for textures, repeated text texture creation, off-screen objects growing memory, and input state transitions. The implemented solution pattern is to validate pointers, clamp screen-dependent values, share texture pointers without ownership, erase off-screen objects, cap deltaTime, and centralize screen-size queries.</p>
+<h1>Chapter 14 - COMPLETE GAME FLOW</h1>
+<p>Theory: this chapter starts from the beginner concept, then connects it to the concrete C++ and SDL2 implementation used in Jumpa Verse.</p>
+<p>Concept: the module is built as a small real-time system where state is stored in C++ objects, updated once per frame, and drawn through SDL2 renderer commands.</p>
+<p>Implementation: the relevant source surface for this chapter is main.cpp, functions.h. The code favors simple classes, vectors, SDL_Rect geometry, shared SDL_Texture pointers, and explicit event polling.</p>
+
+
+<figure>
+  <img src="figures/ch14_master.png" alt="Figure 14.1 Master architecture diagram" width="490" height="294" />
+  <figcaption>Figure 14.1 Master architecture diagram</figcaption>
+  <p class="figure-note">The full application is a set of screen and gameplay loops coordinated by main.cpp.</p>
+</figure>
+
+
+<figure>
+  <img src="figures/ch14_sequence.png" alt="Figure 14.2 Full sequence diagram" width="490" height="294" />
+  <figcaption>Figure 14.2 Full sequence diagram</figcaption>
+  <p class="figure-note">This is the end-to-end program route from startup to shutdown.</p>
+</figure>
+
+
+<h2>Concepts Before Code</h2>
+<p>C++ concepts used here include classes, constructors, references, pointers, enums, namespaces, stack variables, dynamic containers, and RAII-style cleanup where SDL objects are manually destroyed. STL concepts include std::vector storage, push/emplace operations, erase-based recycling, std::string text state, fstream streams, sorting, and iterating by index or reference. SDL2 concepts include renderer ownership, event queues, rectangles as geometry, texture resources, surfaces as temporary CPU bitmaps, and frame presentation.</p>
+<h2>Implementation Notes</h2>
+<p>The complete system starts at initialization, enters menu navigation, resets gameplay state, processes the real-time loop, saves death results, and returns to menu or restarts based on the selected action.</p>
+<h3>Code Excerpt: main.cpp</h3>
+<pre><code>#include &lt;SDL2/SDL_render.h&gt;
+#include &lt;SDL2/SDL_video.h&gt;
+#include&lt;iostream&gt;
+#include&lt;SDL2/SDL.h&gt;
+#include &lt;iterator&gt;
+#include&lt;vector&gt;
+#include&lt;string.h&gt;
+#include&lt;vector&gt;
+#include&lt;algorithm&gt;//For basic algorithim like sorting 
+#include&quot;object.h&quot;
+#include&lt;SDL2/SDL_image.h&gt;
+#include &quot;functions.h&quot;
+#include&lt;stdlib.h&gt;
+#include&lt;SDL2/SDL_ttf.h&gt;
+float cammeraDash=0;
+bool exitb = false;
+int main()
+{
+    SDL_Window* window=nullptr;
+    SDL_Renderer* renderer=nullptr;
+     
+
+    player player1;
+   
+
+    if(!init(window,renderer))
+    {
+        std::cerr&lt;&lt;&quot;FAILD TO START &quot;&lt;&lt;std::endl;
+        return -1;
+    }
+
+    float cammera_offSet=0.5f; //no 2d camera in sdl2 so we create an illusion 
+    //  ground_Class ground(100,900,500,100,renderer,&quot;Images_textures/ground.jpeg&quot;,&quot;Images_textures/underGround.jpeg&quot;);
+
+    //    ground=groundRandomgenerator(ground,renderer);
+    SDL_Texture* groundTex = IMG_LoadTexture(renderer, &quot;Images_textures/ground.jpeg&quot;);
+    SDL_Texture* ugTex = IMG_LoadTexture(renderer, &quot;Images_textures/underGround.jpeg&quot;);
+    TTF_Font *font =TTF_OpenFont(&quot;debrosee-font/Debrosee-ALPnL.ttf&quot;,100);
+    std::vector&lt;trapSpike&gt; trap;
+    std::vector&lt;ground_Class&gt; ground;
+    Score score;
+    GameOver gameOver;
+    auto resetGameplay = [&amp;]()
+    {
+        player1 = player();
+        cammera_offSet = 0.5f;
+        trap.clear();
+        ground = ground_generator(renderer, groundTex, ugTex);
+        groundRandomgenerator(renderer, groundTex, ugTex, ground, trap);
+        // ground.push_back(temp);
+        resetScore(score);
+        gameOver.reset();
+    };
+
+    initializeScore(score);
+    resetGameplay();
+    bool quit=false;   
+    SDL_Event eventManager;
+     Uint32 lastTime = SDL_GetTicks();
+    int i=0;
+    int count=0;
+    const float targetFrameTime = 1000.0f / 60.0f; // 16.67 ms
+    bool menu=false;
+    while(!quit)
+    {
+
+       Uint32 frameStart = SDL_GetTicks();
+        int screenW = currentScreenWidth;
+        int screenH = currentScreenHeight;
+        getScreenSize(renderer, screenW, screenH);
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h3>Code Excerpt: functions.h</h3>
+<pre><code>#pragma once
+#include &lt;SDL2/SDL.h&gt;
+#include &lt;vector&gt;
+#include &lt;SDL2/SDL_ttf.h&gt;
+#include &lt;string&gt;
+#include &lt;cctype&gt;
+
+inline std::string toUpperUsername(const std::string&amp; username)
+{
+    std::string upperUsername = username;
+    for (char&amp; character : upperUsername)
+    {
+        character = (char)std::toupper((unsigned char)character);
+    }
+    return upperUsername;
+}
+
+extern bool exitb;
+extern float cammeraDash;
+extern std::string currentPlayerUsername;
+
+constexpr int GAME_WIDTH = 1980;
+constexpr int GAME_HEIGHT = 1260;
+extern int currentScreenWidth;
+extern int currentScreenHeight;
+
+class ground_Class;
+class trapSpike;
+class player;
+class Score;
+class GameOver;
+enum class GameOverAction;
+enum class DeathCause;
+enum class LoginScreenAction;
+enum class RegisterScreenAction;
+bool init(SDL_Window*&amp; Window, SDL_Renderer*&amp; renderer);
+void close(SDL_Window* window, SDL_Renderer* renderer);
+void getScreenSize(SDL_Renderer* renderer, int&amp; screenW, int&amp; screenH);
+bool handleWindowControlEvent(SDL_Renderer* renderer, const SDL_Event&amp; event);
+void renderWindowControls(SDL_Renderer* renderer);
+
+std::vector&lt;ground_Class&gt; ground_generator(SDL_Renderer* renderer,SDL_Texture* groundTex,SDL_Texture* ugTex);
+
+
+// ground_Class groundRandomgenerator(SDL_Renderer* renderer,SDL_Texture* groundTex,SDL_Texture* ugTex,std::vector&lt;ground_Class&gt; &amp;prevGround,std::vector&lt;trapSpike&gt;&amp; trap);
+
+void groundRandomgenerator(SDL_Renderer* renderer,
+                           SDL_Texture* groundTex,
+                           SDL_Texture* ugTex,
+                           std::vector&lt;ground_Class&gt; &amp;prevGround,
+                           std::vector&lt;trapSpike&gt;&amp; trap);
+// std::vector&lt;ground_Class&gt; cameraMovmentObj(std::vector&lt;ground_Class&gt; ground,float cameraOffset);
+
+// std::vector&lt;ground_Class&gt; freeMemory(std::vector&lt;ground_Class&gt; ground);
+void freeMemory(std::vector&lt;ground_Class&gt;&amp; ground);
+void cameraMovmentObj(std::vector&lt;ground_Class&gt;&amp; ground, float cameraOffset,std::vector&lt;trapSpike&gt;&amp;trap);
+
+
+void trapTriangle(SDL_Renderer* renderer, std::vector&lt;trapSpike&gt;&amp; trap, std::vector&lt;ground_Class&gt;&amp; ground, int i, int maxTraps = 4);
+void trapFreeMemory(std::vector&lt;trapSpike&gt;&amp;trap);
+
+bool menuScreen(SDL_Renderer* renderer, TTF_Font* font);
+LoginScreenAction runLoginScreen(SDL_Renderer* renderer, TTF_Font* font);
+RegisterScreenAction runRegisterScreen(SDL_Renderer* renderer, TTF_Font* font);
+void runScoreMenu(SDL_Renderer* renderer, TTF_Font* font);
+
+void physicsDevelop(player&amp; player1,
+                    std::vector&lt;ground_Class&gt;&amp; g1,
+                    float deltaTime,
+                    const Uint8* keyboardState);
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h2>Issues Faced and Solutions</h2>
+<p>Typical issues in this module include invalid SDL pointers, oversized coordinates, shallow-copy confusion for textures, repeated text texture creation, off-screen objects growing memory, and input state transitions. The implemented solution pattern is to validate pointers, clamp screen-dependent values, share texture pointers without ownership, erase off-screen objects, cap deltaTime, and centralize screen-size queries.</p>
+<h1>Chapter 15 - RANDOM NUMBER GENERATION</h1>
+<p>Theory: this chapter starts from the beginner concept, then connects it to the concrete C++ and SDL2 implementation used in Jumpa Verse.</p>
+<p>Concept: the module is built as a small real-time system where state is stored in C++ objects, updated once per frame, and drawn through SDL2 renderer commands.</p>
+<p>Implementation: the relevant source surface for this chapter is ground.cpp, traps.cpp. The code favors simple classes, vectors, SDL_Rect geometry, shared SDL_Texture pointers, and explicit event polling.</p>
+
+
+<figure>
+  <img src="figures/ch15_rng.png" alt="Figure 15.1 RNG flowchart" width="490" height="294" />
+  <figcaption>Figure 15.1 RNG flowchart</figcaption>
+  <p class="figure-note">The engine and distribution split seed generation from number range logic.</p>
+</figure>
+
+
+<figure>
+  <img src="figures/ch15_prob.png" alt="Figure 15.2 Probability visual" width="490" height="294" />
+  <figcaption>Figure 15.2 Probability visual</figcaption>
+  <p class="figure-note">Different random variables shape difficulty and platform rhythm.</p>
+</figure>
+
+
+<h2>Concepts Before Code</h2>
+<p>C++ concepts used here include classes, constructors, references, pointers, enums, namespaces, stack variables, dynamic containers, and RAII-style cleanup where SDL objects are manually destroyed. STL concepts include std::vector storage, push/emplace operations, erase-based recycling, std::string text state, fstream streams, sorting, and iterating by index or reference. SDL2 concepts include renderer ownership, event queues, rectangles as geometry, texture resources, surfaces as temporary CPU bitmaps, and frame presentation.</p>
+<h2>Implementation Notes</h2>
+<p>Randomness controls ground y-position, width, height, gap, and trap placement. The current implementation uses std::random_device and std::mt19937 for modern C++ random generation, while the chapter also explains beginner srand/rand concepts for comparison.</p>
+<h3>Code Excerpt: ground.cpp</h3>
+<pre><code>#include &lt;SDL2/SDL_rect.h&gt;
+#include &lt;SDL2/SDL_render.h&gt;
+#include &lt;SDL2/SDL_video.h&gt;
+#include&lt;iostream&gt;
+#include&lt;SDL2/SDL.h&gt;
+#include &lt;iterator&gt;
+#include&lt;vector&gt;
+#include&lt;string.h&gt;
+
+#include&lt;algorithm&gt;//For basic algorithim like sorting 
+#include&quot;object.h&quot;
+#include&lt;SDL2/SDL_image.h&gt;
+#include&lt;random&gt;
+#include &quot;functions.h&quot;
+
+namespace
+{
+    int clampInt(int value, int minValue, int maxValue)
+    {
+        if (value &lt; minValue)
+        {
+            return minValue;
+        }
+        if (value &gt; maxValue)
+        {
+            return maxValue;
+        }
+        return value;
+    }
+}
+
+std::vector&lt;ground_Class&gt; ground_generator(SDL_Renderer* renderer,SDL_Texture* groundTex,SDL_Texture* ugTex)
+{
+    int screenW = currentScreenWidth;
+    int screenH = currentScreenHeight;
+    getScreenSize(renderer, screenW, screenH);
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    const int minY = clampInt((int)(screenH * 0.40f), 160, screenH - 260);
+    const int maxY = clampInt((int)(screenH * 0.72f), minY + 50, screenH - 120);
+    const int minW = clampInt((int)(screenW * 0.52f), 700, 1700);
+    const int maxW = clampInt((int)(screenW * 0.95f), minW, 3000);
+    const int maxH = clampInt((int)(screenH * 0.30f), 140, 460);
+
+    std::uniform_int_distribution&lt;&gt; disty(minY, maxY);
+    std::uniform_int_distribution&lt;&gt; distw(minW, maxW);
+    std::uniform_int_distribution&lt;&gt; disth(50, maxH);
+
+    int x = 0;
+    int y = disty(gen);
+    int w = distw(gen);
+    int h = disth(gen);
+
+    std::vector&lt;ground_Class&gt; ground;
+
+    ground.emplace_back(
+        x, y, w, h,
+       groundTex,ugTex
+    );
+    ground[0].first_ground=true;
+
+    return ground;
+}
+
+
+void groundRandomgenerator(SDL_Renderer* renderer,SDL_Texture* groundTex,SDL_Texture* ugTex,std::vector&lt;ground_Class&gt; &amp;prevGround,std::vector&lt;trapSpike&gt;&amp; trap)
+{   
+    if (prevGround.empty())
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h3>Code Excerpt: traps.cpp</h3>
+<pre><code>#include &lt;SDL2/SDL_rect.h&gt;
+#include &lt;SDL2/SDL_render.h&gt;
+#include &lt;SDL2/SDL_video.h&gt;
+#include&lt;iostream&gt;
+#include&lt;SDL2/SDL.h&gt;
+#include &lt;iterator&gt;
+#include&lt;vector&gt;
+#include&lt;string.h&gt;
+#include&lt;algorithm&gt;//For basic algorithim like sorting 
+#include&quot;object.h&quot;
+#include&lt;SDL2/SDL_image.h&gt;
+#include&lt;random&gt;
+#include &quot;functions.h&quot;
+
+void trapTriangle(SDL_Renderer* renderer, std::vector&lt;trapSpike&gt;&amp; trap, std::vector&lt;ground_Class&gt;&amp; ground, int i, int maxTraps)
+{
+    if (ground[i].first_ground || ground[i].trapCount &gt;= maxTraps)
+    {
+        return;
+    }
+
+    int screenW = currentScreenWidth;
+    int screenH = currentScreenHeight;
+    getScreenSize(renderer, screenW, screenH);
+    (void)screenH;
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    // Add a safety limit to prevent infinite looping if conditions are hard to meet
+    int attempts = 0;
+    const int maxAttempts = 100;
+
+    while (attempts &lt; maxAttempts)
+    {
+        attempts++;
+        std::uniform_int_distribution&lt;&gt; chances(0, 1000);
+
+        // Probability check
+        if (chances(gen) &lt; 100) // Adjusted probability for more consistent generation
+        {
+            const int trapSize = scaledTrapSize();
+            const int margin = std::max(100, trapSize * 2);
+            if (ground[i].w &lt;= margin * 2)
+            {
+                return;
+            }
+
+            std::uniform_int_distribution&lt;&gt; distp(ground[i].x + margin,
+                                                  (ground[i].x + ground[i].w) - margin);
+            int spikeX = distp(gen);
+
+            // Check for overlap with existing traps
+            bool overlapping = false;
+            const int minTrapSpacing = std::min(300, std::max(trapSize * 2, screenW / 10));
+            for (const auto&amp; existingTrap : trap)
+            {
+                if (spikeX - existingTrap.x &lt;= minTrapSpacing &amp;&amp;
+                    spikeX - existingTrap.x &gt;= -minTrapSpacing)
+                {
+                    overlapping = true;
+                    break;
+                }
+            }
+
+            if (!overlapping &amp;&amp; ground[i].trapCount &lt; maxTraps)
+            {
+                ground[i].trapCount++;
+                trap.emplace_back(spikeX, ground[i].y, trapSize, trapSize);
+                return; // Successfully added one trap
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h2>Issues Faced and Solutions</h2>
+<p>Typical issues in this module include invalid SDL pointers, oversized coordinates, shallow-copy confusion for textures, repeated text texture creation, off-screen objects growing memory, and input state transitions. The implemented solution pattern is to validate pointers, clamp screen-dependent values, share texture pointers without ownership, erase off-screen objects, cap deltaTime, and centralize screen-size queries.</p>
+<h1>Chapter 16 - LIBRARIES USED</h1>
+<p>Theory: this chapter starts from the beginner concept, then connects it to the concrete C++ and SDL2 implementation used in Jumpa Verse.</p>
+<p>Concept: the module is built as a small real-time system where state is stored in C++ objects, updated once per frame, and drawn through SDL2 renderer commands.</p>
+<p>Implementation: the relevant source surface for this chapter is main.cpp, functions.h. The code favors simple classes, vectors, SDL_Rect geometry, shared SDL_Texture pointers, and explicit event polling.</p>
+
+
+<figure>
+  <img src="figures/ch16_deps.png" alt="Figure 16.1 Library dependency diagram" width="490" height="294" />
+  <figcaption>Figure 16.1 Library dependency diagram</figcaption>
+  <p class="figure-note">Project modules depend on SDL extensions and standard C++ libraries.</p>
+</figure>
+
+
+<figure>
+  <img src="figures/ch16_roles.png" alt="Figure 16.2 Header role map" width="490" height="294" />
+  <figcaption>Figure 16.2 Header role map</figcaption>
+  <p class="figure-note">Headers map directly to rendering, input, text, storage, and containers.</p>
+</figure>
+
+<table><caption>SDL2 and extension functions used by Jumpa Verse</caption><thead><tr><th>Syntax</th><th>Return</th><th>Project role</th></tr></thead><tbody><tr><td><code>SDL_Init(Uint32 flags)</code></td><td>int</td><td>Initializes SDL subsystems; called in init() before creating the window.</td></tr><tr><td><code>SDL_CreateWindow(title,x,y,w,h,flags)</code></td><td>SDL_Window*</td><td>Allocates the native game window and applies fullscreen/resizable flags.</td></tr><tr><td><code>SDL_CreateRenderer(window,index,flags)</code></td><td>SDL_Renderer*</td><td>Creates the accelerated rendering context used by all draw calls.</td></tr><tr><td><code>SDL_PollEvent(SDL_Event*)</code></td><td>int</td><td>Pulls queued keyboard, mouse, text, quit, and window events inside each loop.</td></tr><tr><td><code>SDL_GetKeyboardState(int*)</code></td><td>const Uint8*</td><td>Returns the current keyboard state array used by physicsDevelop().</td></tr><tr><td><code>SDL_GetMouseState(int*,int*)</code></td><td>Uint32</td><td>Reads mouse position/buttons for menu hover and player jump shortcuts.</td></tr><tr><td><code>SDL_SetRenderDrawColor(renderer,r,g,b,a)</code></td><td>int</td><td>Selects the drawing color for clear, rectangles, borders, and UI.</td></tr><tr><td><code>SDL_RenderClear(renderer)</code></td><td>int</td><td>Clears the current back buffer before drawing the next frame.</td></tr><tr><td><code>SDL_RenderFillRect(renderer, rect)</code></td><td>int</td><td>Draws filled UI buttons, player body, and panels.</td></tr><tr><td><code>SDL_RenderDrawRect(renderer, rect)</code></td><td>int</td><td>Draws borders for score boxes, controls, and hitbox-style UI.</td></tr><tr><td><code>SDL_RenderCopy(renderer, texture, src, dst)</code></td><td>int</td><td>Copies texture pixels into a target rectangle for ground and text.</td></tr><tr><td><code>SDL_RenderPresent(renderer)</code></td><td>void</td><td>Swaps the rendered back buffer to the visible screen.</td></tr><tr><td><code>IMG_Init(flags)</code></td><td>int</td><td>Initializes SDL_image JPEG support for ground texture loading.</td></tr><tr><td><code>IMG_LoadTexture(renderer,path)</code></td><td>SDL_Texture*</td><td>Loads image files directly into GPU texture resources.</td></tr><tr><td><code>TTF_OpenFont(path,size)</code></td><td>TTF_Font*</td><td>Loads typefaces used by menus, score display, and screens.</td></tr><tr><td><code>TTF_RenderText_Blended(font,text,color)</code></td><td>SDL_Surface*</td><td>Rasterizes text into a temporary CPU surface.</td></tr><tr><td><code>SDL_CreateTextureFromSurface(renderer,surface)</code></td><td>SDL_Texture*</td><td>Uploads the text surface into a GPU texture.</td></tr><tr><td><code>filledTrigonRGBA(renderer,...)</code></td><td>int</td><td>SDL2_gfx filled triangle used for solid spike traps.</td></tr><tr><td><code>trigonRGBA(renderer,...)</code></td><td>int</td><td>SDL2_gfx outline triangle used for trap edges.</td></tr><tr><td><code>SDL_SetWindowFullscreen(window, flags)</code></td><td>int</td><td>Toggles desktop fullscreen and windowed mode in custom controls.</td></tr></tbody></table>
+<h2>Concepts Before Code</h2>
+<p>C++ concepts used here include classes, constructors, references, pointers, enums, namespaces, stack variables, dynamic containers, and RAII-style cleanup where SDL objects are manually destroyed. STL concepts include std::vector storage, push/emplace operations, erase-based recycling, std::string text state, fstream streams, sorting, and iterating by index or reference. SDL2 concepts include renderer ownership, event queues, rectangles as geometry, texture resources, surfaces as temporary CPU bitmaps, and frame presentation.</p>
+<h2>Implementation Notes</h2>
+<p>The project includes SDL core headers, SDL_render, SDL_video, SDL_image, SDL_ttf, SDL2_gfx, iostream, iterator, vector, string/string.h, algorithm, stdlib, fstream, sstream, and project headers. Each library contributes a narrow role.</p>
+<h3>Code Excerpt: main.cpp</h3>
+<pre><code>#include &lt;SDL2/SDL_render.h&gt;
+#include &lt;SDL2/SDL_video.h&gt;
+#include&lt;iostream&gt;
+#include&lt;SDL2/SDL.h&gt;
+#include &lt;iterator&gt;
+#include&lt;vector&gt;
+#include&lt;string.h&gt;
+#include&lt;vector&gt;
+#include&lt;algorithm&gt;//For basic algorithim like sorting 
+#include&quot;object.h&quot;
+#include&lt;SDL2/SDL_image.h&gt;
+#include &quot;functions.h&quot;
+#include&lt;stdlib.h&gt;
+#include&lt;SDL2/SDL_ttf.h&gt;
+float cammeraDash=0;
+bool exitb = false;
+int main()
+{
+    SDL_Window* window=nullptr;
+    SDL_Renderer* renderer=nullptr;
+     
+
+    player player1;
+   
+
+    if(!init(window,renderer))
+    {
+        std::cerr&lt;&lt;&quot;FAILD TO START &quot;&lt;&lt;std::endl;
+        return -1;
+    }
+
+    float cammera_offSet=0.5f; //no 2d camera in sdl2 so we create an illusion 
+    //  ground_Class ground(100,900,500,100,renderer,&quot;Images_textures/ground.jpeg&quot;,&quot;Images_textures/underGround.jpeg&quot;);
+
+    //    ground=groundRandomgenerator(ground,renderer);
+    SDL_Texture* groundTex = IMG_LoadTexture(renderer, &quot;Images_textures/ground.jpeg&quot;);
+    SDL_Texture* ugTex = IMG_LoadTexture(renderer, &quot;Images_textures/underGround.jpeg&quot;);
+    TTF_Font *font =TTF_OpenFont(&quot;debrosee-font/Debrosee-ALPnL.ttf&quot;,100);
+    std::vector&lt;trapSpike&gt; trap;
+    std::vector&lt;ground_Class&gt; ground;
+    Score score;
+    GameOver gameOver;
+    auto resetGameplay = [&amp;]()
+    {
+        player1 = player();
+        cammera_offSet = 0.5f;
+        trap.clear();
+        ground = ground_generator(renderer, groundTex, ugTex);
+        groundRandomgenerator(renderer, groundTex, ugTex, ground, trap);
+        // ground.push_back(temp);
+        resetScore(score);
+        gameOver.reset();
+    };
+
+    initializeScore(score);
+    resetGameplay();
+    bool quit=false;   
+    SDL_Event eventManager;
+     Uint32 lastTime = SDL_GetTicks();
+    int i=0;
+    int count=0;
+    const float targetFrameTime = 1000.0f / 60.0f; // 16.67 ms
+    bool menu=false;
+    while(!quit)
+    {
+
+       Uint32 frameStart = SDL_GetTicks();
+        int screenW = currentScreenWidth;
+        int screenH = currentScreenHeight;
+        getScreenSize(renderer, screenW, screenH);
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h3>Code Excerpt: functions.h</h3>
+<pre><code>#pragma once
+#include &lt;SDL2/SDL.h&gt;
+#include &lt;vector&gt;
+#include &lt;SDL2/SDL_ttf.h&gt;
+#include &lt;string&gt;
+#include &lt;cctype&gt;
+
+inline std::string toUpperUsername(const std::string&amp; username)
+{
+    std::string upperUsername = username;
+    for (char&amp; character : upperUsername)
+    {
+        character = (char)std::toupper((unsigned char)character);
+    }
+    return upperUsername;
+}
+
+extern bool exitb;
+extern float cammeraDash;
+extern std::string currentPlayerUsername;
+
+constexpr int GAME_WIDTH = 1980;
+constexpr int GAME_HEIGHT = 1260;
+extern int currentScreenWidth;
+extern int currentScreenHeight;
+
+class ground_Class;
+class trapSpike;
+class player;
+class Score;
+class GameOver;
+enum class GameOverAction;
+enum class DeathCause;
+enum class LoginScreenAction;
+enum class RegisterScreenAction;
+bool init(SDL_Window*&amp; Window, SDL_Renderer*&amp; renderer);
+void close(SDL_Window* window, SDL_Renderer* renderer);
+void getScreenSize(SDL_Renderer* renderer, int&amp; screenW, int&amp; screenH);
+bool handleWindowControlEvent(SDL_Renderer* renderer, const SDL_Event&amp; event);
+void renderWindowControls(SDL_Renderer* renderer);
+
+std::vector&lt;ground_Class&gt; ground_generator(SDL_Renderer* renderer,SDL_Texture* groundTex,SDL_Texture* ugTex);
+
+
+// ground_Class groundRandomgenerator(SDL_Renderer* renderer,SDL_Texture* groundTex,SDL_Texture* ugTex,std::vector&lt;ground_Class&gt; &amp;prevGround,std::vector&lt;trapSpike&gt;&amp; trap);
+
+void groundRandomgenerator(SDL_Renderer* renderer,
+                           SDL_Texture* groundTex,
+                           SDL_Texture* ugTex,
+                           std::vector&lt;ground_Class&gt; &amp;prevGround,
+                           std::vector&lt;trapSpike&gt;&amp; trap);
+// std::vector&lt;ground_Class&gt; cameraMovmentObj(std::vector&lt;ground_Class&gt; ground,float cameraOffset);
+
+// std::vector&lt;ground_Class&gt; freeMemory(std::vector&lt;ground_Class&gt; ground);
+void freeMemory(std::vector&lt;ground_Class&gt;&amp; ground);
+void cameraMovmentObj(std::vector&lt;ground_Class&gt;&amp; ground, float cameraOffset,std::vector&lt;trapSpike&gt;&amp;trap);
+
+
+void trapTriangle(SDL_Renderer* renderer, std::vector&lt;trapSpike&gt;&amp; trap, std::vector&lt;ground_Class&gt;&amp; ground, int i, int maxTraps = 4);
+void trapFreeMemory(std::vector&lt;trapSpike&gt;&amp;trap);
+
+bool menuScreen(SDL_Renderer* renderer, TTF_Font* font);
+LoginScreenAction runLoginScreen(SDL_Renderer* renderer, TTF_Font* font);
+RegisterScreenAction runRegisterScreen(SDL_Renderer* renderer, TTF_Font* font);
+void runScoreMenu(SDL_Renderer* renderer, TTF_Font* font);
+
+void physicsDevelop(player&amp; player1,
+                    std::vector&lt;ground_Class&gt;&amp; g1,
+                    float deltaTime,
+                    const Uint8* keyboardState);
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h2>Issues Faced and Solutions</h2>
+<p>Typical issues in this module include invalid SDL pointers, oversized coordinates, shallow-copy confusion for textures, repeated text texture creation, off-screen objects growing memory, and input state transitions. The implemented solution pattern is to validate pointers, clamp screen-dependent values, share texture pointers without ownership, erase off-screen objects, cap deltaTime, and centralize screen-size queries.</p>
+<h1>Chapter 17 - FULLSCREEN IMPLEMENTATION</h1>
+<p>Theory: this chapter starts from the beginner concept, then connects it to the concrete C++ and SDL2 implementation used in Jumpa Verse.</p>
+<p>Concept: the module is built as a small real-time system where state is stored in C++ objects, updated once per frame, and drawn through SDL2 renderer commands.</p>
+<p>Implementation: the relevant source surface for this chapter is Error_Handlers.cpp, functions.h. The code favors simple classes, vectors, SDL_Rect geometry, shared SDL_Texture pointers, and explicit event polling.</p>
+
+
+<figure>
+  <img src="figures/ch17_fullscreen.png" alt="Figure 17.1 Fullscreen diagram" width="490" height="294" />
+  <figcaption>Figure 17.1 Fullscreen diagram</figcaption>
+  <p class="figure-note">The toggle checks current flags before changing the window mode.</p>
+</figure>
+
+
+<figure>
+  <img src="figures/ch17_resolution.png" alt="Figure 17.2 Resolution comparison" width="490" height="294" />
+  <figcaption>Figure 17.2 Resolution comparison</figcaption>
+  <p class="figure-note">Screen-dependent scaling functions keep gameplay readable across display sizes.</p>
+</figure>
+
+
+<h2>Concepts Before Code</h2>
+<p>C++ concepts used here include classes, constructors, references, pointers, enums, namespaces, stack variables, dynamic containers, and RAII-style cleanup where SDL objects are manually destroyed. STL concepts include std::vector storage, push/emplace operations, erase-based recycling, std::string text state, fstream streams, sorting, and iterating by index or reference. SDL2 concepts include renderer ownership, event queues, rectangles as geometry, texture resources, surfaces as temporary CPU bitmaps, and frame presentation.</p>
+<h2>Implementation Notes</h2>
+<p>Fullscreen mode is enabled at window creation with SDL_WINDOW_FULLSCREEN_DESKTOP and toggled later through custom window controls using SDL_SetWindowFullscreen. Windowed mode restores the configured GAME_WIDTH and GAME_HEIGHT.</p>
+<h3>Code Excerpt: Error_Handlers.cpp</h3>
+<pre><code>#include &lt;SDL2/SDL_render.h&gt;
+#include &lt;SDL2/SDL_video.h&gt;
+#include&lt;iostream&gt;
+#include&lt;SDL2/SDL.h&gt;
+#include&lt;vector&gt;
+#include&lt;string.h&gt;
+#include&lt;vector&gt;
+#include&lt;algorithm&gt;//For basic algorithim like sorting 
+#include&quot;object.h&quot;
+#include&quot;functions.h&quot;
+#include&lt;SDL2/SDL_image.h&gt;
+
+
+
+bool init(SDL_Window*&amp; Window,SDL_Renderer *&amp;renderer);//Check 
+void close(SDL_Window* window,SDL_Renderer* renderer);
+
+int currentScreenWidth = GAME_WIDTH;
+int currentScreenHeight = GAME_HEIGHT;
+
+bool init(SDL_Window*&amp; Window,SDL_Renderer *&amp;renderer)
+{
+    if(SDL_Init(SDL_INIT_VIDEO)&lt;0)
+    {
+        std::cerr&lt;&lt;&quot;SDL couldnt be initialized! \t\t\t Error Type:\t&quot;&lt;&lt;SDL_GetError()&lt;&lt;std::endl;
+        return false;
+    }
+    if(TTF_Init()&lt;0)
+    {
+        std::cout&lt;&lt;&quot;TTF NOT FOUND&quot;&lt;&lt;std::endl;
+        return false;
+    }
+
+    if (!(IMG_Init(IMG_INIT_JPG) &amp; IMG_INIT_JPG))
+{
+    std::cerr &lt;&lt; &quot;SDL_image could not initialize! Error: &quot; &lt;&lt; IMG_GetError() &lt;&lt; std::endl;
+    return false;
+}
+
+
+    SDL_DisplayMode displayMode;
+    if (SDL_GetCurrentDisplayMode(0, &amp;displayMode) == 0)
+    {
+        currentScreenWidth = displayMode.w;
+        currentScreenHeight = displayMode.h;
+    }
+
+    Window = SDL_CreateWindow(&quot;Jumpa Verse&quot;,
+                              SDL_WINDOWPOS_CENTERED,
+                              SDL_WINDOWPOS_CENTERED,
+                              currentScreenWidth,
+                              currentScreenHeight,
+                              SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_FULLSCREEN_DESKTOP);
+
+    if(!Window)
+    {
+        std::cerr&lt;&lt;&quot;SDL WINDOW COULDNT START \t\t\tERROR TYPE:\t&quot;&lt;&lt;SDL_GetError()&lt;&lt;std::endl;
+        return false;
+    }
+    renderer=SDL_CreateRenderer(Window,-1,SDL_RENDERER_ACCELERATED);
+
+    if(!renderer)
+    {
+        std::cerr&lt;&lt;&quot;RENDERER COULDNT LOAD!\t\t\tSDL ERROR:\t&quot;&lt;&lt;SDL_GetError()&lt;&lt;std::endl;
+        return false;
+    }
+
+    SDL_SetWindowMinimumSize(Window, 960, 540);
+
+    return true;
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h3>Code Excerpt: functions.h</h3>
+<pre><code>#pragma once
+#include &lt;SDL2/SDL.h&gt;
+#include &lt;vector&gt;
+#include &lt;SDL2/SDL_ttf.h&gt;
+#include &lt;string&gt;
+#include &lt;cctype&gt;
+
+inline std::string toUpperUsername(const std::string&amp; username)
+{
+    std::string upperUsername = username;
+    for (char&amp; character : upperUsername)
+    {
+        character = (char)std::toupper((unsigned char)character);
+    }
+    return upperUsername;
+}
+
+extern bool exitb;
+extern float cammeraDash;
+extern std::string currentPlayerUsername;
+
+constexpr int GAME_WIDTH = 1980;
+constexpr int GAME_HEIGHT = 1260;
+extern int currentScreenWidth;
+extern int currentScreenHeight;
+
+class ground_Class;
+class trapSpike;
+class player;
+class Score;
+class GameOver;
+enum class GameOverAction;
+enum class DeathCause;
+enum class LoginScreenAction;
+enum class RegisterScreenAction;
+bool init(SDL_Window*&amp; Window, SDL_Renderer*&amp; renderer);
+void close(SDL_Window* window, SDL_Renderer* renderer);
+void getScreenSize(SDL_Renderer* renderer, int&amp; screenW, int&amp; screenH);
+bool handleWindowControlEvent(SDL_Renderer* renderer, const SDL_Event&amp; event);
+void renderWindowControls(SDL_Renderer* renderer);
+
+std::vector&lt;ground_Class&gt; ground_generator(SDL_Renderer* renderer,SDL_Texture* groundTex,SDL_Texture* ugTex);
+
+
+// ground_Class groundRandomgenerator(SDL_Renderer* renderer,SDL_Texture* groundTex,SDL_Texture* ugTex,std::vector&lt;ground_Class&gt; &amp;prevGround,std::vector&lt;trapSpike&gt;&amp; trap);
+
+void groundRandomgenerator(SDL_Renderer* renderer,
+                           SDL_Texture* groundTex,
+                           SDL_Texture* ugTex,
+                           std::vector&lt;ground_Class&gt; &amp;prevGround,
+                           std::vector&lt;trapSpike&gt;&amp; trap);
+// std::vector&lt;ground_Class&gt; cameraMovmentObj(std::vector&lt;ground_Class&gt; ground,float cameraOffset);
+
+// std::vector&lt;ground_Class&gt; freeMemory(std::vector&lt;ground_Class&gt; ground);
+void freeMemory(std::vector&lt;ground_Class&gt;&amp; ground);
+void cameraMovmentObj(std::vector&lt;ground_Class&gt;&amp; ground, float cameraOffset,std::vector&lt;trapSpike&gt;&amp;trap);
+
+
+void trapTriangle(SDL_Renderer* renderer, std::vector&lt;trapSpike&gt;&amp; trap, std::vector&lt;ground_Class&gt;&amp; ground, int i, int maxTraps = 4);
+void trapFreeMemory(std::vector&lt;trapSpike&gt;&amp;trap);
+
+bool menuScreen(SDL_Renderer* renderer, TTF_Font* font);
+LoginScreenAction runLoginScreen(SDL_Renderer* renderer, TTF_Font* font);
+RegisterScreenAction runRegisterScreen(SDL_Renderer* renderer, TTF_Font* font);
+void runScoreMenu(SDL_Renderer* renderer, TTF_Font* font);
+
+void physicsDevelop(player&amp; player1,
+                    std::vector&lt;ground_Class&gt;&amp; g1,
+                    float deltaTime,
+                    const Uint8* keyboardState);
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h2>Issues Faced and Solutions</h2>
+<p>Typical issues in this module include invalid SDL pointers, oversized coordinates, shallow-copy confusion for textures, repeated text texture creation, off-screen objects growing memory, and input state transitions. The implemented solution pattern is to validate pointers, clamp screen-dependent values, share texture pointers without ownership, erase off-screen objects, cap deltaTime, and centralize screen-size queries.</p>
+<h1>Chapter 18 - CLAMPING SYSTEM</h1>
+<p>Theory: this chapter starts from the beginner concept, then connects it to the concrete C++ and SDL2 implementation used in Jumpa Verse.</p>
+<p>Concept: the module is built as a small real-time system where state is stored in C++ objects, updated once per frame, and drawn through SDL2 renderer commands.</p>
+<p>Implementation: the relevant source surface for this chapter is ground.cpp, player.cpp, main.cpp. The code favors simple classes, vectors, SDL_Rect geometry, shared SDL_Texture pointers, and explicit event polling.</p>
+
+
+<figure>
+  <img src="figures/ch18_clamp.png" alt="Figure 18.1 Coordinate limit diagram" width="490" height="294" />
+  <figcaption>Figure 18.1 Coordinate limit diagram</figcaption>
+  <p class="figure-note">Clamping prevents positions and dimensions from leaving useful gameplay boundaries.</p>
+</figure>
+
+
+<figure>
+  <img src="figures/ch18_boundary.png" alt="Figure 18.2 Boundary visual" width="490" height="294" />
+  <figcaption>Figure 18.2 Boundary visual</figcaption>
+  <p class="figure-note">The clampInt helper in ground.cpp is representative of this safety pattern.</p>
+</figure>
+
+
+<h2>Concepts Before Code</h2>
+<p>C++ concepts used here include classes, constructors, references, pointers, enums, namespaces, stack variables, dynamic containers, and RAII-style cleanup where SDL objects are manually destroyed. STL concepts include std::vector storage, push/emplace operations, erase-based recycling, std::string text state, fstream streams, sorting, and iterating by index or reference. SDL2 concepts include renderer ownership, event queues, rectangles as geometry, texture resources, surfaces as temporary CPU bitmaps, and frame presentation.</p>
+<h2>Implementation Notes</h2>
+<p>Clamping restricts values to safe ranges. The project clamps generation ranges, player x-position, deltaTime, tile sizes, and screen-dependent platform dimensions so random generation and physics remain playable.</p>
+<h3>Code Excerpt: ground.cpp</h3>
+<pre><code>#include &lt;SDL2/SDL_rect.h&gt;
+#include &lt;SDL2/SDL_render.h&gt;
+#include &lt;SDL2/SDL_video.h&gt;
+#include&lt;iostream&gt;
+#include&lt;SDL2/SDL.h&gt;
+#include &lt;iterator&gt;
+#include&lt;vector&gt;
+#include&lt;string.h&gt;
+
+#include&lt;algorithm&gt;//For basic algorithim like sorting 
+#include&quot;object.h&quot;
+#include&lt;SDL2/SDL_image.h&gt;
+#include&lt;random&gt;
+#include &quot;functions.h&quot;
+
+namespace
+{
+    int clampInt(int value, int minValue, int maxValue)
+    {
+        if (value &lt; minValue)
+        {
+            return minValue;
+        }
+        if (value &gt; maxValue)
+        {
+            return maxValue;
+        }
+        return value;
+    }
+}
+
+std::vector&lt;ground_Class&gt; ground_generator(SDL_Renderer* renderer,SDL_Texture* groundTex,SDL_Texture* ugTex)
+{
+    int screenW = currentScreenWidth;
+    int screenH = currentScreenHeight;
+    getScreenSize(renderer, screenW, screenH);
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    const int minY = clampInt((int)(screenH * 0.40f), 160, screenH - 260);
+    const int maxY = clampInt((int)(screenH * 0.72f), minY + 50, screenH - 120);
+    const int minW = clampInt((int)(screenW * 0.52f), 700, 1700);
+    const int maxW = clampInt((int)(screenW * 0.95f), minW, 3000);
+    const int maxH = clampInt((int)(screenH * 0.30f), 140, 460);
+
+    std::uniform_int_distribution&lt;&gt; disty(minY, maxY);
+    std::uniform_int_distribution&lt;&gt; distw(minW, maxW);
+    std::uniform_int_distribution&lt;&gt; disth(50, maxH);
+
+    int x = 0;
+    int y = disty(gen);
+    int w = distw(gen);
+    int h = disth(gen);
+
+    std::vector&lt;ground_Class&gt; ground;
+
+    ground.emplace_back(
+        x, y, w, h,
+       groundTex,ugTex
+    );
+    ground[0].first_ground=true;
+
+    return ground;
+}
+
+
+void groundRandomgenerator(SDL_Renderer* renderer,SDL_Texture* groundTex,SDL_Texture* ugTex,std::vector&lt;ground_Class&gt; &amp;prevGround,std::vector&lt;trapSpike&gt;&amp; trap)
+{   
+    if (prevGround.empty())
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h3>Code Excerpt: player.cpp</h3>
+<pre><code>#include &lt;SDL2/SDL_render.h&gt;
+#include &lt;SDL2/SDL_scancode.h&gt;
+#include &lt;SDL2/SDL_video.h&gt;
+#include&lt;iostream&gt;
+#include&lt;SDL2/SDL.h&gt;
+#include &lt;iterator&gt;
+#include &lt;ostream&gt;
+#include&lt;vector&gt;
+#include&lt;string.h&gt;
+#include&lt;vector&gt;
+#include&lt;algorithm&gt;//For basic algorithim like sorting 
+#include&quot;object.h&quot;
+#include&lt;SDL2/SDL_image.h&gt;
+#include &quot;functions.h&quot;
+#include&lt;stdlib.h&gt;
+#include&lt;SDL2/SDL_ttf.h&gt;
+#include&lt;limits&gt;
+int i=0;
+void physicsDevelop(player&amp; player1,
+                    std::vector&lt;ground_Class&gt;&amp; g1,
+                    float deltaTime,
+                    const Uint8* keyboardState)
+{
+    Uint32 mouseState = SDL_GetMouseState(NULL, NULL);
+    
+    if (deltaTime &lt;= 0.0f)
+    {
+        return;
+    }
+
+    bool jumpPressed = keyboardState[SDL_SCANCODE_SPACE] ||
+                       keyboardState[SDL_SCANCODE_W] ||
+                       keyboardState[SDL_SCANCODE_UP];
+
+    bool characterDown=keyboardState[SDL_SCANCODE_LCTRL] ||
+                        keyboardState[SDL_SCANCODE_S]||
+                        keyboardState[SDL_SCANCODE_DOWN];
+
+    bool characterdash=keyboardState[SDL_SCANCODE_LSHIFT] ||
+                        keyboardState[SDL_SCANCODE_D]||
+                        keyboardState[SDL_SCANCODE_RIGHT];
+    bool backward=keyboardState[SDL_SCANCODE_A] ||
+                        keyboardState[SDL_SCANCODE_LEFT]||
+                        keyboardState[SDL_SCANCODE_LALT];
+
+        bool leftClick  = mouseState &amp; SDL_BUTTON(SDL_BUTTON_LEFT);
+    bool rightClick = mouseState &amp; SDL_BUTTON(SDL_BUTTON_RIGHT);
+    bool middleClick= mouseState &amp; SDL_BUTTON(SDL_BUTTON_MIDDLE);
+
+//     if (mouseState &amp; SDL_BUTTON(SDL_BUTTON_RIGHT))
+// {
+//     std::cout &lt;&lt; &quot;Right click detected\n&quot;;
+// }
+    if ((jumpPressed || leftClick)&amp;&amp; player1.onGround)
+    {
+        player1.jumpVelocity = player1.jumpPower;
+        player1.onGround = false;
+    }
+    if (characterDown||rightClick)
+    {
+        player1.gravity+=2000;
+    }
+    const int playerMoveRight = std::min(9, std::max(5, currentScreenWidth / 360));
+    const int playerMoveLeft = std::min(14, std::max(8, currentScreenWidth / 240));
+    const int rightLimit = currentScreenWidth - player1.character.w;
+    if(characterdash &amp;&amp; (player1.character.x+player1.character.w)&lt;currentScreenWidth)
+    {
+        player1.character.x += playerMoveRight;
+        if (player1.character.x &gt; rightLimit)
+        {
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h2>Issues Faced and Solutions</h2>
+<p>Typical issues in this module include invalid SDL pointers, oversized coordinates, shallow-copy confusion for textures, repeated text texture creation, off-screen objects growing memory, and input state transitions. The implemented solution pattern is to validate pointers, clamp screen-dependent values, share texture pointers without ownership, erase off-screen objects, cap deltaTime, and centralize screen-size queries.</p>
+<h1>Chapter 19 - MAIN.CPP COMPLETE FLOW</h1>
+<p>Theory: this chapter starts from the beginner concept, then connects it to the concrete C++ and SDL2 implementation used in Jumpa Verse.</p>
+<p>Concept: the module is built as a small real-time system where state is stored in C++ objects, updated once per frame, and drawn through SDL2 renderer commands.</p>
+<p>Implementation: the relevant source surface for this chapter is main.cpp. The code favors simple classes, vectors, SDL_Rect geometry, shared SDL_Texture pointers, and explicit event polling.</p>
+
+
+<figure>
+  <img src="figures/ch19_mainloop.png" alt="Figure 19.1 Main loop diagram" width="490" height="294" />
+  <figcaption>Figure 19.1 Main loop diagram</figcaption>
+  <p class="figure-note">The line-by-line structure of main.cpp is a staged real-time application lifecycle.</p>
+</figure>
+
+
+<figure>
+  <img src="figures/ch19_cycles.png" alt="Figure 19.2 Execution flowchart" width="490" height="294" />
+  <figcaption>Figure 19.2 Execution flowchart</figcaption>
+  <p class="figure-note">Each frame repeats the same update and draw order to keep behavior deterministic enough for gameplay.</p>
+</figure>
+
+<p>Line-by-line summary: SDL pointers are initialized to null; player and gameplay containers are created; init() validates subsystems; textures and fonts are loaded; resetGameplay clears containers and recreates the starting world; the menu loop blocks gameplay until Play/Login succeeds; deltaTime is capped; events are polled; keyboard state drives physicsDevelop; death checks trigger GameOver; score updates only while alive; rendering clears the sky, generates enough future ground, frees old objects, applies camera movement, renders ground/traps/player/score/window controls, presents the frame, delays to target 60 FPS, and finally close() destroys SDL resources.</p>
+<h2>Concepts Before Code</h2>
+<p>C++ concepts used here include classes, constructors, references, pointers, enums, namespaces, stack variables, dynamic containers, and RAII-style cleanup where SDL objects are manually destroyed. STL concepts include std::vector storage, push/emplace operations, erase-based recycling, std::string text state, fstream streams, sorting, and iterating by index or reference. SDL2 concepts include renderer ownership, event queues, rectangles as geometry, texture resources, surfaces as temporary CPU bitmaps, and frame presentation.</p>
+<h2>Implementation Notes</h2>
+<p>main.cpp owns the startup, gameplay reset lambda, menu gate, per-frame timing, event polling, physics calls, collision/death checks, score update, generation buffer, cleanup, camera movement, rendering, FPS throttling, and shutdown.</p>
+<h3>Code Excerpt: main.cpp</h3>
+<pre><code>#include &lt;SDL2/SDL_render.h&gt;
+#include &lt;SDL2/SDL_video.h&gt;
+#include&lt;iostream&gt;
+#include&lt;SDL2/SDL.h&gt;
+#include &lt;iterator&gt;
+#include&lt;vector&gt;
+#include&lt;string.h&gt;
+#include&lt;vector&gt;
+#include&lt;algorithm&gt;//For basic algorithim like sorting 
+#include&quot;object.h&quot;
+#include&lt;SDL2/SDL_image.h&gt;
+#include &quot;functions.h&quot;
+#include&lt;stdlib.h&gt;
+#include&lt;SDL2/SDL_ttf.h&gt;
+float cammeraDash=0;
+bool exitb = false;
+int main()
+{
+    SDL_Window* window=nullptr;
+    SDL_Renderer* renderer=nullptr;
+     
+
+    player player1;
+   
+
+    if(!init(window,renderer))
+    {
+        std::cerr&lt;&lt;&quot;FAILD TO START &quot;&lt;&lt;std::endl;
+        return -1;
+    }
+
+    float cammera_offSet=0.5f; //no 2d camera in sdl2 so we create an illusion 
+    //  ground_Class ground(100,900,500,100,renderer,&quot;Images_textures/ground.jpeg&quot;,&quot;Images_textures/underGround.jpeg&quot;);
+
+    //    ground=groundRandomgenerator(ground,renderer);
+    SDL_Texture* groundTex = IMG_LoadTexture(renderer, &quot;Images_textures/ground.jpeg&quot;);
+    SDL_Texture* ugTex = IMG_LoadTexture(renderer, &quot;Images_textures/underGround.jpeg&quot;);
+    TTF_Font *font =TTF_OpenFont(&quot;debrosee-font/Debrosee-ALPnL.ttf&quot;,100);
+    std::vector&lt;trapSpike&gt; trap;
+    std::vector&lt;ground_Class&gt; ground;
+    Score score;
+    GameOver gameOver;
+    auto resetGameplay = [&amp;]()
+    {
+        player1 = player();
+        cammera_offSet = 0.5f;
+        trap.clear();
+        ground = ground_generator(renderer, groundTex, ugTex);
+        groundRandomgenerator(renderer, groundTex, ugTex, ground, trap);
+        // ground.push_back(temp);
+        resetScore(score);
+        gameOver.reset();
+    };
+
+    initializeScore(score);
+    resetGameplay();
+    bool quit=false;   
+    SDL_Event eventManager;
+     Uint32 lastTime = SDL_GetTicks();
+    int i=0;
+    int count=0;
+    const float targetFrameTime = 1000.0f / 60.0f; // 16.67 ms
+    bool menu=false;
+    while(!quit)
+    {
+
+       Uint32 frameStart = SDL_GetTicks();
+        int screenW = currentScreenWidth;
+        int screenH = currentScreenHeight;
+        getScreenSize(renderer, screenW, screenH);
+// ... excerpt trimmed for the report ...</code></pre>
+<p>Execution flow: the snippet participates in the game loop by reading current state, calculating next state, then issuing render or storage operations. Memory flow: SDL resources are referenced by pointer, while gameplay objects and rectangles are copied or moved inside vectors. Object interaction: main.cpp coordinates these calls so each subsystem remains small and testable by inspection.</p>
+<h2>Issues Faced and Solutions</h2>
+<p>Typical issues in this module include invalid SDL pointers, oversized coordinates, shallow-copy confusion for textures, repeated text texture creation, off-screen objects growing memory, and input state transitions. The implemented solution pattern is to validate pointers, clamp screen-dependent values, share texture pointers without ownership, erase off-screen objects, cap deltaTime, and centralize screen-size queries.</p>
+<h1>Bibliography</h1>
+<p>[1] SDL2 Documentation. [2] SDL_image Documentation. [3] SDL_ttf Documentation. [4] SDL2_gfx Primitive Documentation. [5] ISO C++ Standard Library references for vector, string, fstream, algorithm, and random.</p>
+<h1>Appendix A - UML Appendix</h1>
+
+<figure>
+  <img src="figures/appendix_uml_master.png" alt="Appendix Figure A.1 Complete UML appendix" width="490" height="294" />
+  <figcaption>Appendix Figure A.1 Complete UML appendix</figcaption>
+  <p class="figure-note">This consolidated UML-style diagram summarizes inheritance, association, and dependency relationships used throughout the game.</p>
+</figure>
+
+<h1>Appendix B - Code Appendix</h1>
+<h2>main.cpp</h2><pre><code>#include &lt;SDL2/SDL_render.h&gt;
+#include &lt;SDL2/SDL_video.h&gt;
+#include&lt;iostream&gt;
+#include&lt;SDL2/SDL.h&gt;
+#include &lt;iterator&gt;
+#include&lt;vector&gt;
+#include&lt;string.h&gt;
+#include&lt;vector&gt;
+#include&lt;algorithm&gt;//For basic algorithim like sorting 
+#include&quot;object.h&quot;
+#include&lt;SDL2/SDL_image.h&gt;
+#include &quot;functions.h&quot;
+#include&lt;stdlib.h&gt;
+#include&lt;SDL2/SDL_ttf.h&gt;
+float cammeraDash=0;
+bool exitb = false;
+int main()
+{
+    SDL_Window* window=nullptr;
+    SDL_Renderer* renderer=nullptr;
+     
+
+    player player1;
+   
+
+    if(!init(window,renderer))
+    {
+        std::cerr&lt;&lt;&quot;FAILD TO START &quot;&lt;&lt;std::endl;
+        return -1;
+    }
+
+    float cammera_offSet=0.5f; //no 2d camera in sdl2 so we create an illusion 
+    //  ground_Class ground(100,900,500,100,renderer,&quot;Images_textures/ground.jpeg&quot;,&quot;Images_textures/underGround.jpeg&quot;);
+
+    //    ground=groundRandomgenerator(ground,renderer);
+    SDL_Texture* groundTex = IMG_LoadTexture(renderer, &quot;Images_textures/ground.jpeg&quot;);
+    SDL_Texture* ugTex = IMG_LoadTexture(renderer, &quot;Images_textures/underGround.jpeg&quot;);
+    TTF_Font *font =TTF_OpenFont(&quot;debrosee-font/Debrosee-ALPnL.ttf&quot;,100);
+    std::vector&lt;trapSpike&gt; trap;
+    std::vector&lt;ground_Class&gt; ground;
+    Score score;
+    GameOver gameOver;
+    auto resetGameplay = [&amp;]()
+    {
+        player1 = player();
+        cammera_offSet = 0.5f;
+        trap.clear();
+        ground = ground_generator(renderer, groundTex, ugTex);
+        groundRandomgenerator(renderer, groundTex, ugTex, ground, trap);
+        // ground.push_back(temp);
+        resetScore(score);
+        gameOver.reset();
+    };
+
+    initializeScore(score);
+    resetGameplay();
+    bool quit=false;   
+    SDL_Event eventManager;
+     Uint32 lastTime = SDL_GetTicks();
+    int i=0;
+    int count=0;
+    const float targetFrameTime = 1000.0f / 60.0f; // 16.67 ms
+    bool menu=false;
+    while(!quit)
+    {
+
+       Uint32 frameStart = SDL_GetTicks();
+        int screenW = currentScreenWidth;
+        int screenH = currentScreenHeight;
+        getScreenSize(renderer, screenW, screenH);
+
+        Uint32 currentTime = SDL_GetTicks();
+        float deltaTime = (currentTime - lastTime) / 1000.0f;
+        lastTime = currentTime;
+        float speed = 2.0f; // pixels per second
+     
+    while(!menu &amp;&amp; !quit)
+    {
+    menu=menuScreen(renderer,font);
+    if(exitb==true)
+    {
+        quit=true;
+        continue;
+    }
+    resetGameplay();
+    lastTime = SDL_GetTicks();
+    }
+
+    if (deltaTime &gt; 0.05f)
+    deltaTime = 0.05f;
+
+        
+
+        // if (cammera_offSet &lt; -10.0f)
+        //     cammera_offSet = -10.0f;
+
+        if (cammera_offSet &gt; -9.0f)
+        {
+            cammera_offSet -= speed * deltaTime;
+        }
+
+         i++;
+      
+
+        while(SDL_PollEvent(&amp;eventManager)!=0)
+        {
+            if (handleWindowControlEvent(renderer, eventManager))
+            {
+                continue;
+            }
+
+            if(eventManager.type==SDL_QUIT)
+            {
+                quit=true;
+            }
+        }
+        const Uint8* keyboardState = SDL_GetKeyboardState(NULL);
+        player1.fallOffest=cammera_offSet;
+        physicsDevelop(player1, ground, deltaTime, keyboardState);
+        if (playerFellOff(player1))
+        {
+            gameOver.trigger(DeathCause::FellOff, score.value());
+        }
+        else if (playerHitTrap(player1, trap))
+        {
+            gameOver.trigger(DeathCause::HitTrap, score.value());
+        }
+
+        if (gameOver.isActive())
+        {
+            saveFinalScore(gameOver);
+            saveLoggedInPlayerScore(gameOver);
+            GameOverAction action = runGameOverScreen(renderer, font, gameOver);
+            if (exitb)
+            {
+                quit = true;
+                continue;
+            }
+
+            resetGameplay();
+            lastTime = SDL_GetTicks();
+
+            if (action == GameOverAction::TryAgain)
+            {
+                menu = true;
+            }
+            else if (action == GameOverAction::ReturnToMenu)
+            {
+                menu = false;
+            }
+
+            continue;
+        }
+
+        bool playerAlive = !gameOver.isActive();
+        updateScore(score, deltaTime, playerAlive);
+        
+
+        SDL_SetRenderDrawColor(renderer,135,206,235,255);  
+        SDL_RenderClear(renderer);
+       
+        const int generationBuffer = std::max(screenW, 1400);
+        const int maxGeneratedPlatforms = 10;
+        while(!ground.empty() &amp;&amp;
+              ground.back().x + ground.back().w &lt; screenW + generationBuffer &amp;&amp;
+              (int)ground.size() &lt; maxGeneratedPlatforms)
+        {
+            groundRandomgenerator(renderer,groundTex,ugTex,ground,trap);
+        }
+        freeMemory(ground);  
+        
+        trapFreeMemory(trap);     
+ 
+        cameraMovmentObj(ground,cammera_offSet+cammeraDash,trap);
+        
+        for(int j=0;j&lt;ground.size();j++)
+        {
+            ground[j].render(renderer);
+        }
+
+        for(int j=0;j&lt;trap.size();j++)
+        {
+             trap[j].render(renderer);
+        }
+        
+        player1.Render(renderer);
+        renderScore(score, renderer, font);
+        renderWindowControls(renderer);
+          
+
+        SDL_RenderPresent(renderer);
+
+        static int frames = 0;
+    static Uint32 fpsTimer = SDL_GetTicks();
+
+    frames++;
+
+    Uint32 frameTime = SDL_GetTicks() - frameStart;
+
+    if (frameTime &lt; targetFrameTime)
+    {
+        SDL_Delay((Uint32)(targetFrameTime - frameTime));
+    }
+
+
+    if (SDL_GetTicks() - fpsTimer &gt;= 1000)
+    {
+        std::cout &lt;&lt; &quot;\rFPS: &quot; &lt;&lt; frames 
+          &lt;&lt; &quot;  Offset: &quot; &lt;&lt; cammera_offSet&lt;&lt;&quot; &quot;&lt;&lt;cammeraDash
+          &lt;&lt; std::flush;
+        frames = 0;
+        
+        fpsTimer = SDL_GetTicks();
+    }
+
+    
+    }
+    close(window,renderer);
+    return 0;
+
+}</code></pre>
+<h2>object.h</h2><pre><code>#pragma once
+
+#include &lt;SDL2/SDL.h&gt;
+#include &lt;SDL2/SDL_rect.h&gt;
+#include &lt;SDL2/SDL_image.h&gt;
+#include &lt;SDL2/SDL_render.h&gt;
+#include &lt;SDL2/SDL_surface.h&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
+#include &lt;SDL2/SDL2_gfxPrimitives.h&gt;//to import trigons
+#include&lt;SDL2/SDL_ttf.h&gt;
+
+extern int currentScreenWidth;
+extern int currentScreenHeight;
+
+inline int scaledGroundTileSize()
+{
+    if (currentScreenWidth &gt;= 3840)
+    {
+        return 96;
+    }
+    if (currentScreenWidth &gt;= 3200)
+    {
+        return 80;
+    }
+    if (currentScreenWidth &gt;= 2400)
+    {
+        return 64;
+    }
+    return 50;
+}
+
+inline int scaledTrapSize()
+{
+    if (currentScreenWidth &gt;= 3200)
+    {
+        return 88;
+    }
+    if (currentScreenWidth &gt;= 2400)
+    {
+        return 68;
+    }
+    return 50;
+}
+
+inline int scaledPlayerSize()
+{
+    if (currentScreenWidth &gt;= 3200)
+    {
+        return 88;
+    }
+    if (currentScreenWidth &gt;= 2400)
+    {
+        return 68;
+    }
+    return 50;
+}
+
+class hitBox
+{
+public:
+    int x, y, w, h;
+
+    hitBox(int x, int y, int w, int h)
+    {
+        this-&gt;x = x;
+        this-&gt;y = y;
+        this-&gt;w = w;
+        this-&gt;h = h;
+    }
+    hitBox();
+    // inline optionBoxes::optionBoxes(int x, int y, int w, int h);
+};
+
+class ground_Class : public hitBox
+{
+public:
+bool first_ground=false;
+/*Characterrizing ground into 3 types small medium and big*/
+    bool small=false;
+    bool big=false;
+    bool medium=false;
+    int divw = 0;
+    int trapCount=0;
+
+    bool trapFill=false;
+    std::vector&lt;SDL_Rect&gt; ground;
+    std::vector&lt;std::vector&lt;SDL_Rect&gt;&gt; groundUnder;
+
+    SDL_Texture* groundTexture = nullptr;  // shared (NOT owned)
+    SDL_Texture* ugTexture = nullptr;      // shared (NOT owned)
+
+    int perboxwidth = scaledGroundTileSize();
+    int perboxheight = scaledGroundTileSize();
+
+public:
+    // Default constructor
+    ground_Class() : hitBox(0, 0, 0, 0) {}
+
+    // Main constructor (USES SHARED TEXTURES)
+    ground_Class(int ax, int ay, int aw, int ah,
+                 SDL_Texture* groundTex,
+                 SDL_Texture* ugTex)
+        
+        : hitBox(ax, ay, aw, ah),
+          groundTexture(groundTex),
+          ugTexture(ugTex)
+    {
+        rebuild();
+    }
+
+    // Rebuild geometry only (NO SDL loading here)
+    void rebuild()
+    {
+        divw = w / perboxwidth;
+        int rows = h / perboxheight;
+
+        ground.clear();
+        groundUnder.clear();
+
+        ground.resize(divw);
+        groundUnder.resize(divw);
+
+        for (int i = 0; i &lt; divw; i++)
+        {
+            groundUnder[i].resize(rows);
+        }
+
+        for (int i = 0; i &lt; divw; i++)
+        {
+            ground[i] = { x + i * perboxwidth, y, perboxwidth, perboxheight };
+            for (int j = 0; j &lt; rows; j++)
+            {
+                groundUnder[i][j] =
+                {
+                    x + i * perboxwidth,
+                    y + (j + 1) * perboxheight,
+                    perboxwidth,
+                    perboxheight
+                };
+            }
+        }
+    }
+
+    void seterForElements(int newX, int newY, int newW, int newH)
+    {
+        x = newX;
+        y = newY;
+        w = newW;
+        h = newH;
+
+        rebuild();
+    }
+
+    void render(SDL_Renderer* renderer)
+    {
+        if (!groundTexture || !ugTexture)
+        {
+            std::cerr &lt;&lt; &quot;Cannot render: texture is null!\n&quot;;
+            return;
+        }
+
+        for (int i = 0; i &lt; divw; i++)
+        {
+            SDL_RenderCopy(renderer, groundTexture, nullptr, &amp;ground[i]);
+
+            for (int j = 0; j &lt; (int)groundUnder[i].size(); j++)
+            {
+                SDL_RenderCopy(renderer, ugTexture, nullptr, &amp;groundUnder[i][j]);
+            }
+        }
+    }
+
+    
+   
+};
+
+
+class trapSpike : public hitBox
+{
+public:
+    trapSpike() : hitBox(0, 0, 0, 0) {}
+
+    trapSpike(int x, int y, int w, int h) : hitBox(x, y, w, h) {}
+
+    void setterNew(int x)
+    {
+        this-&gt;x = x;
+    }
+
+    void render(SDL_Renderer* renderer, float cameraOffset = 0)
+    {
+        int x1 = x + (int)cameraOffset;
+        int y1 = y;
+        
+        // Visibility and Overflow Check:
+        // SDL2_gfx uses int16_t (-32768 to 32767). 
+        // We only render if it&#x27;s reasonably near the screen to avoid overflow &quot;streaks&quot;.
+        if (x1 &lt; -500 || x1 &gt; currentScreenWidth + 1000) 
+        {
+            return;
+        }
+
+        const int trapSize = w &gt; 0 ? w : scaledTrapSize();
+        int x2 = x1 + trapSize; 
+        int y2 = y1;
+        int x3 = x1 + trapSize / 2; 
+        int y3 = y1 - trapSize; 
+
+        filledTrigonRGBA(renderer,
+                        x1, y1,
+                        x2, y2,
+                        x3, y3,
+                        92, 52, 40, 255);
+
+        trigonRGBA(renderer,
+                  x1, y1,
+                  x2, y2,
+                  x3, y3,
+                  40, 22, 18, 255);
+    }
+
+    void updatePosition(int x, int y)
+    {
+        this-&gt;x = x;
+        this-&gt;y = y;
+    }
+};
+
+class Score
+{
+public:
+    Score();
+    ~Score();
+
+    Score(const Score&amp;) = delete;
+    Score&amp; operator=(const Score&amp;) = delete;
+
+    void initialize();
+    void update(float deltaTime, bool playerAlive);
+    void render(SDL_Renderer* renderer, TTF_Font* font);
+    void reset();
+    int value() const;
+
+private:
+    int score = 0;
+    float timeAccumulator = 0.0f;
+};
+
+enum class DeathCause
+{
+    None,
+    FellOff,
+    HitTrap
+};
+
+enum class GameOverAction
+{
+    None,
+// ... excerpt trimmed for the report ...</code></pre>
+<h2>ground.cpp</h2><pre><code>#include &lt;SDL2/SDL_rect.h&gt;
+#include &lt;SDL2/SDL_render.h&gt;
+#include &lt;SDL2/SDL_video.h&gt;
+#include&lt;iostream&gt;
+#include&lt;SDL2/SDL.h&gt;
+#include &lt;iterator&gt;
+#include&lt;vector&gt;
+#include&lt;string.h&gt;
+
+#include&lt;algorithm&gt;//For basic algorithim like sorting 
+#include&quot;object.h&quot;
+#include&lt;SDL2/SDL_image.h&gt;
+#include&lt;random&gt;
+#include &quot;functions.h&quot;
+
+namespace
+{
+    int clampInt(int value, int minValue, int maxValue)
+    {
+        if (value &lt; minValue)
+        {
+            return minValue;
+        }
+        if (value &gt; maxValue)
+        {
+            return maxValue;
+        }
+        return value;
+    }
+}
+
+std::vector&lt;ground_Class&gt; ground_generator(SDL_Renderer* renderer,SDL_Texture* groundTex,SDL_Texture* ugTex)
+{
+    int screenW = currentScreenWidth;
+    int screenH = currentScreenHeight;
+    getScreenSize(renderer, screenW, screenH);
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    const int minY = clampInt((int)(screenH * 0.40f), 160, screenH - 260);
+    const int maxY = clampInt((int)(screenH * 0.72f), minY + 50, screenH - 120);
+    const int minW = clampInt((int)(screenW * 0.52f), 700, 1700);
+    const int maxW = clampInt((int)(screenW * 0.95f), minW, 3000);
+    const int maxH = clampInt((int)(screenH * 0.30f), 140, 460);
+
+    std::uniform_int_distribution&lt;&gt; disty(minY, maxY);
+    std::uniform_int_distribution&lt;&gt; distw(minW, maxW);
+    std::uniform_int_distribution&lt;&gt; disth(50, maxH);
+
+    int x = 0;
+    int y = disty(gen);
+    int w = distw(gen);
+    int h = disth(gen);
+
+    std::vector&lt;ground_Class&gt; ground;
+
+    ground.emplace_back(
+        x, y, w, h,
+       groundTex,ugTex
+    );
+    ground[0].first_ground=true;
+
+    return ground;
+}
+
+
+void groundRandomgenerator(SDL_Renderer* renderer,SDL_Texture* groundTex,SDL_Texture* ugTex,std::vector&lt;ground_Class&gt; &amp;prevGround,std::vector&lt;trapSpike&gt;&amp; trap)
+{   
+    if (prevGround.empty())
+    {
+        return;
+    }
+
+    int screenW = currentScreenWidth;
+    int screenH = currentScreenHeight;
+    getScreenSize(renderer, screenW, screenH);
+
+    bool check=false;
+    int x,y,w,h;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    const int minY = clampInt((int)(screenH * 0.16f), 80, screenH - 260);
+    const int maxY = clampInt((int)(screenH * 0.74f), minY + 50, screenH - 120);
+    const int minGap = clampInt((int)(screenW * 0.055f), 120, 240);
+    const int maxGap = clampInt((int)(screenW * 0.09f), minGap, 380);
+    const int minW = clampInt((int)(screenW * 0.30f), 700, 1300);
+    const int maxW = clampInt((int)(screenW * 0.86f), minW, 2600);
+    const int maxH = clampInt((int)(screenH * 0.30f), 140, 460);
+
+    std::uniform_int_distribution&lt;&gt; distx(prevGround.back().x + prevGround.back().w + minGap,
+                                          prevGround.back().x + prevGround.back().w + maxGap);
+    std::uniform_int_distribution&lt;&gt; distw(minW, 2400);
+    std::uniform_int_distribution&lt;&gt; disth(50, maxH);
+    
+
+    while(!check)
+    {
+        const int nextMinY = clampInt(prevGround.back().y - (int)(screenH * 0.08f), minY, maxY);
+        const int nextMaxY = clampInt(prevGround.back().y + (int)(screenH * 0.48f), nextMinY, maxY);
+        std::uniform_int_distribution&lt;&gt; disty(nextMinY, nextMaxY);
+        x = distx(gen);
+        y = disty(gen);
+        w = distw(gen);
+        h = disth(gen);
+        if(y &lt;= maxY &amp;&amp; y &gt;= minY)
+        {
+            check=true;
+        }
+    }
+    int settrap = 1;
+    prevGround.emplace_back(x, y, w, h, groundTex, ugTex);
+    int currentnumberindex = (int)prevGround.size() - 1;
+
+    const int smallPlatformLimit = clampInt((int)(screenW * 0.34f), 750, 1300);
+    const int mediumPlatformLimit = clampInt((int)(screenW * 0.66f), smallPlatformLimit + 250, 2100);
+
+    if (prevGround[currentnumberindex].w &lt; smallPlatformLimit)
+    {
+        prevGround[currentnumberindex].small = true;
+        prevGround[currentnumberindex].medium = false;
+        prevGround[currentnumberindex].big = false;
+        settrap = 1;
+    }
+    else if (prevGround[currentnumberindex].w &lt; mediumPlatformLimit)
+    {
+        prevGround[currentnumberindex].small = false;
+        prevGround[currentnumberindex].medium = true;
+        prevGround[currentnumberindex].big = false;
+        settrap = 3;
+    }
+    else
+    {
+        prevGround[currentnumberindex].small = false;
+        prevGround[currentnumberindex].medium = false;
+        prevGround[currentnumberindex].big = true;
+        settrap = 6;
+    }
+
+    for (int j = 0; j &lt; settrap; j++)
+    {
+        trapTriangle(renderer, trap, prevGround, currentnumberindex, settrap);
+    }
+}
+
+
+
+
+// void groundRandomgenerator(SDL_Renderer* renderer,
+//                            SDL_Texture* groundTex,
+//                            SDL_Texture* ugTex,
+//                            std::vector&lt;ground_Class&gt; &amp;prevGround,
+//                            std::vector&lt;trapSpike&gt;&amp; trap)
+// {   
+//     bool check = false;
+//     int x, y, w, h;
+
+//     std::random_device rd;
+//     std::mt19937 gen(rd());
+
+//     std::uniform_int_distribution&lt;&gt; distx(
+//         prevGround.back().x + prevGround.back().w + 120,
+//         prevGround.back().x + prevGround.back().w + 300
+//     );
+
+//     std::uniform_int_distribution&lt;&gt; distw(300, 2450);
+//     std::uniform_int_distribution&lt;&gt; disth(50, 400);
+
+//     for (int i = 0; i &lt; prevGround.size(); i++)
+//     {
+//         trapTriangle(renderer, trap, prevGround, i);
+//     }
+
+//     while (!check)
+//     {
+//         std::uniform_int_distribution&lt;&gt; disty(
+//             prevGround.back().y - 100,
+//             prevGround.back().y + 600
+//         );
+
+//         x = distx(gen);
+//         y = disty(gen);
+//         w = distw(gen);
+//         h = disth(gen);
+
+//         if (y &lt; 800 &amp;&amp; y &gt; 100)
+//         {
+//             check = true;
+//         }
+//     }
+
+//     // ✅ Construct directly inside the vector
+//     prevGround.emplace_back(x, y, w, h, groundTex, ugTex);
+// }
+
+void freeMemory(std::vector&lt;ground_Class&gt;&amp; ground)
+{
+    for (int i = 0; i &lt; (int)ground.size(); )
+    {
+        // ✅ Remove platforms that are fully off-screen to the LEFT
+        if (ground[i].x + ground[i].w &lt; 0)
+            ground.erase(ground.begin() + i);
+        else
+            i++;
+    }
+}
+
+void dualPath(std::vector&lt;ground_Class&gt;&amp; ground,SDL_Texture* groundTex,SDL_Texture* ugTex)
+{
+
+    std::random_device rd;
+    std::mt19937 gen;
+    std::uniform_int_distribution &lt;&gt; chances (0,1000);
+
+    if(chances(gen)&lt;=1)
+    {
+
+    std::uniform_int_distribution&lt;&gt; distx(ground.back().x+ ground.back().w+80,ground.back().x +ground.back().w+ 120);
+    std::uniform_int_distribution&lt;&gt; disty(ground.back().y+150,ground.back().y+250);
+// ... excerpt trimmed for the report ...</code></pre>
+<h2>player.cpp</h2><pre><code>#include &lt;SDL2/SDL_render.h&gt;
+#include &lt;SDL2/SDL_scancode.h&gt;
+#include &lt;SDL2/SDL_video.h&gt;
+#include&lt;iostream&gt;
+#include&lt;SDL2/SDL.h&gt;
+#include &lt;iterator&gt;
+#include &lt;ostream&gt;
+#include&lt;vector&gt;
+#include&lt;string.h&gt;
+#include&lt;vector&gt;
+#include&lt;algorithm&gt;//For basic algorithim like sorting 
+#include&quot;object.h&quot;
+#include&lt;SDL2/SDL_image.h&gt;
+#include &quot;functions.h&quot;
+#include&lt;stdlib.h&gt;
+#include&lt;SDL2/SDL_ttf.h&gt;
+#include&lt;limits&gt;
+int i=0;
+void physicsDevelop(player&amp; player1,
+                    std::vector&lt;ground_Class&gt;&amp; g1,
+                    float deltaTime,
+                    const Uint8* keyboardState)
+{
+    Uint32 mouseState = SDL_GetMouseState(NULL, NULL);
+    
+    if (deltaTime &lt;= 0.0f)
+    {
+        return;
+    }
+
+    bool jumpPressed = keyboardState[SDL_SCANCODE_SPACE] ||
+                       keyboardState[SDL_SCANCODE_W] ||
+                       keyboardState[SDL_SCANCODE_UP];
+
+    bool characterDown=keyboardState[SDL_SCANCODE_LCTRL] ||
+                        keyboardState[SDL_SCANCODE_S]||
+                        keyboardState[SDL_SCANCODE_DOWN];
+
+    bool characterdash=keyboardState[SDL_SCANCODE_LSHIFT] ||
+                        keyboardState[SDL_SCANCODE_D]||
+                        keyboardState[SDL_SCANCODE_RIGHT];
+    bool backward=keyboardState[SDL_SCANCODE_A] ||
+                        keyboardState[SDL_SCANCODE_LEFT]||
+                        keyboardState[SDL_SCANCODE_LALT];
+
+        bool leftClick  = mouseState &amp; SDL_BUTTON(SDL_BUTTON_LEFT);
+    bool rightClick = mouseState &amp; SDL_BUTTON(SDL_BUTTON_RIGHT);
+    bool middleClick= mouseState &amp; SDL_BUTTON(SDL_BUTTON_MIDDLE);
+
+//     if (mouseState &amp; SDL_BUTTON(SDL_BUTTON_RIGHT))
+// {
+//     std::cout &lt;&lt; &quot;Right click detected\n&quot;;
+// }
+    if ((jumpPressed || leftClick)&amp;&amp; player1.onGround)
+    {
+        player1.jumpVelocity = player1.jumpPower;
+        player1.onGround = false;
+    }
+    if (characterDown||rightClick)
+    {
+        player1.gravity+=2000;
+    }
+    const int playerMoveRight = std::min(9, std::max(5, currentScreenWidth / 360));
+    const int playerMoveLeft = std::min(14, std::max(8, currentScreenWidth / 240));
+    const int rightLimit = currentScreenWidth - player1.character.w;
+    if(characterdash &amp;&amp; (player1.character.x+player1.character.w)&lt;currentScreenWidth)
+    {
+        player1.character.x += playerMoveRight;
+        if (player1.character.x &gt; rightLimit)
+        {
+            player1.character.x = rightLimit;
+        }
+      
+    }
+    if (backward &amp;&amp; player1.character.x&gt;=0)
+    {
+       player1.character.x -= playerMoveLeft;
+       if (player1.character.x &lt; 0)
+       {
+           player1.character.x = 0;
+       }
+    }
+
+
+if((!characterDown &amp;&amp; !rightClick) &amp;&amp; player1.gravity != 1800)
+    {
+        player1.gravity = 1800;
+    }
+
+    SDL_Rect previous = player1.character;
+    int nextGroundIndex = -1;
+    int nextGroundDistance = std::numeric_limits&lt;int&gt;::max();
+
+    player1.jumpVelocity += player1.gravity * deltaTime;
+    player1.character.y += static_cast&lt;int&gt;(player1.jumpVelocity * deltaTime);
+    player1.onGround = false;
+
+    for (size_t i = 0; i &lt; g1.size(); i++)
+    {
+        SDL_Rect groundRect = {g1[i].x, g1[i].y, g1[i].w, g1[i].h};
+        int playerRight = player1.character.x + player1.character.w;
+        int distanceToNextGround = groundRect.x - playerRight;
+
+        // The next ground must start after the player&#x27;s right side.
+        // If we compare with player.x, the current ground can be selected
+        // when the player is standing near its left side.
+        if (distanceToNextGround &gt; 0 &amp;&amp; distanceToNextGround &lt; nextGroundDistance)
+        {
+            nextGroundDistance = distanceToNextGround;
+            if(g1.size()&gt;i+1)
+            nextGroundIndex = static_cast&lt;int&gt;(i+1);
+        }
+
+        bool overlapX =(player1.character.x + player1.character.w &gt; groundRect.x) &amp;&amp;
+        (player1.character.x &lt; groundRect.x + groundRect.w);
+        bool wasAboveGround = previous.y + previous.h &lt;= groundRect.y;
+        bool crossedGround = player1.character.y + player1.character.h &gt;= groundRect.y;
+
+        if (overlapX &amp;&amp; wasAboveGround &amp;&amp; crossedGround &amp;&amp; player1.jumpVelocity &gt;= 0.0f)
+        {
+            player1.character.y = groundRect.y - player1.character.h;
+            player1.jumpVelocity = 0.0f;
+            player1.onGround = true;
+            break;
+
+        }
+    }
+
+    player1.syncHitBox();
+}</code></pre>
+<h2>traps.cpp</h2><pre><code>#include &lt;SDL2/SDL_rect.h&gt;
+#include &lt;SDL2/SDL_render.h&gt;
+#include &lt;SDL2/SDL_video.h&gt;
+#include&lt;iostream&gt;
+#include&lt;SDL2/SDL.h&gt;
+#include &lt;iterator&gt;
+#include&lt;vector&gt;
+#include&lt;string.h&gt;
+#include&lt;algorithm&gt;//For basic algorithim like sorting 
+#include&quot;object.h&quot;
+#include&lt;SDL2/SDL_image.h&gt;
+#include&lt;random&gt;
+#include &quot;functions.h&quot;
+
+void trapTriangle(SDL_Renderer* renderer, std::vector&lt;trapSpike&gt;&amp; trap, std::vector&lt;ground_Class&gt;&amp; ground, int i, int maxTraps)
+{
+    if (ground[i].first_ground || ground[i].trapCount &gt;= maxTraps)
+    {
+        return;
+    }
+
+    int screenW = currentScreenWidth;
+    int screenH = currentScreenHeight;
+    getScreenSize(renderer, screenW, screenH);
+    (void)screenH;
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    // Add a safety limit to prevent infinite looping if conditions are hard to meet
+    int attempts = 0;
+    const int maxAttempts = 100;
+
+    while (attempts &lt; maxAttempts)
+    {
+        attempts++;
+        std::uniform_int_distribution&lt;&gt; chances(0, 1000);
+
+        // Probability check
+        if (chances(gen) &lt; 100) // Adjusted probability for more consistent generation
+        {
+            const int trapSize = scaledTrapSize();
+            const int margin = std::max(100, trapSize * 2);
+            if (ground[i].w &lt;= margin * 2)
+            {
+                return;
+            }
+
+            std::uniform_int_distribution&lt;&gt; distp(ground[i].x + margin,
+                                                  (ground[i].x + ground[i].w) - margin);
+            int spikeX = distp(gen);
+
+            // Check for overlap with existing traps
+            bool overlapping = false;
+            const int minTrapSpacing = std::min(300, std::max(trapSize * 2, screenW / 10));
+            for (const auto&amp; existingTrap : trap)
+            {
+                if (spikeX - existingTrap.x &lt;= minTrapSpacing &amp;&amp;
+                    spikeX - existingTrap.x &gt;= -minTrapSpacing)
+                {
+                    overlapping = true;
+                    break;
+                }
+            }
+
+            if (!overlapping &amp;&amp; ground[i].trapCount &lt; maxTraps)
+            {
+                ground[i].trapCount++;
+                trap.emplace_back(spikeX, ground[i].y, trapSize, trapSize);
+                return; // Successfully added one trap
+            }
+        }
+    }
+}
+
+void trapFreeMemory(std::vector&lt;trapSpike&gt;&amp; trap)
+{
+    for (int i = 0; i &lt; (int)trap.size(); )
+    {
+        // Remove traps that are fully off-screen to the left
+        const int trapSize = trap[i].w &gt; 0 ? trap[i].w : scaledTrapSize();
+        if (trap[i].x + trapSize &lt; -trapSize * 4) 
+            trap.erase(trap.begin() + i);
+        else
+            i++;
+    }
+}</code></pre>
+</body></html>

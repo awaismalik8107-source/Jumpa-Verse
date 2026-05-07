@@ -1,0 +1,22 @@
+digraph G {
+    
+    graph [bgcolor="transparent", rankdir=LR, splines=ortho, nodesep=0.55, ranksep=0.8];
+    node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=14, penwidth=2, color="#d96f00", fillcolor="#f3f4f6"];
+    edge [color="#55585f", penwidth=2, fontname="DejaVu Sans", fontsize=11];
+    
+    rankdir=TB;
+    node [shape=box, fillcolor="#fff3e8"];
+    start [label="main()"];
+    init [label="init(window, renderer)"];
+    load [label="Load textures + fonts"];
+    menu [label="menuScreen()"];
+    reset [label="resetGameplay()"];
+    loop [label="Frame loop"];
+    events [label="SDL_PollEvent / keyboard"];
+    physics [label="physicsDevelop()"];
+    collide [label="playerFellOff() / playerHitTrap()"];
+    render [label="Render ground, traps, player, score"];
+    present [label="SDL_RenderPresent()"];
+    start -> init -> load -> menu -> reset -> loop;
+    loop -> events -> physics -> collide -> render -> present -> loop;
+    }

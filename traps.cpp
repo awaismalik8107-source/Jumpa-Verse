@@ -39,7 +39,8 @@ void trapTriangle(SDL_Renderer* renderer, std::vector<trapSpike>& trap, std::vec
         // Probability check
         if (chances(gen) < 100) // Adjusted probability for more consistent generation
         {
-            const int margin = 100;
+            const int trapSize = scaledTrapSize();
+            const int margin = std::max(100, trapSize * 2);
             if (ground[i].w <= margin * 2)
             {
                 return;
@@ -51,7 +52,7 @@ void trapTriangle(SDL_Renderer* renderer, std::vector<trapSpike>& trap, std::vec
 
             // Check for overlap with existing traps
             bool overlapping = false;
-            const int minTrapSpacing = screenW / 10;
+            const int minTrapSpacing = std::min(300, std::max(trapSize * 2, screenW / 10));
             for (const auto& existingTrap : trap)
             {
                 if (spikeX - existingTrap.x <= minTrapSpacing &&
@@ -65,7 +66,7 @@ void trapTriangle(SDL_Renderer* renderer, std::vector<trapSpike>& trap, std::vec
             if (!overlapping && ground[i].trapCount < maxTraps)
             {
                 ground[i].trapCount++;
-                trap.emplace_back(spikeX, ground[i].y, 50, 50);
+                trap.emplace_back(spikeX, ground[i].y, trapSize, trapSize);
                 return; // Successfully added one trap
             }
         }
@@ -77,7 +78,8 @@ void trapFreeMemory(std::vector<trapSpike>& trap)
     for (int i = 0; i < (int)trap.size(); )
     {
         // Remove traps that are fully off-screen to the left
-        if (trap[i].x + 50 < -200) 
+        const int trapSize = trap[i].w > 0 ? trap[i].w : scaledTrapSize();
+        if (trap[i].x + trapSize < -trapSize * 4) 
             trap.erase(trap.begin() + i);
         else
             i++;

@@ -1,0 +1,99 @@
+digraph UMLClassOwnership {
+  graph [rankdir=LR, bgcolor="white", labelloc="t", label="Jumpa Verse - UML Class and Object Ownership Diagram", fontsize=24, fontname="Helvetica", splines=ortho];
+  node [shape=plain, fontname="Helvetica", fontsize=10];
+  edge [fontname="Helvetica", fontsize=10, arrowsize=0.8, color="#334155"];
+
+  hitBox [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#dbeafe">
+      <TR><TD><B>hitBox</B></TD></TR>
+      <TR><TD ALIGN="LEFT">+ int x, y, w, h</TD></TR>
+      <TR><TD ALIGN="LEFT">+ hitBox(int,int,int,int)<BR/>+ hitBox()</TD></TR>
+    </TABLE>
+  >];
+  ground [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#dcfce7">
+      <TR><TD><B>ground_Class : hitBox</B></TD></TR>
+      <TR><TD ALIGN="LEFT">+ bool first_ground, small, medium, big<BR/>+ int divw, trapCount<BR/>+ bool trapFill<BR/>+ vector&lt;SDL_Rect&gt; ground<BR/>+ vector&lt;vector&lt;SDL_Rect&gt;&gt; groundUnder<BR/>+ SDL_Texture* groundTexture (shared)<BR/>+ SDL_Texture* ugTexture (shared)<BR/>+ int perboxwidth/perboxheight</TD></TR>
+      <TR><TD ALIGN="LEFT">+ ground_Class(..., SDL_Texture*, SDL_Texture*)<BR/>+ rebuild(): void<BR/>+ seterForElements(int,int,int,int): void<BR/>+ render(SDL_Renderer*): void</TD></TR>
+    </TABLE>
+  >];
+  trap [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#ffedd5">
+      <TR><TD><B>trapSpike : hitBox</B></TD></TR>
+      <TR><TD ALIGN="LEFT">No extra data beyond hitBox dimensions.</TD></TR>
+      <TR><TD ALIGN="LEFT">+ trapSpike(int,int,int,int)<BR/>+ setterNew(int): void<BR/>+ render(SDL_Renderer*, float=0): void<BR/>+ updatePosition(int,int): void</TD></TR>
+    </TABLE>
+  >];
+  player [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#fee2e2">
+      <TR><TD><B>player : hitBox</B></TD></TR>
+      <TR><TD ALIGN="LEFT">+ SDL_Rect character<BR/>+ float jumpVelocity, gravity, jumpPower<BR/>+ bool onGround, dashcooldown, dashstop<BR/>+ float ofsset, returnSpeed, fallOffest</TD></TR>
+      <TR><TD ALIGN="LEFT">+ player(int=150,int=100,int=0,int=0)<BR/>+ syncHitBox(): void<BR/>+ newPosition(int,int,int,int): void<BR/>+ Render(SDL_Renderer*): void</TD></TR>
+    </TABLE>
+  >];
+  score [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#fef9c3">
+      <TR><TD><B>Score</B></TD></TR>
+      <TR><TD ALIGN="LEFT">- int score<BR/>- float timeAccumulator</TD></TR>
+      <TR><TD ALIGN="LEFT">+ initialize(): void<BR/>+ update(float,bool): void<BR/>+ render(SDL_Renderer*,TTF_Font*): void<BR/>+ reset(): void<BR/>+ value(): int</TD></TR>
+    </TABLE>
+  >];
+  gameover [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#fecaca">
+      <TR><TD><B>GameOver</B></TD></TR>
+      <TR><TD ALIGN="LEFT">- bool active<BR/>- DeathCause deathCause<BR/>- int savedFinalScore</TD></TR>
+      <TR><TD ALIGN="LEFT">+ reset(): void<BR/>+ trigger(DeathCause,int): void<BR/>+ isActive(): bool<BR/>+ cause(): DeathCause<BR/>+ finalScore(): int<BR/>+ causeText(): string</TD></TR>
+    </TABLE>
+  >];
+  option [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#fae8ff">
+      <TR><TD><B>optionBoxes : hitBox</B></TD></TR>
+      <TR><TD ALIGN="LEFT">+ SDL_Texture* textTexture/scoresTexture/exitTexture (owned)<BR/>+ bool state/stateScores/stateExit<BR/>+ SDL_Rect box/boxScores/boxExit<BR/>+ string scoresText/exitText<BR/>+ int boxOffsetY</TD></TR>
+      <TR><TD ALIGN="LEFT">+ ~optionBoxes()<BR/>+ box_Initializer(SDL_Renderer*,TTF_Font*,string): void<BR/>+ render(SDL_Renderer*): void<BR/>+ stateHolder(...): void</TD></TR>
+    </TABLE>
+  >];
+  login [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#fae8ff">
+      <TR><TD><B>LoginScreen</B></TD></TR>
+      <TR><TD ALIGN="LEFT">- string username/password/message<BR/>- int activeField</TD></TR>
+      <TR><TD ALIGN="LEFT">+ run(SDL_Renderer*,TTF_Font*): LoginScreenAction</TD></TR>
+    </TABLE>
+  >];
+  reg [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#fae8ff">
+      <TR><TD><B>RegisterScreen</B></TD></TR>
+      <TR><TD ALIGN="LEFT">- string username/password/confirmPassword/message<BR/>- int activeField</TD></TR>
+      <TR><TD ALIGN="LEFT">+ run(SDL_Renderer*,TTF_Font*): RegisterScreenAction</TD></TR>
+    </TABLE>
+  >];
+  scoremenu [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#fae8ff">
+      <TR><TD><B>ScoreMenu</B></TD></TR>
+      <TR><TD ALIGN="LEFT">+ run(SDL_Renderer*,TTF_Font*): void</TD></TR>
+    </TABLE>
+  >];
+  colors [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="6" COLOR="#334155" BGCOLOR="#e0f2fe">
+      <TR><TD><B>mainMenuColor</B></TD></TR>
+      <TR><TD ALIGN="LEFT">+ static SDL_Color background<BR/>+ static SDL_Color buttonNormal/buttonHover/buttonActive<BR/>+ static SDL_Color text</TD></TR>
+    </TABLE>
+  >];
+  main [shape=box, style="rounded,filled", label="main.cpp::main()\nOwns local runtime objects:\nplayer1, ground vector, trap vector,\nScore, GameOver, SDL handles", fillcolor="#e0f2fe"];
+  sdl [shape=box, style="rounded,filled", label="SDL resources\nSDL_Window* window\nSDL_Renderer* renderer\nSDL_Texture* groundTex/ugTex\nTTF_Font* font", fillcolor="#ccfbf1"];
+
+  ground -> hitBox [arrowhead=empty, label="inherits"];
+  trap -> hitBox [arrowhead=empty, label="inherits"];
+  player -> hitBox [arrowhead=empty, label="inherits"];
+  option -> hitBox [arrowhead=empty, label="inherits"];
+  main -> player [arrowhead=diamond, label="owns local object"];
+  main -> score [arrowhead=diamond, label="owns local object"];
+  main -> gameover [arrowhead=diamond, label="owns local object"];
+  main -> ground [arrowhead=diamond, label="owns vector elements"];
+  main -> trap [arrowhead=diamond, label="owns vector elements"];
+  main -> sdl [arrowhead=diamond, label="owns handles"];
+  ground -> sdl [style=dotted, label="uses shared textures"];
+  option -> sdl [style=dashed, label="owns text textures"];
+  login -> reg [label="may call registration flow"];
+  scoremenu -> sdl [style=dotted, label="renders and reads player.csv"];
+  colors -> option [style=dotted, label="menu palette"];
+}
