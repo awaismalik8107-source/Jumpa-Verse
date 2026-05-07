@@ -64,9 +64,9 @@ void Score::render(SDL_Renderer* renderer, TTF_Font* font)
         return;
     }
 
-    int screenW = 1980;
-    int screenH = 1260;
-    SDL_GetRendererOutputSize(renderer, &screenW, &screenH);
+    int screenW = GAME_WIDTH;
+        int screenH = GAME_HEIGHT;
+        getScreenSize(renderer, screenW, screenH);
 
     const int margin = 28;
     const int paddingX = 18;

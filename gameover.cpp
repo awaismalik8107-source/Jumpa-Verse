@@ -80,9 +80,9 @@ namespace
                         const GameOver& gameOver,
                         int selectedButton)
     {
-        int screenW = 1980;
-        int screenH = 1260;
-        SDL_GetRendererOutputSize(renderer, &screenW, &screenH);
+        int screenW = GAME_WIDTH;
+        int screenH = GAME_HEIGHT;
+        getScreenSize(renderer, screenW, screenH);
 
         SDL_SetRenderDrawColor(renderer, 24, 24, 24, 255);
         SDL_RenderClear(renderer);
@@ -311,9 +311,9 @@ GameOverAction runGameOverScreen(SDL_Renderer* renderer, TTF_Font* font, GameOve
 
             if (event.type == SDL_MOUSEMOTION)
             {
-                int screenW = 1980;
-                int screenH = 1260;
-                SDL_GetRendererOutputSize(renderer, &screenW, &screenH);
+                int screenW = GAME_WIDTH;
+        int screenH = GAME_HEIGHT;
+        getScreenSize(renderer, screenW, screenH);
                 int stripH = screenH / 3;
                 if (stripH < 320)
                 {
@@ -343,9 +343,9 @@ GameOverAction runGameOverScreen(SDL_Renderer* renderer, TTF_Font* font, GameOve
 
             if (event.type == SDL_MOUSEBUTTONDOWN)
             {
-                int screenW = 1980;
-                int screenH = 1260;
-                SDL_GetRendererOutputSize(renderer, &screenW, &screenH);
+                int screenW = GAME_WIDTH;
+        int screenH = GAME_HEIGHT;
+        getScreenSize(renderer, screenW, screenH);
                 int stripH = screenH / 3;
                 if (stripH < 320)
                 {

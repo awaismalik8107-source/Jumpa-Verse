@@ -147,9 +147,9 @@ void ScoreMenu::run(SDL_Renderer* renderer, TTF_Font* font)
 
     while (running)
     {
-        int screenW = 1980;
-        int screenH = 1260;
-        SDL_GetRendererOutputSize(renderer, &screenW, &screenH);
+        int screenW = GAME_WIDTH;
+        int screenH = GAME_HEIGHT;
+        getScreenSize(renderer, screenW, screenH);
 
         SDL_Rect backButton = {screenW / 2 - 150, screenH - 150, 300, 78};
         const int maxRows = 12;

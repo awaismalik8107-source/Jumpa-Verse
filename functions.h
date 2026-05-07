@@ -18,6 +18,10 @@ inline std::string toUpperUsername(const std::string& username)
 extern bool exitb;
 extern float cammeraDash;
 extern std::string currentPlayerUsername;
+
+constexpr int GAME_WIDTH = 1980;
+constexpr int GAME_HEIGHT = 1260;
+
 class ground_Class;
 class trapSpike;
 class player;
@@ -29,6 +33,9 @@ enum class LoginScreenAction;
 enum class RegisterScreenAction;
 bool init(SDL_Window*& Window, SDL_Renderer*& renderer);
 void close(SDL_Window* window, SDL_Renderer* renderer);
+void getScreenSize(SDL_Renderer* renderer, int& screenW, int& screenH);
+bool handleWindowControlEvent(SDL_Renderer* renderer, const SDL_Event& event);
+void renderWindowControls(SDL_Renderer* renderer);
 
 std::vector<ground_Class> ground_generator(SDL_Renderer* renderer,SDL_Texture* groundTex,SDL_Texture* ugTex);
 
