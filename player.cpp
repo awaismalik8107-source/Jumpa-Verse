@@ -60,7 +60,7 @@ void physicsDevelop(player& player1,
     {
         player1.gravity+=2000;
     }
-    if(characterdash && (player1.character.x+player1.character.w)<1980)
+    if(characterdash && (player1.character.x+player1.character.w)<currentScreenWidth)
     {
         player1.character.x+=5;
       

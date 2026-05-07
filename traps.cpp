@@ -19,6 +19,11 @@ void trapTriangle(SDL_Renderer* renderer, std::vector<trapSpike>& trap, std::vec
         return;
     }
 
+    int screenW = currentScreenWidth;
+    int screenH = currentScreenHeight;
+    getScreenSize(renderer, screenW, screenH);
+    (void)screenH;
+
     std::random_device rd;
     std::mt19937 gen(rd());
 
@@ -34,14 +39,23 @@ void trapTriangle(SDL_Renderer* renderer, std::vector<trapSpike>& trap, std::vec
         // Probability check
         if (chances(gen) < 100) // Adjusted probability for more consistent generation
         {
-            std::uniform_int_distribution<> distp(ground[i].x, (ground[i].x + ground[i].w) - 100);
+            const int margin = 100;
+            if (ground[i].w <= margin * 2)
+            {
+                return;
+            }
+
+            std::uniform_int_distribution<> distp(ground[i].x + margin,
+                                                  (ground[i].x + ground[i].w) - margin);
             int spikeX = distp(gen);
 
             // Check for overlap with existing traps
             bool overlapping = false;
+            const int minTrapSpacing = screenW / 10;
             for (const auto& existingTrap : trap)
             {
-                if (spikeX - existingTrap.x <= 200 && spikeX - existingTrap.x >= -200)
+                if (spikeX - existingTrap.x <= minTrapSpacing &&
+                    spikeX - existingTrap.x >= -minTrapSpacing)
                 {
                     overlapping = true;
                     break;

@@ -38,10 +38,6 @@ namespace
 bool menuScreen(SDL_Renderer* renderer, TTF_Font* font)
 {
     optionBoxes playButton(740, 430, 500, 150);
-    /*
-    1980/2=990-widthof the box
-    1260/2=630-200
-    */
     playButton.box_Initializer(renderer, font, "Play");
     SDL_Texture* titleTexture = nullptr;
     if (font)
@@ -53,8 +49,11 @@ bool menuScreen(SDL_Renderer* renderer, TTF_Font* font)
             SDL_FreeSurface(titleSurface);
         }
     }
-    SDL_Point start={0,1100};
-    SDL_Point end={1980,1100};
+    int screenW = currentScreenWidth;
+    int screenH = currentScreenHeight;
+    getScreenSize(renderer, screenW, screenH);
+    SDL_Point start={0, screenH - 160};
+    SDL_Point end={screenW, screenH - 160};
 
     bool running = true;
     SDL_Event event;
@@ -80,8 +79,22 @@ bool menuScreen(SDL_Renderer* renderer, TTF_Font* font)
         if (deltaTime > 0.05f)
             deltaTime = 0.05f;
 
+        getScreenSize(renderer, screenW, screenH);
+        start = {0, screenH - 160};
+        end = {screenW, screenH - 160};
+        playButton.x = (screenW - playButton.w) / 2;
+        playButton.y = screenH / 3;
+        playButton.box = {playButton.x, playButton.y, playButton.w, playButton.h};
+        playButton.boxScores = {playButton.x, playButton.y + playButton.h + playButton.boxOffsetY, playButton.w, playButton.h};
+        playButton.boxExit = {playButton.x, playButton.y + (playButton.h + playButton.boxOffsetY) * 2, playButton.w, playButton.h};
+
         while (SDL_PollEvent(&event))
         {
+            if (handleWindowControlEvent(renderer, event))
+            {
+                continue;
+            }
+
             if (event.type == SDL_QUIT)
             {
                 if (titleTexture)
@@ -229,7 +242,7 @@ bool menuScreen(SDL_Renderer* renderer, TTF_Font* font)
             int titleW, titleH;
             SDL_QueryTexture(titleTexture, NULL, NULL, &titleW, &titleH);
             SDL_Rect titleRect = {
-                (1980 - titleW) / 2,
+                (screenW - titleW) / 2,
                 110,
                 titleW,
                 titleH
@@ -297,6 +310,7 @@ bool menuScreen(SDL_Renderer* renderer, TTF_Font* font)
 
         // Render button
         playButton.render(renderer);
+        renderWindowControls(renderer);
 
         SDL_RenderPresent(renderer);
     }

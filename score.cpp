@@ -64,9 +64,9 @@ void Score::render(SDL_Renderer* renderer, TTF_Font* font)
         return;
     }
 
-    int screenW = GAME_WIDTH;
-        int screenH = GAME_HEIGHT;
-        getScreenSize(renderer, screenW, screenH);
+    int screenW = currentScreenWidth;
+    int screenH = currentScreenHeight;
+    getScreenSize(renderer, screenW, screenH);
 
     const int margin = 28;
     const int paddingX = 18;
@@ -106,11 +106,7 @@ void Score::render(SDL_Renderer* renderer, TTF_Font* font)
     const int spacing = 8;
     int boxW = labelW + spacing + valueW + paddingX * 2;
     int boxH = (labelH > valueH ? labelH : valueH) + paddingY * 2;
-    int x = screenW - margin - boxW;
-    if (x < margin)
-    {
-        x = margin;
-    }
+    int x = (screenW - boxW) / 2;
 
     SDL_Rect box = {x, margin, boxW, boxH};
     SDL_SetRenderDrawColor(renderer, borderColor.r, borderColor.g, borderColor.b, borderColor.a);

@@ -157,6 +157,11 @@ void ScoreMenu::run(SDL_Renderer* renderer, TTF_Font* font)
 
         while (SDL_PollEvent(&event))
         {
+            if (handleWindowControlEvent(renderer, event))
+            {
+                continue;
+            }
+
             if (event.type == SDL_QUIT)
             {
                 exitb = true;
@@ -244,6 +249,7 @@ void ScoreMenu::run(SDL_Renderer* renderer, TTF_Font* font)
         SDL_SetRenderDrawColor(renderer, fill.r, fill.g, fill.b, fill.a);
         SDL_RenderFillRect(renderer, &backButton);
         drawText(renderer, headerFont, "Back", SDL_Color{30, 30, 30, 255}, backButton);
+        renderWindowControls(renderer);
 
         SDL_RenderPresent(renderer);
         SDL_Delay(16);

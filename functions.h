@@ -21,6 +21,8 @@ extern std::string currentPlayerUsername;
 
 constexpr int GAME_WIDTH = 1980;
 constexpr int GAME_HEIGHT = 1260;
+extern int currentScreenWidth;
+extern int currentScreenHeight;
 
 class ground_Class;
 class trapSpike;
@@ -72,7 +74,7 @@ void updateScore(Score& score, float deltaTime, bool playerAlive);
 void renderScore(Score& score, SDL_Renderer* renderer, TTF_Font* font);
 void resetScore(Score& score);
 
-bool playerFellOff(const player& player1, int fallY = 1200);
+bool playerFellOff(const player& player1, int fallY = -1);
 bool playerHitTrap(const player& player1, const std::vector<trapSpike>& trap);
 GameOverAction runGameOverScreen(SDL_Renderer* renderer, TTF_Font* font, GameOver& gameOver);
 void saveFinalScore(const GameOver& gameOver, const std::string& path = "score.csv");

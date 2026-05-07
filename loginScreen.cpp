@@ -202,6 +202,11 @@ LoginScreenAction LoginScreen::run(SDL_Renderer* renderer, TTF_Font* font)
 
         while (SDL_PollEvent(&event))
         {
+            if (handleWindowControlEvent(renderer, event))
+            {
+                continue;
+            }
+
             if (event.type == SDL_QUIT)
             {
                 SDL_StopTextInput();
@@ -352,6 +357,7 @@ LoginScreenAction LoginScreen::run(SDL_Renderer* renderer, TTF_Font* font)
         drawText(renderer, smallFont, "If you don't have an account click here to register",
                  registerHover ? SDL_Color{255, 127, 0, 255} : SDL_Color{255, 255, 255, 255},
                  registerText);
+        renderWindowControls(renderer);
 
         SDL_RenderPresent(renderer);
         SDL_Delay(16);

@@ -11,6 +11,8 @@
 #include <SDL2/SDL2_gfxPrimitives.h>//to import trigons
 #include<SDL2/SDL_ttf.h>
 
+extern int currentScreenWidth;
+
 class hitBox
 {
 public:
@@ -151,7 +153,7 @@ public:
         // Visibility and Overflow Check:
         // SDL2_gfx uses int16_t (-32768 to 32767). 
         // We only render if it's reasonably near the screen to avoid overflow "streaks".
-        if (x1 < -500 || x1 > 3000) 
+        if (x1 < -500 || x1 > currentScreenWidth + 1000) 
         {
             return;
         }

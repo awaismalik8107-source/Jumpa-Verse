@@ -7,12 +7,16 @@
 #include<vector>
 #include<algorithm>//For basic algorithim like sorting 
 #include"object.h"
+#include"functions.h"
 #include<SDL2/SDL_image.h>
 
 
 
 bool init(SDL_Window*& Window,SDL_Renderer *&renderer);//Check 
 void close(SDL_Window* window,SDL_Renderer* renderer);
+
+int currentScreenWidth = GAME_WIDTH;
+int currentScreenHeight = GAME_HEIGHT;
 
 bool init(SDL_Window*& Window,SDL_Renderer *&renderer)
 {
@@ -34,11 +38,18 @@ bool init(SDL_Window*& Window,SDL_Renderer *&renderer)
 }
 
 
+    SDL_DisplayMode displayMode;
+    if (SDL_GetCurrentDisplayMode(0, &displayMode) == 0)
+    {
+        currentScreenWidth = displayMode.w;
+        currentScreenHeight = displayMode.h;
+    }
+
     Window = SDL_CreateWindow("Jumpa Verse",
                               SDL_WINDOWPOS_CENTERED,
                               SDL_WINDOWPOS_CENTERED,
-                              GAME_WIDTH,
-                              GAME_HEIGHT,
+                              currentScreenWidth,
+                              currentScreenHeight,
                               SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_FULLSCREEN_DESKTOP);
 
     if(!Window)
@@ -55,36 +66,25 @@ bool init(SDL_Window*& Window,SDL_Renderer *&renderer)
     }
 
     SDL_SetWindowMinimumSize(Window, 960, 540);
-    if (SDL_RenderSetLogicalSize(renderer, GAME_WIDTH, GAME_HEIGHT) != 0)
-    {
-        std::cerr<<"LOGICAL RESOLUTION COULDNT SET!\t\t\tSDL ERROR:\t"<<SDL_GetError()<<std::endl;
-        return false;
-    }
 
     return true;
 }
 
 void getScreenSize(SDL_Renderer* renderer, int& screenW, int& screenH)
 {
-    screenW = GAME_WIDTH;
-    screenH = GAME_HEIGHT;
+    screenW = currentScreenWidth;
+    screenH = currentScreenHeight;
 
     if (!renderer)
     {
         return;
     }
 
-    int logicalW = 0;
-    int logicalH = 0;
-    SDL_RenderGetLogicalSize(renderer, &logicalW, &logicalH);
-    if (logicalW > 0 && logicalH > 0)
+    if (SDL_GetRendererOutputSize(renderer, &screenW, &screenH) == 0)
     {
-        screenW = logicalW;
-        screenH = logicalH;
-        return;
+        currentScreenWidth = screenW;
+        currentScreenHeight = screenH;
     }
-
-    SDL_GetRendererOutputSize(renderer, &screenW, &screenH);
 }
 
 bool handleWindowControlEvent(SDL_Renderer* renderer, const SDL_Event& event)
@@ -94,8 +94,8 @@ bool handleWindowControlEvent(SDL_Renderer* renderer, const SDL_Event& event)
         return false;
     }
 
-    int screenW = GAME_WIDTH;
-    int screenH = GAME_HEIGHT;
+    int screenW = currentScreenWidth;
+    int screenH = currentScreenHeight;
     getScreenSize(renderer, screenW, screenH);
 
     const int buttonSize = 46;
@@ -133,8 +133,6 @@ bool handleWindowControlEvent(SDL_Renderer* renderer, const SDL_Event& event)
         {
             SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
         }
-
-        SDL_RenderSetLogicalSize(renderer, GAME_WIDTH, GAME_HEIGHT);
         return true;
     }
 
@@ -148,8 +146,8 @@ void renderWindowControls(SDL_Renderer* renderer)
         return;
     }
 
-    int screenW = GAME_WIDTH;
-    int screenH = GAME_HEIGHT;
+    int screenW = currentScreenWidth;
+    int screenH = currentScreenHeight;
     getScreenSize(renderer, screenW, screenH);
 
     const int buttonSize = 46;

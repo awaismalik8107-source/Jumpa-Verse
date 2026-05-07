@@ -192,6 +192,7 @@ namespace
 
         renderText(renderer, font, "Try Again", lightText, tryAgain);
         renderText(renderer, font, "Return to Menu", lightText, menu);
+        renderWindowControls(renderer);
 
         SDL_RenderPresent(renderer);
     }
@@ -199,6 +200,11 @@ namespace
 
 bool playerFellOff(const player& player1, int fallY)
 {
+    if (fallY < 0)
+    {
+        fallY = currentScreenHeight + 120;
+    }
+
     return player1.character.y >= fallY;
 }
 
@@ -288,6 +294,11 @@ GameOverAction runGameOverScreen(SDL_Renderer* renderer, TTF_Font* font, GameOve
     {
         while (SDL_PollEvent(&event))
         {
+            if (handleWindowControlEvent(renderer, event))
+            {
+                continue;
+            }
+
             if (event.type == SDL_QUIT)
             {
                 exitb = true;

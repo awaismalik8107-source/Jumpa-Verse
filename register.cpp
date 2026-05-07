@@ -207,6 +207,11 @@ RegisterScreenAction RegisterScreen::run(SDL_Renderer* renderer, TTF_Font* font)
 
         while (SDL_PollEvent(&event))
         {
+            if (handleWindowControlEvent(renderer, event))
+            {
+                continue;
+            }
+
             if (event.type == SDL_QUIT)
             {
                 SDL_StopTextInput();
@@ -334,6 +339,7 @@ RegisterScreenAction RegisterScreen::run(SDL_Renderer* renderer, TTF_Font* font)
         drawButton(renderer, formFont, backButton, "Back", selectedButton == 1);
         drawText(renderer, formFont, message, SDL_Color{255, 127, 0, 255},
                  SDL_Rect{screenW / 2 - 430, 860, 860, 44});
+        renderWindowControls(renderer);
 
         SDL_RenderPresent(renderer);
         SDL_Delay(16);

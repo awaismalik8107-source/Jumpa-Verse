@@ -65,6 +65,9 @@ int main()
     {
 
        Uint32 frameStart = SDL_GetTicks();
+        int screenW = currentScreenWidth;
+        int screenH = currentScreenHeight;
+        getScreenSize(renderer, screenW, screenH);
 
         Uint32 currentTime = SDL_GetTicks();
         float deltaTime = (currentTime - lastTime) / 1000.0f;
@@ -101,6 +104,11 @@ int main()
 
         while(SDL_PollEvent(&eventManager)!=0)
         {
+            if (handleWindowControlEvent(renderer, eventManager))
+            {
+                continue;
+            }
+
             if(eventManager.type==SDL_QUIT)
             {
                 quit=true;
@@ -173,6 +181,7 @@ int main()
         
         player1.Render(renderer);
         renderScore(score, renderer, font);
+        renderWindowControls(renderer);
           
 
         SDL_RenderPresent(renderer);
